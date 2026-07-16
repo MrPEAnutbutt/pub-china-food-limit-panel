@@ -1,0 +1,433 @@
+{
+  "validation_passed": true,
+  "artifact_scope": {
+    "layer": "conservative_ocr_candidate_layer",
+    "complete_edition_representation": false,
+    "intended_use": "cross-validation, disputed-row quarantine, and reproducible OCR evidence",
+    "release_warning": "accepted rows remain conservative OCR candidates and must not be described as complete 2019 or 2021 edition tables"
+  },
+  "manifest": {
+    "filename": "completion_manifest.json",
+    "sha256": "fbcda46b84263f829b99be0d52a617a95436b93efc37854902dc40d1c6010cd7",
+    "verified_years": [
+      "2019",
+      "2021"
+    ]
+  },
+  "source_files": {
+    "2019": {
+      "filename": "ocr_words_2019.tsv",
+      "sha256": "f09a6313409fb87dd2d62ae89a5309ded6be0a1eb9aa32d3073cce00e74694a8",
+      "page_count": 333,
+      "word_count": 91900
+    },
+    "2021": {
+      "filename": "ocr_words_2021.tsv",
+      "sha256": "9c651dcd29759a51011fd24524209e1ed386bd153d4a6532041c700d9687886c",
+      "page_count": 422,
+      "word_count": 125852
+    }
+  },
+  "resolver": {
+    "source": "Data/Interim/pesticide_text/pesticide_text_section_roster.csv",
+    "english_keys": 637,
+    "chinese_keys": 572,
+    "external_english_roster_used": false
+  },
+  "food_vocabulary": {
+    "source_directory": "Data/Interim/pesticide_text",
+    "terms": 644
+  },
+  "parent_resolution": {
+    "method": "layout_column_cluster",
+    "vocabulary_source": "Data/Interim/pesticide_text",
+    "vocabulary_terms": 31,
+    "parent_column_start_rule": "first Chinese token x < 0.20 * page_width",
+    "cluster_split_rule": "horizontal gap > 0.05 * page_width",
+    "unresolved_policy": "clear inherited parent and add explicit review status"
+  },
+  "identity_adjudications": {
+    "source": "Data/Interim/pesticide_ocr/pesticide_section_identity_adjudications.csv",
+    "sha256": "fef935bce35a05f6fb223ad3ccab5e360881ab4b2e13476591a3d24188d87f01",
+    "rows": 45,
+    "evidence_type": "manual_source_transcription"
+  },
+  "source_image_adjudications": {
+    "source": "Data/Interim/pesticide_ocr/pesticide_source_image_adjudications.csv",
+    "sha256": "c1bc5c3ca44180cdeddf1cc62829fcf8d67aa9a05d3f56a2cb5d7d2b2f1120ea",
+    "rows": [
+      {
+        "adjudication_id": "A001",
+        "year": "2019",
+        "source_page": 27,
+        "section": 15,
+        "pesticide": "百草枯",
+        "raw_food": "豆类蔬菜",
+        "raw_value": "1",
+        "raw_parent": "蔬菜",
+        "corrected_parent": "蔬菜",
+        "corrected_food": "豆类蔬菜",
+        "corrected_value": "0.05",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A002",
+        "year": "2019",
+        "source_page": 107,
+        "section": 134,
+        "pesticide": "氟苯脲",
+        "raw_food": "芹菜",
+        "raw_value": "0.51",
+        "raw_parent": "蔬菜",
+        "corrected_parent": "蔬菜",
+        "corrected_food": "芹菜",
+        "corrected_value": "0.5",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A003",
+        "year": "2019",
+        "source_page": 150,
+        "section": 205,
+        "pesticide": "腈菌唑",
+        "raw_food": "麦类",
+        "raw_value": "1",
+        "raw_parent": "谷物",
+        "corrected_parent": "谷物",
+        "corrected_food": "麦类",
+        "corrected_value": "0.1",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A004",
+        "year": "2021",
+        "source_page": 40,
+        "section": 25,
+        "pesticide": "苯氟磺胺",
+        "raw_food": "辣椒",
+        "raw_value": "20",
+        "raw_parent": "水可",
+        "corrected_parent": "调味料",
+        "corrected_food": "干辣椒",
+        "corrected_value": "20",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A005",
+        "year": "2021",
+        "source_page": 69,
+        "section": 63,
+        "pesticide": "丙溴磷",
+        "raw_food": "辣椒",
+        "raw_value": "20",
+        "raw_parent": "调味料",
+        "corrected_parent": "调味料",
+        "corrected_food": "干辣椒",
+        "corrected_value": "20",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A006",
+        "year": "2021",
+        "source_page": 331,
+        "section": 443,
+        "pesticide": "烯草酮",
+        "raw_food": "葵花籽",
+        "raw_value": "0.57",
+        "raw_parent": "油料和油脂",
+        "corrected_parent": "油料和油脂",
+        "corrected_food": "葵花籽",
+        "corrected_value": "0.5",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A007",
+        "year": "2021",
+        "source_page": 363,
+        "section": 500,
+        "pesticide": "乙酯杀螨醇",
+        "raw_food": "水生类蔬菜",
+        "raw_value": "01",
+        "raw_parent": "项菜",
+        "corrected_parent": "蔬菜",
+        "corrected_food": "水生类蔬菜",
+        "corrected_value": "0.01",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A008",
+        "year": "2021",
+        "source_page": 373,
+        "section": 520,
+        "pesticide": "茚草酮",
+        "raw_food": "稻类",
+        "raw_value": "01",
+        "raw_parent": "谷物",
+        "corrected_parent": "谷物",
+        "corrected_food": "稻类",
+        "corrected_value": "0.01",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A009",
+        "year": "2021",
+        "source_page": 388,
+        "section": 545,
+        "pesticide": "氯丹",
+        "raw_food": "仿果类水果",
+        "raw_value": "0.03",
+        "raw_parent": "水果",
+        "corrected_parent": "水果",
+        "corrected_food": "瓜果类水果",
+        "corrected_value": "0.02",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A010",
+        "year": "2019",
+        "source_page": 225,
+        "section": 312,
+        "pesticide": "噻螨酮",
+        "raw_food": "坚果",
+        "raw_value": "05",
+        "raw_parent": "坚果",
+        "corrected_parent": "坚果",
+        "corrected_food": "坚果",
+        "corrected_value": "0.05",
+        "hits": 1
+      },
+      {
+        "adjudication_id": "A011",
+        "year": "2019",
+        "source_page": 258,
+        "section": 373,
+        "pesticide": "戊唑醇",
+        "raw_food": "辣椒",
+        "raw_value": "10",
+        "raw_parent": "饮料类",
+        "corrected_parent": "调味料",
+        "corrected_food": "干辣椒",
+        "corrected_value": "10",
+        "hits": 1
+      }
+    ]
+  },
+  "years": {
+    "2019": {
+      "roster": {
+        "total": 467,
+        "statuses": {
+          "resolved": 467
+        }
+      },
+      "extraction": {
+        "transitions": {
+          "header": 465,
+          "parent_exact": 1166,
+          "parent_fuzzy": 140,
+          "parent_unresolved": 734,
+          "subitem_1": 464,
+          "subitem_2": 466,
+          "subitem_3": 465,
+          "subitem_4": 464,
+          "subitem_5": 336,
+          "table_title_skipped": 572
+        },
+        "accepted": 1934,
+        "quarantine": 3061,
+        "candidates": 4995,
+        "accepted_sections": 233,
+        "accepted_pesticides": 233,
+        "review_status": {
+          "auto_accepted": 1152,
+          "review_name_conf_30_49": 156,
+          "review_name_conf_lt30": 256,
+          "review_parent_food_unseen": 34,
+          "review_parent_fuzzy": 56,
+          "review_parent_fuzzy;review_parent_food_unseen": 2,
+          "review_parent_unresolved": 273,
+          "source_image_corrected": 5
+        },
+        "parent_review": {
+          "missing": 273,
+          "fuzzy": 58,
+          "source_image_corrected": 1,
+          "parent_food_unseen": 36
+        },
+        "reject_reasons": {
+          "food_fuzzy_requires_review": 135,
+          "food_unresolved": 984,
+          "food_watermark_occlusion": 232,
+          "leading_zero_integer": 75,
+          "prose_row": 7,
+          "value_low_confidence": 806,
+          "value_out_of_range": 168,
+          "value_watermark_occlusion": 654
+        }
+      }
+    },
+    "2021": {
+      "roster": {
+        "total": 548,
+        "statuses": {
+          "resolved": 548
+        }
+      },
+      "extraction": {
+        "transitions": {
+          "header": 542,
+          "parent_exact": 1506,
+          "parent_fuzzy": 477,
+          "parent_unresolved": 1264,
+          "subitem_1": 547,
+          "subitem_2": 547,
+          "subitem_3": 548,
+          "subitem_4": 549,
+          "subitem_5": 373,
+          "table_title_skipped": 709
+        },
+        "accepted": 1779,
+        "quarantine": 5490,
+        "candidates": 7269,
+        "accepted_sections": 312,
+        "accepted_pesticides": 312,
+        "review_status": {
+          "auto_accepted": 713,
+          "review_name_conf_30_49": 189,
+          "review_name_conf_lt30": 273,
+          "review_parent_food_unseen": 62,
+          "review_parent_fuzzy": 179,
+          "review_parent_fuzzy;review_parent_food_unseen": 9,
+          "review_parent_unresolved": 348,
+          "source_image_corrected": 5,
+          "source_image_corrected;review_parent_fuzzy": 1
+        },
+        "parent_review": {
+          "missing": 348,
+          "fuzzy": 189,
+          "source_image_corrected": 1,
+          "parent_food_unseen": 71
+        },
+        "reject_reasons": {
+          "food_fuzzy_requires_review": 251,
+          "food_unresolved": 2970,
+          "food_watermark_occlusion": 58,
+          "invalid_number": 7,
+          "leading_zero_integer": 149,
+          "prose_row": 21,
+          "value_low_confidence": 1603,
+          "value_out_of_range": 283,
+          "value_watermark_occlusion": 148
+        }
+      }
+    }
+  },
+  "totals": {
+    "accepted": 3713,
+    "quarantine": 8551,
+    "candidates": 12264,
+    "section_roster": 1015,
+    "roster_evidence": 2167
+  },
+  "validation": {
+    "roster_expected": {
+      "2019": 467,
+      "2021": 548
+    },
+    "unresolved_sections": {
+      "2019": [],
+      "2021": []
+    },
+    "known_page_checks": {
+      "2019_p20_s1": {
+        "expected": "2,4-滴和2,4-滴钠盐",
+        "seen": [
+          "2,4-滴和2,4-滴钠盐"
+        ],
+        "pass": true
+      },
+      "2019_p20_s2": {
+        "expected": "2,4-滴丁酯",
+        "seen": [
+          "2,4-滴丁酯"
+        ],
+        "pass": true
+      },
+      "2021_p22_s2": {
+        "expected": "2,4-滴丁酯",
+        "seen": [
+          "2,4-滴丁酯"
+        ],
+        "pass": true
+      },
+      "2021_p22_s3": {
+        "expected": "2,4-滴二甲胺盐",
+        "seen": [
+          "2,4-滴二甲胺盐"
+        ],
+        "pass": true
+      },
+      "2021_p23_s4": {
+        "expected": "2,4-滴和2,4-滴钠盐",
+        "seen": [
+          "2,4-滴和2,4-滴钠盐"
+        ],
+        "pass": true
+      },
+      "2021_p357_s487": {
+        "expected": "乙螨唑",
+        "seen": [
+          "乙螨唑"
+        ],
+        "pass": true
+      },
+      "2021_p362_s497": {
+        "expected": "乙氧氟草醚",
+        "seen": [
+          "乙氧氟草醚"
+        ],
+        "pass": true
+      },
+      "2021_p366_s504": {
+        "expected": "异丙隆",
+        "seen": [
+          "异丙隆"
+        ],
+        "pass": true
+      },
+      "2021_p367_s506": {
+        "expected": "异丙威",
+        "seen": [
+          "异丙威"
+        ],
+        "pass": true
+      },
+      "2021_p367_s508": {
+        "expected": "异稻瘟净",
+        "seen": [
+          "异稻瘟净"
+        ],
+        "pass": true
+      }
+    },
+    "fuzzy_accepted": 0,
+    "accepted_duplicate_keys": 0,
+    "accepted_2021_p390": 7,
+    "accepted_2021_p390_unique_keys": 7,
+    "candidates_2021_p392_plus": 0,
+    "source_image_adjudications_accepted": 11,
+    "tebuconazole_chili_rules": [
+      [
+        "蔬菜",
+        "辣椒",
+        "2"
+      ],
+      [
+        "调味料",
+        "干辣椒",
+        "10"
+      ]
+    ],
+    "p55_s57_vegetable_parent_rows": 6
+  }
+}

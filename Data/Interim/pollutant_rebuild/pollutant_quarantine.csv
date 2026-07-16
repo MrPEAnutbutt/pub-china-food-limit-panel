@@ -1,0 +1,7 @@
+﻿source_path,year,analyte,food_category,limit_value,unit,reason
+pollutant_old_path.csv,2017,总砷,(调味品水产调味品、藻类调味品和香辛料类除外),0.5,mg/kg,missing_category_head
+pollutant_old_path.csv,2017,无机砷,、稻谷糙米、大米,0.2,mg/kg,leading_separator_or_closing_bracket
+pollutant_old_path.csv,2022,总汞,、粉)、渣)、稻谷糙米、大米(玉米、玉米粉、玉米糁(小麦、小麦粉,0.02,mg/kg,leading_separator_or_closing_bracket
+pollutant_old_path.csv,2025,亚硝酸盐,特殊医学用途配方食品(特殊医学用途婴儿配方食品涉及的,2.0,mg/kg,unclosed_bracket
+pollutant_old_path.csv,2025,总汞,、粉)、渣)、稻谷糙米、大米(玉米、玉米粉、玉米糁(小麦、小麦粉,0.02,mg/kg,leading_separator_or_closing_bracket
+pollutant_old_path.csv,2025,硝酸盐,特殊医学用途配方食品(特殊医学用途婴儿配方食品涉及的,100,mg/kg,unclosed_bracket

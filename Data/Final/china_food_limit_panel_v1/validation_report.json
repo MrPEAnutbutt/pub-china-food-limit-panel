@@ -1,0 +1,2058 @@
+{
+  "report_schema_version": "3.0",
+  "generated_utc": "2026-07-16T08:40:55.635396+00:00",
+  "target": "china_food_limit_panel_v1",
+  "inputs": {
+    "package_root": ".",
+    "source_root": null,
+    "source_roots": [
+      "补充_其它限量标准",
+      "补充_农兽药残留限量标准",
+      "污染物",
+      "政府文本层副本",
+      "外部英译本"
+    ],
+    "results_tab": "Results/tab"
+  },
+  "environment": {
+    "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "python_executable": "python3.14",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "pdftotext": "pdftotext version 26.02.0\nCopyright 2005-2026 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC"
+  },
+  "git": {
+    "available": true,
+    "commit": "b99ac8f164630ddc6da2fd8a918f69705f569b4f",
+    "dirty": true,
+    "root": "01食品标准数据"
+  },
+  "file_hashes": {
+    "LICENSE.md": {
+      "sha256": "b23433323d9080772ad30f290529cd6116b1a6d015f844080af247fb56e74178",
+      "bytes": 1938
+    },
+    "README.md": {
+      "sha256": "17d09017d020a625175a61bffe7d48e77f3793e69b0fad626e4adc308d7bb186",
+      "bytes": 23806
+    },
+    "SOURCE_ACQUISITION.md": {
+      "sha256": "25bc725641975ccc90113190f6b93855180dc2e11fb85b6a11b3225159cb6fd1",
+      "bytes": 15248
+    },
+    "_build_stats.json": {
+      "sha256": "d14430a5c1a45ea723ace5453c9b002d8b0ed329e9190da8cf594ebac2037a64",
+      "bytes": 1678
+    },
+    "additive_limits_long.csv": {
+      "sha256": "f0a2407fe914ebc97773a6817cc3b0288ddc1449ff727be449fcfd07de7d36d6",
+      "bytes": 1017981
+    },
+    "additive_names_en.csv": {
+      "sha256": "6e7d37e2addd873c8ce3e3a81dea7bbdff5a05142d7d213e765b2b2977681561",
+      "bytes": 30358
+    },
+    "additive_panel.csv": {
+      "sha256": "8cfa5b52639c161527ba47ef77efd68d8446332ef33d6e709b81dafd4f1b089c",
+      "bytes": 3242890
+    },
+    "data_dictionary.csv": {
+      "sha256": "eec41f428f81efd2ed6dff29e538c83aa3ffc606737552d8bb9dd189a636a63e",
+      "bytes": 53552
+    },
+    "entity_names_en.csv": {
+      "sha256": "debcf612093c0f1a3a9b3054abd8b11bc649e5743181ee6d1dcf0dbc7acae936",
+      "bytes": 66946
+    },
+    "food_category_names_en.csv": {
+      "sha256": "d4eda6577519f5a17612af3297c22c9f310377311dbbe73006a44febf0238c26",
+      "bytes": 70756
+    },
+    "mycotoxin_limits_long.csv": {
+      "sha256": "671472834fb45f9683639ef70bf02a4157a8f4c70f83ef1bc1cecdbd71f1e344",
+      "bytes": 7617
+    },
+    "mycotoxin_member_panel.csv": {
+      "sha256": "e52a67ec5b5bba443bd5c0b0240122edd5c1f50fd5074697a8bade8f5294e9c1",
+      "bytes": 8026
+    },
+    "mycotoxin_panel.csv": {
+      "sha256": "6bf04957ae009b7e33aa8f8cfb14e688c34fe5eb5fc60c6156118afd03c93933",
+      "bytes": 4301
+    },
+    "pesticide_edition_reconciliation.csv": {
+      "sha256": "a04c003611eab9e5bd4f5e5beb3ef53a81a82ab5a57d82dd71d9b5b05ff621bf",
+      "bytes": 2018
+    },
+    "pesticide_limits_long.csv": {
+      "sha256": "dd67d2998220e787a041e13827544493966bff1fe4cf848280e7e64f9b900de4",
+      "bytes": 14342044
+    },
+    "pesticide_ocr_crosscheck.csv": {
+      "sha256": "41ec312a187386564acde9ecc17697ebce68c3aaf2bd011f3ee36ef26dfeb785",
+      "bytes": 1210280
+    },
+    "pesticide_panel.csv": {
+      "sha256": "f47f5e8ade71d94cefd319ab4ec254c4fd3e7ba9f7b7a56ec21767239c4e8922",
+      "bytes": 43312648
+    },
+    "pollutant_category_panel.csv": {
+      "sha256": "9bce9eb33453ad191590d4f198aeabaffa85198648ef95c6542fd5faa939cc7b",
+      "bytes": 67705
+    },
+    "pollutant_limits_long.csv": {
+      "sha256": "d6d28f131bea152ff3c58bc9be012ac379f1a9b468e5fbf732c51f74ddfe2bf9",
+      "bytes": 113293
+    },
+    "pollutant_member_panel.csv": {
+      "sha256": "70d8b667d01d081ea181b57edaf6e8af6b2b147be320d477a80b60da13095bdd",
+      "bytes": 99062
+    },
+    "quarantined_rows.csv": {
+      "sha256": "1b57cb8e106b1d68fb6717b05d2d3d1344b5640f32e0f6b1997b36ec1a1d64b2",
+      "bytes": 3384
+    },
+    "source_manifest.csv": {
+      "sha256": "f6bd5dc5f381ce0ec4ba4fbdb08905c7149a86f639b6b524cabfd682cc30507a",
+      "bytes": 7847
+    },
+    "standard_timeline_conflicts.csv": {
+      "sha256": "cc3b4ded6e18b960eed805a826b0a3246c34f18521f5c4f9b1c85924c0f8b2fb",
+      "bytes": 1011
+    },
+    "standard_version_timeline.csv": {
+      "sha256": "9d381517c83cb268956cbcffdad25f1353d3291b26f475ae08480fe3ebdb4b98",
+      "bytes": 187668
+    },
+    "validate.py": {
+      "sha256": "635ca4a71b542987d42c2aa1cadce8a9c28cf389ba53d50d939144c186b7c776",
+      "bytes": 202204
+    },
+    "version_dates.csv": {
+      "sha256": "74f0d46db8e8f1b06018ef4c652af07dd3895b2d475a931cb0b39327da15166f",
+      "bytes": 4240
+    },
+    "vetdrug_limits_long.csv": {
+      "sha256": "c9dd7c88fe9ce3630cf978157e3b5637f508cb25b95c41e4b48353251dc5eecd",
+      "bytes": 180582
+    },
+    "vetdrug_member_panel.csv": {
+      "sha256": "8b9fc53cfd1c4726eac5d088c8c069248012d16ec766c25fb6af432f46c80144",
+      "bytes": 99558
+    },
+    "vetdrug_panel.csv": {
+      "sha256": "f98403757539d20041927053f63bc12e42e922b495008a7bed1d0adeed69efd5",
+      "bytes": 51885
+    }
+  },
+  "external_input_hashes": {
+    "results_tab/tab1AlignmentFailures.tex": {
+      "sha256": "ce6ba2c8999e8f9170bd4ba1d6f6681c19b595ff07dd9068bbc1735fa25c2cd6",
+      "bytes": 2542
+    },
+    "results_tab/tab1ExtractionMethod.tex": {
+      "sha256": "19acae5d4728398ded33967c8e75f1d74074bc64edfc6873cbec220e4d1a3dba",
+      "bytes": 2348
+    },
+    "source_roots/外部英译本/FSIS_GB2763-2016_en.pdf": {
+      "sha256": "b28b87fb4a50759cd40c9889349ee59be24f9e49ea890af103d913fccccda542",
+      "bytes": 2480852
+    },
+    "source_roots/外部英译本/GAIN_CH2019-0170_GB2763-2019_en.pdf": {
+      "sha256": "8f333e72aafa92140c9992fac61957efe686ce8d232a67d2b668f58560955730",
+      "bytes": 4073400
+    },
+    "source_roots/外部英译本/GAIN_CH2023-0040_GB2762-2022_en.pdf": {
+      "sha256": "c8bccdb20f30b3f6246b18167af26dab16b09cc639621e98c9c16294b76c10a7",
+      "bytes": 639722
+    },
+    "source_roots/外部英译本/GAIN_GB2760-2014_en.pdf": {
+      "sha256": "69d7d767b7c8c995f1dfd1b8bc828ced40a7d8f755a495ab977328e12665903f",
+      "bytes": 2335051
+    },
+    "source_roots/政府文本层副本/GB2763-2019_shanghai_gov_textlayer.pdf": {
+      "sha256": "749ccc899bc522c3774101026588fe8cad8699f5da47033758ff815d4b9c66ce",
+      "bytes": 6021886
+    },
+    "source_roots/政府文本层副本/GB2763-2021_lushan_gov_textlayer.pdf": {
+      "sha256": "e8c60114975f458c649b6cf842138a2ba8c9d8ed9f1e576902fcc06140304123",
+      "bytes": 4347643
+    },
+    "source_roots/污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf": {
+      "sha256": "8ebbcf11896b5a2684414e6f8d63de8bf4595b3547629a947d4eeda37bfe8647",
+      "bytes": 451648
+    },
+    "source_roots/污染物/GB 2762-2017 《食品安全国家标准 食品中污染物限量》（GB 2762-2017）第1号修改单.pdf": {
+      "sha256": "affed0199e54c0b60b57dfcfa750f83e2964832525ace693766c727fdcdb034a",
+      "bytes": 1043971
+    },
+    "source_roots/污染物/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf": {
+      "sha256": "3d03a0d9488bfc100d0d6830d370f1607a18a620852c7927a4db289305ce7ade",
+      "bytes": 353973
+    },
+    "source_roots/污染物/GB 2762-2022 GB 2762-2022《食品安全国家标准 食品中污染物限量》第1号修改单.pdf": {
+      "sha256": "0dd2062dd03f887c591b39fc1b694d0cf0bd9561b68a48f52769bed2fc224c9e",
+      "bytes": 416597
+    },
+    "source_roots/污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf": {
+      "sha256": "7ce8442362405a2b6381811ee6dca5aab75ee0b6613ea11888c2facc60d1ea39",
+      "bytes": 418099
+    },
+    "source_roots/污染物/GB 2762-2025 食品安全国家标准 食品中污染物限量.pdf": {
+      "sha256": "a8cad4d17354ef28c7dc6dae3dc3c0bde0b1d9315260f8e630b531f0d19966b4",
+      "bytes": 368617
+    },
+    "source_roots/补充_其它限量标准/GB 2760-1996 食品添加剂使用卫生标准.pdf": {
+      "sha256": "6bb28516a5edff325a325da054b2566bbb4ae432e8ea70bd2de5b519a120f0c4",
+      "bytes": 3002530
+    },
+    "source_roots/补充_其它限量标准/GB 2760-2011 食品安全国家标准 食品添加剂使用标准.pdf": {
+      "sha256": "9c2a3387c91bb586d17cf81f78cae6ec9879c7ceb42c6f0f80a4a3f14ce3db2d",
+      "bytes": 4439793
+    },
+    "source_roots/补充_其它限量标准/GB 2760-2014 食品安全国家标准 食品添加剂使用标准.pdf": {
+      "sha256": "69cbd4c8295cb2c3cef77339dc8aa75b8002dd423def5a7fe64081584d2ab93e",
+      "bytes": 19008763
+    },
+    "source_roots/补充_其它限量标准/GB 2760-2024 食品安全国家标准 食品添加剂使用标准.pdf": {
+      "sha256": "2a2c4a867cf5551177e5e65bf8140e9f85a0616d96aa3353161869e07a8505de",
+      "bytes": 2600140
+    },
+    "source_roots/补充_其它限量标准/GB 2761-2005 食品中真菌毒素限量.pdf": {
+      "sha256": "08419d4ca6eb01bafac3b8dbd84e4af1e515d11b7ac9cd78e7860be24f208045",
+      "bytes": 77083
+    },
+    "source_roots/补充_其它限量标准/GB 2761-2011 食品安全国家标准 食品中真菌毒素限量.pdf": {
+      "sha256": "3baaee973294fb0c34ed349e61b9a387a09cb4a226ae7186922e1c5aef5fe4f0",
+      "bytes": 157778
+    },
+    "source_roots/补充_其它限量标准/GB 2761-2017 食品安全国家标准 食品中真菌毒素限量.pdf": {
+      "sha256": "301bf80484b36d097985a4b9b3a6145f31042941064869a130072767636d1dee",
+      "bytes": 253696
+    },
+    "source_roots/补充_其它限量标准/GB 2762-2005 食品中污染物限量.pdf": {
+      "sha256": "1984f15932988ab1502bab17eeca357c603e5aa3378b4c403a5b31cfe2c62dcf",
+      "bytes": 558499
+    },
+    "source_roots/补充_其它限量标准/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf": {
+      "sha256": "8ebbcf11896b5a2684414e6f8d63de8bf4595b3547629a947d4eeda37bfe8647",
+      "bytes": 451648
+    },
+    "source_roots/补充_农兽药残留限量标准/GB 2763-2012 食品安全国家标准 食品中农药最大残留限量.pdf": {
+      "sha256": "a22ca0c525bfb0b1172cf61489e762a470bb4f7cde3d8ecf0c22ed8a6eb43eca",
+      "bytes": 8212829
+    },
+    "source_roots/补充_农兽药残留限量标准/GB 2763-2014 食品安全国家标准 食品中农药最大残留限量.pdf": {
+      "sha256": "078022a2db7d1c2d20e1f14b800dab77e4e0fc4a81faa666c1225b9343ea2042",
+      "bytes": 4475244
+    },
+    "source_roots/补充_农兽药残留限量标准/GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf": {
+      "sha256": "7e291366aac9562f349ee0ea0c03a457f8c7b7b0e1ff7f9619939a5d290ca41b",
+      "bytes": 4898485
+    },
+    "source_roots/补充_农兽药残留限量标准/GB 2763-2019 食品安全国家标准 食品中农药最大残留限量.pdf": {
+      "sha256": "bb83d0196565c786cb20618424e1b7b367b710bf5081745002ea0dd91c006ed9",
+      "bytes": 59380201
+    },
+    "source_roots/补充_农兽药残留限量标准/GB 2763-2021 食品安全国家标准 食品中农药最大残留限量.pdf": {
+      "sha256": "686195fff70772a3d4cd4899adbc3752576c24391f1a81a81c9150bd2ef43d6b",
+      "bytes": 67033577
+    },
+    "source_roots/补充_农兽药残留限量标准/GB 2763-2026 食品安全国家标准 食品中农药最大残留限量.pdf": {
+      "sha256": "98acde2f22614f184913c12bec745e7844ab1d5cbbeccf4c3617c1e064830b68",
+      "bytes": 4135298
+    },
+    "source_roots/补充_农兽药残留限量标准/GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf": {
+      "sha256": "cfc745f1ac1567a6e59c50b3b119916a619573b833685158a7b0942dc22c5273",
+      "bytes": 1614531
+    },
+    "source_roots/补充_农兽药残留限量标准/GB 31650.1-2022 食品安全国家标准 食品中兽药最大残留限量增补.pdf": {
+      "sha256": "f65065dfae6450f1495de7921176b08d0058165b89479b16e297f484f151a27e",
+      "bytes": 6898293
+    },
+    "source_roots/补充_农兽药残留限量标准/农业部235号公告-2002 动物性食品中兽药最高残留限量.doc": {
+      "sha256": "053802726b5b377bcb074987c72ec69318af7e91e74f2cc859d98747f92ce992",
+      "bytes": 313856
+    }
+  },
+  "layers": {
+    "self_contained": [
+      {
+        "id": "package.required_files",
+        "status": "pass",
+        "message": "All required release files are present.",
+        "details": {
+          "missing": [],
+          "required": 29
+        }
+      },
+      {
+        "id": "package.csv_integrity",
+        "status": "pass",
+        "message": "All CSV files are readable and rectangular.",
+        "details": {
+          "inventory": {
+            "additive_limits_long.csv": {
+              "rows": 6148,
+              "columns": 14
+            },
+            "additive_names_en.csv": {
+              "rows": 221,
+              "columns": 6
+            },
+            "additive_panel.csv": {
+              "rows": 2762,
+              "columns": 34
+            },
+            "data_dictionary.csv": {
+              "rows": 255,
+              "columns": 10
+            },
+            "entity_names_en.csv": {
+              "rows": 753,
+              "columns": 6
+            },
+            "food_category_names_en.csv": {
+              "rows": 394,
+              "columns": 7
+            },
+            "mycotoxin_limits_long.csv": {
+              "rows": 61,
+              "columns": 12
+            },
+            "mycotoxin_member_panel.csv": {
+              "rows": 55,
+              "columns": 13
+            },
+            "mycotoxin_panel.csv": {
+              "rows": 40,
+              "columns": 11
+            },
+            "pesticide_edition_reconciliation.csv": {
+              "rows": 6,
+              "columns": 11
+            },
+            "pesticide_limits_long.csv": {
+              "rows": 38024,
+              "columns": 29
+            },
+            "pesticide_ocr_crosscheck.csv": {
+              "rows": 17203,
+              "columns": 12
+            },
+            "pesticide_panel.csv": {
+              "rows": 11718,
+              "columns": 76
+            },
+            "pollutant_category_panel.csv": {
+              "rows": 260,
+              "columns": 29
+            },
+            "pollutant_limits_long.csv": {
+              "rows": 739,
+              "columns": 17
+            },
+            "pollutant_member_panel.csv": {
+              "rows": 390,
+              "columns": 25
+            },
+            "quarantined_rows.csv": {
+              "rows": 12,
+              "columns": 12
+            },
+            "source_manifest.csv": {
+              "rows": 25,
+              "columns": 19
+            },
+            "standard_timeline_conflicts.csv": {
+              "rows": 2,
+              "columns": 19
+            },
+            "standard_version_timeline.csv": {
+              "rows": 1504,
+              "columns": 9
+            },
+            "version_dates.csv": {
+              "rows": 21,
+              "columns": 14
+            },
+            "vetdrug_limits_long.csv": {
+              "rows": 1365,
+              "columns": 18
+            },
+            "vetdrug_member_panel.csv": {
+              "rows": 1132,
+              "columns": 11
+            },
+            "vetdrug_panel.csv": {
+              "rows": 559,
+              "columns": 9
+            }
+          },
+          "malformed": []
+        }
+      },
+      {
+        "id": "package.build_stats",
+        "status": "pass",
+        "message": "Build manifest row counts match the released tables.",
+        "details": {
+          "mismatches": [],
+          "missing_keys": []
+        }
+      },
+      {
+        "id": "package.primary_keys",
+        "status": "pass",
+        "message": "Every released table has a declared, nonblank, unique primary key.",
+        "details": {
+          "checked": {
+            "additive_limits_long.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 6148,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "additive_names_en.csv": {
+              "key": [
+                "cns_code"
+              ],
+              "rows": 221,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "additive_panel.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 2762,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "data_dictionary.csv": {
+              "key": [
+                "table",
+                "column"
+              ],
+              "rows": 255,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "entity_names_en.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 753,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "food_category_names_en.csv": {
+              "key": [
+                "family",
+                "food_key"
+              ],
+              "rows": 394,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "mycotoxin_limits_long.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 61,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "mycotoxin_member_panel.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 55,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "mycotoxin_panel.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 40,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "pesticide_edition_reconciliation.csv": {
+              "key": [
+                "standard",
+                "version_year"
+              ],
+              "rows": 6,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "pesticide_limits_long.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 38024,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "pesticide_ocr_crosscheck.csv": {
+              "key": [
+                "year",
+                "section_number",
+                "parent_category",
+                "food",
+                "key_level"
+              ],
+              "rows": 17203,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "pesticide_panel.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 11718,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "pollutant_category_panel.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 260,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "pollutant_limits_long.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 739,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "pollutant_member_panel.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 390,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "quarantined_rows.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 12,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "source_manifest.csv": {
+              "key": [
+                "source_id"
+              ],
+              "rows": 25,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "standard_timeline_conflicts.csv": {
+              "key": [
+                "conflict_id",
+                "candidate_rank"
+              ],
+              "rows": 2,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "standard_version_timeline.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 1504,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "version_dates.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 21,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "vetdrug_limits_long.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 1365,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "vetdrug_member_panel.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 1132,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "vetdrug_panel.csv": {
+              "key": [
+                "record_id"
+              ],
+              "rows": 559,
+              "blank": 0,
+              "duplicates": 0
+            }
+          },
+          "problems": []
+        }
+      },
+      {
+        "id": "package.version_coverage",
+        "status": "pass",
+        "message": "The five long tables contain exactly the declared editions.",
+        "details": {
+          "coverage": {
+            "pollutant_limits_long.csv": {
+              "expected": [
+                "2012",
+                "2017",
+                "2022",
+                "2025"
+              ],
+              "actual": [
+                "2012",
+                "2017",
+                "2022",
+                "2025"
+              ],
+              "rows_per_version": {
+                "2012": 162,
+                "2017": 178,
+                "2022": 200,
+                "2025": 199
+              }
+            },
+            "pesticide_limits_long.csv": {
+              "expected": [
+                "2012",
+                "2014",
+                "2016",
+                "2019",
+                "2021",
+                "2026"
+              ],
+              "actual": [
+                "2012",
+                "2014",
+                "2016",
+                "2019",
+                "2021",
+                "2026"
+              ],
+              "rows_per_version": {
+                "2012": 2293,
+                "2014": 3650,
+                "2016": 4132,
+                "2019": 7108,
+                "2021": 10092,
+                "2026": 10749
+              }
+            },
+            "mycotoxin_limits_long.csv": {
+              "expected": [
+                "2005",
+                "2011",
+                "2017"
+              ],
+              "actual": [
+                "2005",
+                "2011",
+                "2017"
+              ],
+              "rows_per_version": {
+                "2005": 9,
+                "2011": 22,
+                "2017": 30
+              }
+            },
+            "vetdrug_limits_long.csv": {
+              "expected": [
+                "2002",
+                "2019",
+                "2022"
+              ],
+              "actual": [
+                "2002",
+                "2019",
+                "2022"
+              ],
+              "rows_per_version": {
+                "2002": 551,
+                "2019": 692,
+                "2022": 122
+              }
+            },
+            "additive_limits_long.csv": {
+              "expected": [
+                "2011",
+                "2014",
+                "2024"
+              ],
+              "actual": [
+                "2011",
+                "2014",
+                "2024"
+              ],
+              "rows_per_version": {
+                "2011": 1742,
+                "2014": 2095,
+                "2024": 2311
+              }
+            }
+          },
+          "problems": []
+        }
+      },
+      {
+        "id": "package.conflict_flags",
+        "status": "pass",
+        "message": "Conflict flags agree with repeated business keys.",
+        "details": {
+          "summaries": {
+            "pollutant_limits_long.csv": {
+              "business_key": [
+                "version_year",
+                "analyte_zh",
+                "food_category_zh"
+              ],
+              "rows_flagged": 0,
+              "duplicate_groups": 0
+            },
+            "pesticide_limits_long.csv": {
+              "business_key": [
+                "version_year",
+                "pesticide_key",
+                "food_key"
+              ],
+              "rows_flagged": 388,
+              "duplicate_groups": 194
+            },
+            "mycotoxin_limits_long.csv": {
+              "business_key": [
+                "version_year",
+                "toxin_zh",
+                "food_category_zh"
+              ],
+              "rows_flagged": 0,
+              "duplicate_groups": 0
+            },
+            "vetdrug_limits_long.csv": {
+              "business_key": [
+                "version_year",
+                "drug_en",
+                "animal",
+                "tissue_zh"
+              ],
+              "rows_flagged": 0,
+              "duplicate_groups": 0
+            },
+            "additive_limits_long.csv": {
+              "business_key": [
+                "version_year",
+                "cns_code",
+                "food_code"
+              ],
+              "rows_flagged": 72,
+              "duplicate_groups": 32
+            }
+          },
+          "problems": []
+        }
+      },
+      {
+        "id": "package.data_dictionary",
+        "status": "pass",
+        "message": "Every released field is documented and conforms to its declared type.",
+        "details": {
+          "documented_fields": 413,
+          "actual_fields": 413,
+          "uncovered": [],
+          "unmatched_patterns": [],
+          "type_errors": [],
+          "nullability_errors": [],
+          "enum_errors": [],
+          "schema_meta_errors": [],
+          "ambiguity_errors": [],
+          "truncated": false
+        }
+      },
+      {
+        "id": "package.lookup_integrity",
+        "status": "pass",
+        "message": "Stable lookup keys and Chinese-side release joins are internally consistent.",
+        "details": {
+          "entity_rows": 753,
+          "food_rows": 394,
+          "additive_name_rows": 221,
+          "problems": [],
+          "problem_count": 0,
+          "interpretation_boundary": "This self-contained check validates stable-key derivation and Chinese-side joins. English-label pairing remains generation-audit evidence; source-PDF vocabulary occurrence does not validate it."
+        }
+      },
+      {
+        "id": "package.panel_lineage",
+        "status": "pass",
+        "message": "Multi-value panel cells preserve long-record lineage and comparability.",
+        "details": {
+          "summaries": {
+            "pesticide_panel.csv": {
+              "rows": 11718,
+              "cells_checked": 70308
+            },
+            "additive_panel.csv": {
+              "rows": 2762,
+              "cells_checked": 8286
+            }
+          },
+          "problems": [],
+          "problem_count": 0
+        }
+      },
+      {
+        "id": "package.missing_values",
+        "status": "pass",
+        "message": "Blank fields and the GMP sentinel follow the documented missing-value contract.",
+        "details": {
+          "unexpected_placeholders": [],
+          "additive_gmp_unit_errors": []
+        }
+      },
+      {
+        "id": "package.pollutant_normalization",
+        "status": "pass",
+        "message": "Pollutant mass-per-mass conversions and density-required records follow the declared contract.",
+        "details": {
+          "problems": [],
+          "problem_count": 0
+        }
+      },
+      {
+        "id": "package.pollutant_panels",
+        "status": "pass",
+        "message": "Pollutant category and member cells preserve edition units, bases, and long-table lineage.",
+        "details": {
+          "category_rows": 260,
+          "member_rows": 390,
+          "problems": [],
+          "problem_count": 0,
+          "interpretation_boundary": "Edition host/value cells are linked to released long-table rules; canonical category labels and member-to-host expansion are supplied by frozen crosswalks that are not revalidated from this package alone."
+        }
+      },
+      {
+        "id": "package.mycotoxin_panel_lineage",
+        "status": "pass",
+        "message": "Mycotoxin summary value multisets and trends, plus member host-rule values, reproduce the long table.",
+        "details": {
+          "panel_rows": 40,
+          "member_rows": 55,
+          "long_rows": 61,
+          "problems": [],
+          "problem_count": 0,
+          "interpretation_boundary": "The strictness panel conserves the year/toxin/value multiset, while summary food alignment and member expansion are supplied by frozen crosswalks that are not revalidated from this package alone."
+        }
+      },
+      {
+        "id": "package.vetdrug_panel_lineage",
+        "status": "pass",
+        "message": "Veterinary-drug summary and member values reproduce released long-table rules.",
+        "details": {
+          "panel_rows": 559,
+          "member_rows": 1132,
+          "long_rows": 1365,
+          "problems": [],
+          "problem_count": 0,
+          "interpretation_boundary": "Member values are linked to a bilingual drug/tissue rule; expansion from grouped animal scopes is supplied by a frozen member crosswalk that is not revalidated from this package alone."
+        }
+      },
+      {
+        "id": "package.quarantine_contract",
+        "status": "pass",
+        "message": "Quarantine rows use portable provenance and family-conditional missing fields.",
+        "details": {
+          "rows": 12,
+          "rows_per_standard": {
+            "GB 2760": 6,
+            "GB 2762": 6
+          },
+          "problems": [],
+          "problem_count": 0
+        }
+      },
+      {
+        "id": "package.vetdrug_provenance",
+        "status": "pass",
+        "message": "Veterinary-drug edition identities and 2002 Word-table locators are explicit.",
+        "details": {
+          "rows": 1365,
+          "rows_with_table_locators": 551,
+          "unique_table_locators": 551,
+          "problems": [],
+          "problem_count": 0
+        }
+      },
+      {
+        "id": "package.source_manifest",
+        "status": "pass",
+        "message": "The source manifest fingerprints edition identities, extraction copies, and excluded identity-audit copies with complete row lineage.",
+        "details": {
+          "rows": 25,
+          "role_counts": {
+            "edition_source": 21,
+            "extraction_copy": 2,
+            "identity_audit_copy": 2
+          },
+          "release_status_counts": {
+            "archived_unextracted": 2,
+            "excluded_from_extraction": 2,
+            "extracted": 19,
+            "identity_anchor_crosscheck": 2
+          },
+          "released_limit_rows": 46337,
+          "source_acquisition_guide": {
+            "documented_source_rows": 25,
+            "translation_locks": 4
+          },
+          "problems": [],
+          "problem_count": 0
+        }
+      },
+      {
+        "id": "package.pesticide_release_contract",
+        "status": "pass",
+        "message": "Six-edition visible-rule reconciliation, qualifiers, coordinates, and OCR crosschecks agree with the released pesticide tables.",
+        "details": {
+          "released_rows_by_year": {
+            "2012": 2293,
+            "2014": 3650,
+            "2016": 4132,
+            "2019": 7108,
+            "2021": 10092,
+            "2026": 10749
+          },
+          "ocr_crosscheck_rows_by_year": {
+            "2019": 7109,
+            "2021": 10094
+          },
+          "ocr_crosscheck_statuses": {
+            "conflict": 9,
+            "consistent": 3701,
+            "ocr_only": 3,
+            "text_only": 13490
+          },
+          "released_text_groups": 17200,
+          "problems": [],
+          "problem_count": 0,
+          "interpretation_boundary": "Text-side keys, values, counts, and pages are recomputed from the released long table. OCR-side values, counts, and pages are frozen upstream audit evidence; this package checks their internal structure only."
+        }
+      },
+      {
+        "id": "package.timeline_conflicts",
+        "status": "pass",
+        "message": "Timeline metadata conflicts retain every candidate and exactly one reproducible selection.",
+        "details": {
+          "conflict_groups": 1,
+          "candidates": 2,
+          "problems": [],
+          "problem_count": 0
+        }
+      },
+      {
+        "id": "package.version_dates",
+        "status": "pass",
+        "message": "Every extracted edition has issue/effective dates with a recorded read path.",
+        "details": {
+          "missing": [],
+          "missing_timeline_versions": [],
+          "missing_timeline_amendments": [],
+          "date_problems": [],
+          "date_problem_count": 0,
+          "extra_archived_entries": 0
+        }
+      },
+      {
+        "id": "package.readme_contract",
+        "status": "pass",
+        "message": "README documents multi-value, missing-value, and validation-status semantics without frozen row counts.",
+        "details": {
+          "missing_phrases": [],
+          "frozen_row_count_rows": []
+        }
+      }
+    ],
+    "source_dependent": [
+      {
+        "id": "external_tables.alignment_failures",
+        "status": "pass",
+        "message": "The alignment-failures table carries all four dimensions and the expected label.",
+        "details": {
+          "path": "tab1AlignmentFailures.tex",
+          "missing": []
+        }
+      },
+      {
+        "id": "external_tables.extraction_counts",
+        "status": "pass",
+        "message": "Extraction-method table row counts match the released long tables.",
+        "details": {
+          "path": "tab1ExtractionMethod.tex",
+          "mismatches": []
+        }
+      },
+      {
+        "id": "source.input_manifest",
+        "status": "pass",
+        "message": "Every source-manifest file and locked translation was found with the declared size and SHA-256 digest.",
+        "details": {
+          "verified": [
+            {
+              "source_id": "SRC0001",
+              "path": "补充_其它限量标准/GB 2762-2005 食品中污染物限量.pdf",
+              "sha256": "1984f15932988ab1502bab17eeca357c603e5aa3378b4c403a5b31cfe2c62dcf",
+              "bytes": 558499
+            },
+            {
+              "source_id": "SRC0002",
+              "path": "补充_其它限量标准/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+              "sha256": "8ebbcf11896b5a2684414e6f8d63de8bf4595b3547629a947d4eeda37bfe8647",
+              "bytes": 451648
+            },
+            {
+              "source_id": "SRC0003",
+              "path": "污染物/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf",
+              "sha256": "3d03a0d9488bfc100d0d6830d370f1607a18a620852c7927a4db289305ce7ade",
+              "bytes": 353973
+            },
+            {
+              "source_id": "SRC0004",
+              "path": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "sha256": "7ce8442362405a2b6381811ee6dca5aab75ee0b6613ea11888c2facc60d1ea39",
+              "bytes": 418099
+            },
+            {
+              "source_id": "SRC0005",
+              "path": "污染物/GB 2762-2025 食品安全国家标准 食品中污染物限量.pdf",
+              "sha256": "a8cad4d17354ef28c7dc6dae3dc3c0bde0b1d9315260f8e630b531f0d19966b4",
+              "bytes": 368617
+            },
+            {
+              "source_id": "SRC0006",
+              "path": "补充_农兽药残留限量标准/GB 2763-2012 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "sha256": "a22ca0c525bfb0b1172cf61489e762a470bb4f7cde3d8ecf0c22ed8a6eb43eca",
+              "bytes": 8212829
+            },
+            {
+              "source_id": "SRC0007",
+              "path": "补充_农兽药残留限量标准/GB 2763-2014 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "sha256": "078022a2db7d1c2d20e1f14b800dab77e4e0fc4a81faa666c1225b9343ea2042",
+              "bytes": 4475244
+            },
+            {
+              "source_id": "SRC0008",
+              "path": "补充_农兽药残留限量标准/GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "sha256": "7e291366aac9562f349ee0ea0c03a457f8c7b7b0e1ff7f9619939a5d290ca41b",
+              "bytes": 4898485
+            },
+            {
+              "source_id": "SRC0009",
+              "path": "补充_农兽药残留限量标准/GB 2763-2019 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "sha256": "bb83d0196565c786cb20618424e1b7b367b710bf5081745002ea0dd91c006ed9",
+              "bytes": 59380201
+            },
+            {
+              "source_id": "SRC0010",
+              "path": "补充_农兽药残留限量标准/GB 2763-2021 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "sha256": "686195fff70772a3d4cd4899adbc3752576c24391f1a81a81c9150bd2ef43d6b",
+              "bytes": 67033577
+            },
+            {
+              "source_id": "SRC0011",
+              "path": "补充_农兽药残留限量标准/GB 2763-2026 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "sha256": "98acde2f22614f184913c12bec745e7844ab1d5cbbeccf4c3617c1e064830b68",
+              "bytes": 4135298
+            },
+            {
+              "source_id": "SRC0012",
+              "path": "补充_其它限量标准/GB 2761-2005 食品中真菌毒素限量.pdf",
+              "sha256": "08419d4ca6eb01bafac3b8dbd84e4af1e515d11b7ac9cd78e7860be24f208045",
+              "bytes": 77083
+            },
+            {
+              "source_id": "SRC0013",
+              "path": "补充_其它限量标准/GB 2761-2011 食品安全国家标准 食品中真菌毒素限量.pdf",
+              "sha256": "3baaee973294fb0c34ed349e61b9a387a09cb4a226ae7186922e1c5aef5fe4f0",
+              "bytes": 157778
+            },
+            {
+              "source_id": "SRC0014",
+              "path": "补充_其它限量标准/GB 2761-2017 食品安全国家标准 食品中真菌毒素限量.pdf",
+              "sha256": "301bf80484b36d097985a4b9b3a6145f31042941064869a130072767636d1dee",
+              "bytes": 253696
+            },
+            {
+              "source_id": "SRC0015",
+              "path": "补充_农兽药残留限量标准/农业部235号公告-2002 动物性食品中兽药最高残留限量.doc",
+              "sha256": "053802726b5b377bcb074987c72ec69318af7e91e74f2cc859d98747f92ce992",
+              "bytes": 313856
+            },
+            {
+              "source_id": "SRC0016",
+              "path": "补充_农兽药残留限量标准/GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf",
+              "sha256": "cfc745f1ac1567a6e59c50b3b119916a619573b833685158a7b0942dc22c5273",
+              "bytes": 1614531
+            },
+            {
+              "source_id": "SRC0017",
+              "path": "补充_农兽药残留限量标准/GB 31650.1-2022 食品安全国家标准 食品中兽药最大残留限量增补.pdf",
+              "sha256": "f65065dfae6450f1495de7921176b08d0058165b89479b16e297f484f151a27e",
+              "bytes": 6898293
+            },
+            {
+              "source_id": "SRC0018",
+              "path": "补充_其它限量标准/GB 2760-1996 食品添加剂使用卫生标准.pdf",
+              "sha256": "6bb28516a5edff325a325da054b2566bbb4ae432e8ea70bd2de5b519a120f0c4",
+              "bytes": 3002530
+            },
+            {
+              "source_id": "SRC0019",
+              "path": "补充_其它限量标准/GB 2760-2011 食品安全国家标准 食品添加剂使用标准.pdf",
+              "sha256": "9c2a3387c91bb586d17cf81f78cae6ec9879c7ceb42c6f0f80a4a3f14ce3db2d",
+              "bytes": 4439793
+            },
+            {
+              "source_id": "SRC0020",
+              "path": "补充_其它限量标准/GB 2760-2014 食品安全国家标准 食品添加剂使用标准.pdf",
+              "sha256": "69cbd4c8295cb2c3cef77339dc8aa75b8002dd423def5a7fe64081584d2ab93e",
+              "bytes": 19008763
+            },
+            {
+              "source_id": "SRC0021",
+              "path": "补充_其它限量标准/GB 2760-2024 食品安全国家标准 食品添加剂使用标准.pdf",
+              "sha256": "2a2c4a867cf5551177e5e65bf8140e9f85a0616d96aa3353161869e07a8505de",
+              "bytes": 2600140
+            },
+            {
+              "source_id": "SRC0022",
+              "path": "污染物/GB 2762-2017 《食品安全国家标准 食品中污染物限量》（GB 2762-2017）第1号修改单.pdf",
+              "sha256": "affed0199e54c0b60b57dfcfa750f83e2964832525ace693766c727fdcdb034a",
+              "bytes": 1043971
+            },
+            {
+              "source_id": "SRC0023",
+              "path": "污染物/GB 2762-2022 GB 2762-2022《食品安全国家标准 食品中污染物限量》第1号修改单.pdf",
+              "sha256": "0dd2062dd03f887c591b39fc1b694d0cf0bd9561b68a48f52769bed2fc224c9e",
+              "bytes": 416597
+            },
+            {
+              "source_id": "SRC0024",
+              "path": "政府文本层副本/GB2763-2019_shanghai_gov_textlayer.pdf",
+              "sha256": "749ccc899bc522c3774101026588fe8cad8699f5da47033758ff815d4b9c66ce",
+              "bytes": 6021886
+            },
+            {
+              "source_id": "SRC0025",
+              "path": "政府文本层副本/GB2763-2021_lushan_gov_textlayer.pdf",
+              "sha256": "e8c60114975f458c649b6cf842138a2ba8c9d8ed9f1e576902fcc06140304123",
+              "bytes": 4347643
+            },
+            {
+              "source_id": "translation:FSIS_GB2763-2016_en.pdf",
+              "path": "外部英译本/FSIS_GB2763-2016_en.pdf",
+              "sha256": "b28b87fb4a50759cd40c9889349ee59be24f9e49ea890af103d913fccccda542",
+              "bytes": 2480852
+            },
+            {
+              "source_id": "translation:GAIN_CH2019-0170_GB2763-2019_en.pdf",
+              "path": "外部英译本/GAIN_CH2019-0170_GB2763-2019_en.pdf",
+              "sha256": "8f333e72aafa92140c9992fac61957efe686ce8d232a67d2b668f58560955730",
+              "bytes": 4073400
+            },
+            {
+              "source_id": "translation:GAIN_CH2023-0040_GB2762-2022_en.pdf",
+              "path": "外部英译本/GAIN_CH2023-0040_GB2762-2022_en.pdf",
+              "sha256": "c8bccdb20f30b3f6246b18167af26dab16b09cc639621e98c9c16294b76c10a7",
+              "bytes": 639722
+            },
+            {
+              "source_id": "translation:GAIN_GB2760-2014_en.pdf",
+              "path": "外部英译本/GAIN_GB2760-2014_en.pdf",
+              "sha256": "69d7d767b7c8c995f1dfd1b8bc828ced40a7d8f755a495ab977328e12665903f",
+              "bytes": 2335051
+            }
+          ],
+          "missing": [],
+          "mismatched": []
+        }
+      },
+      {
+        "id": "source.pollutant_fixture.2012.p10.硝酸盐.较大婴儿和幼儿配方食品",
+        "status": "pass",
+        "message": "Source-page fixture maps to exactly one released row with the expected basis.",
+        "details": {
+          "source": "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+          "expected": {
+            "year": "2012",
+            "page": 10,
+            "printed_page": "8",
+            "analyte": "硝酸盐",
+            "food": "较大婴儿和幼儿配方食品",
+            "value": "100",
+            "unit": "mg/kg",
+            "basis": "粉状产品计"
+          },
+          "source_terms_found": true,
+          "source_components": {
+            "food": true,
+            "value_near_food": true,
+            "analyte_in_document": true,
+            "unit": true,
+            "basis": true
+          },
+          "release_matches": 1,
+          "released_basis": [
+            "粉状产品计"
+          ],
+          "released_record_ids": [
+            "POL612EF2A04006B2A4"
+          ]
+        }
+      },
+      {
+        "id": "source.pollutant_fixture.2012.p7.镉.包装饮用水（矿泉水除外）",
+        "status": "pass",
+        "message": "Source-page fixture maps to exactly one released row with the expected basis.",
+        "details": {
+          "source": "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+          "expected": {
+            "year": "2012",
+            "page": 7,
+            "printed_page": "5",
+            "analyte": "镉",
+            "food": "包装饮用水（矿泉水除外）",
+            "value": "0.005",
+            "unit": "mg/L",
+            "basis": ""
+          },
+          "source_terms_found": true,
+          "source_components": {
+            "food": true,
+            "value_near_food": true,
+            "analyte_in_document": true,
+            "unit": true,
+            "basis": true
+          },
+          "release_matches": 1,
+          "released_basis": [
+            ""
+          ],
+          "released_record_ids": [
+            "POL187773D127AFAE64"
+          ]
+        }
+      },
+      {
+        "id": "source.pollutant_fixture.2012.p7.镉.矿泉水",
+        "status": "pass",
+        "message": "Source-page fixture maps to exactly one released row with the expected basis.",
+        "details": {
+          "source": "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+          "expected": {
+            "year": "2012",
+            "page": 7,
+            "printed_page": "5",
+            "analyte": "镉",
+            "food": "矿泉水",
+            "value": "0.003",
+            "unit": "mg/L",
+            "basis": ""
+          },
+          "source_terms_found": true,
+          "source_components": {
+            "food": true,
+            "value_near_food": true,
+            "analyte_in_document": true,
+            "unit": true,
+            "basis": true
+          },
+          "release_matches": 1,
+          "released_basis": [
+            ""
+          ],
+          "released_record_ids": [
+            "POLDDC991415C71C2ED"
+          ]
+        }
+      },
+      {
+        "id": "source.pollutant_fixture.2017.p6.铅.1岁~10岁人群的产品",
+        "status": "pass",
+        "message": "Source-page fixture maps to exactly one released row with the expected basis.",
+        "details": {
+          "source": "污染物/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf",
+          "expected": {
+            "year": "2017",
+            "page": 6,
+            "printed_page": "4",
+            "analyte": "铅",
+            "food": "1岁~10岁人群的产品",
+            "value": "0.15",
+            "unit": "mg/kg",
+            "basis": "固态产品计"
+          },
+          "source_terms_found": true,
+          "source_components": {
+            "food": true,
+            "value_near_food": true,
+            "analyte_in_document": true,
+            "unit": true,
+            "basis": true
+          },
+          "release_matches": 1,
+          "released_basis": [
+            "固态产品计"
+          ],
+          "released_record_ids": [
+            "POL4F777C65F6D0F420"
+          ]
+        }
+      },
+      {
+        "id": "source.pollutant_fixture.2022.p6.铅.婴幼儿配方食品",
+        "status": "pass",
+        "message": "Source-page fixture maps to exactly one released row with the expected basis.",
+        "details": {
+          "source": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+          "expected": {
+            "year": "2022",
+            "page": 6,
+            "printed_page": "4",
+            "analyte": "铅",
+            "food": "婴幼儿配方食品",
+            "value": "0.08",
+            "unit": "mg/kg",
+            "basis": "固态产品计"
+          },
+          "source_terms_found": true,
+          "source_components": {
+            "food": true,
+            "value_near_food": true,
+            "analyte_in_document": true,
+            "unit": true,
+            "basis": true
+          },
+          "release_matches": 1,
+          "released_basis": [
+            "固态产品计"
+          ],
+          "released_record_ids": [
+            "POL2B4ED76CD979B46C"
+          ]
+        }
+      },
+      {
+        "id": "source.pollutant_fixture.2022.p6.铅.10岁以上人群的产品",
+        "status": "pass",
+        "message": "Source-page fixture maps to exactly one released row with the expected basis.",
+        "details": {
+          "source": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+          "expected": {
+            "year": "2022",
+            "page": 6,
+            "printed_page": "4",
+            "analyte": "铅",
+            "food": "10岁以上人群的产品",
+            "value": "0.5",
+            "unit": "mg/kg",
+            "basis": "固态产品计"
+          },
+          "source_terms_found": true,
+          "source_components": {
+            "food": true,
+            "value_near_food": true,
+            "analyte_in_document": true,
+            "unit": true,
+            "basis": true
+          },
+          "release_matches": 1,
+          "released_basis": [
+            "固态产品计"
+          ],
+          "released_record_ids": [
+            "POL9613D951146F1574"
+          ]
+        }
+      },
+      {
+        "id": "source.pollutant_fixture.2022.p6.铅.1岁~10岁人群的产品",
+        "status": "pass",
+        "message": "Source-page fixture maps to exactly one released row with the expected basis.",
+        "details": {
+          "source": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+          "expected": {
+            "year": "2022",
+            "page": 6,
+            "printed_page": "4",
+            "analyte": "铅",
+            "food": "1岁~10岁人群的产品",
+            "value": "0.15",
+            "unit": "mg/kg",
+            "basis": "固态产品计"
+          },
+          "source_terms_found": true,
+          "source_components": {
+            "food": true,
+            "value_near_food": true,
+            "analyte_in_document": true,
+            "unit": true,
+            "basis": true
+          },
+          "release_matches": 1,
+          "released_basis": [
+            "固态产品计"
+          ],
+          "released_record_ids": [
+            "POL199A43FFE82E8BAB"
+          ]
+        }
+      },
+      {
+        "id": "source.pollutant_fixture.2022.p8.镉.包装饮用水（饮用天然矿泉水除外）",
+        "status": "pass",
+        "message": "Source-page fixture maps to exactly one released row with the expected basis.",
+        "details": {
+          "source": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+          "expected": {
+            "year": "2022",
+            "page": 8,
+            "printed_page": "6",
+            "analyte": "镉",
+            "food": "包装饮用水（饮用天然矿泉水除外）",
+            "value": "0.005",
+            "unit": "mg/L",
+            "basis": ""
+          },
+          "source_terms_found": true,
+          "source_components": {
+            "food": true,
+            "value_near_food": true,
+            "analyte_in_document": true,
+            "unit": true,
+            "basis": true
+          },
+          "release_matches": 1,
+          "released_basis": [
+            ""
+          ],
+          "released_record_ids": [
+            "POL611486917B68A609"
+          ]
+        }
+      },
+      {
+        "id": "source.pollutant_fixture.2022.p8.镉.饮用天然矿泉水",
+        "status": "pass",
+        "message": "Source-page fixture maps to exactly one released row with the expected basis.",
+        "details": {
+          "source": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+          "expected": {
+            "year": "2022",
+            "page": 8,
+            "printed_page": "6",
+            "analyte": "镉",
+            "food": "饮用天然矿泉水",
+            "value": "0.003",
+            "unit": "mg/L",
+            "basis": ""
+          },
+          "source_terms_found": true,
+          "source_components": {
+            "food": true,
+            "value_near_food": true,
+            "analyte_in_document": true,
+            "unit": true,
+            "basis": true
+          },
+          "release_matches": 1,
+          "released_basis": [
+            ""
+          ],
+          "released_record_ids": [
+            "POL3C2014AF0F12DBF9"
+          ]
+        }
+      },
+      {
+        "id": "source.pollutant_basis.2012",
+        "status": "pass",
+        "message": "The release and source PDF contain the same number of countable basis qualifiers.",
+        "details": {
+          "source": "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+          "source_qualifiers": 9,
+          "release_rows_with_basis": 9
+        }
+      },
+      {
+        "id": "source.pollutant_basis.2017",
+        "status": "pass",
+        "message": "The release and source PDF contain the same number of countable basis qualifiers.",
+        "details": {
+          "source": "污染物/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf",
+          "source_qualifiers": 14,
+          "release_rows_with_basis": 14
+        }
+      },
+      {
+        "id": "source.pollutant_basis.2022",
+        "status": "pass",
+        "message": "The release and source PDF contain the same number of countable basis qualifiers.",
+        "details": {
+          "source": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+          "source_qualifiers": 15,
+          "release_rows_with_basis": 15
+        }
+      },
+      {
+        "id": "source.pollutant_basis.2025",
+        "status": "pass",
+        "message": "The release and source PDF contain the same number of countable basis qualifiers.",
+        "details": {
+          "source": "污染物/GB 2762-2025 食品安全国家标准 食品中污染物限量.pdf",
+          "source_qualifiers": 15,
+          "release_rows_with_basis": 15
+        }
+      },
+      {
+        "id": "source.entity_count_coverage.additive.2024",
+        "status": "pass",
+        "message": "Released and source entity counts yield coverage between 95% and 100%.",
+        "details": {
+          "source": "补充_其它限量标准/GB 2760-2024 食品安全国家标准 食品添加剂使用标准.pdf",
+          "released_unique_entities": 287,
+          "independently_counted_source_entries": 288,
+          "entity_count_coverage": 0.996528,
+          "minimum_coverage": 0.95,
+          "maximum_coverage": 1.0,
+          "interpretation": "Count-based coverage proxy only; this check does not perform entity-name set matching."
+        }
+      },
+      {
+        "id": "source.entity_count_coverage.additive.2014",
+        "status": "pass",
+        "message": "Released and source entity counts yield coverage between 95% and 100%.",
+        "details": {
+          "source": "补充_其它限量标准/GB 2760-2014 食品安全国家标准 食品添加剂使用标准.pdf",
+          "released_unique_entities": 239,
+          "independently_counted_source_entries": 243,
+          "entity_count_coverage": 0.983539,
+          "minimum_coverage": 0.95,
+          "maximum_coverage": 1.0,
+          "interpretation": "Count-based coverage proxy only; this check does not perform entity-name set matching."
+        }
+      },
+      {
+        "id": "source.entity_count_coverage.vetdrug.2019",
+        "status": "pass",
+        "message": "Released and source entity counts yield coverage between 95% and 100%.",
+        "details": {
+          "source": "补充_农兽药残留限量标准/GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf",
+          "released_unique_entities": 104,
+          "independently_counted_source_entries": 104,
+          "entity_count_coverage": 1.0,
+          "minimum_coverage": 0.95,
+          "maximum_coverage": 1.0,
+          "interpretation": "Count-based coverage proxy only; this check does not perform entity-name set matching."
+        }
+      },
+      {
+        "id": "source.entity_count_coverage.pesticide.2012",
+        "status": "pass",
+        "message": "Released and source entity counts yield coverage between 95% and 100%.",
+        "details": {
+          "source": "补充_农兽药残留限量标准/GB 2763-2012 食品安全国家标准 食品中农药最大残留限量.pdf",
+          "released_unique_entities": 307,
+          "independently_counted_source_entries": 307,
+          "entity_count_coverage": 1.0,
+          "minimum_coverage": 0.95,
+          "maximum_coverage": 1.0,
+          "interpretation": "Count-based coverage proxy only; this check does not perform entity-name set matching."
+        }
+      },
+      {
+        "id": "source.entity_count_coverage.pesticide.2014",
+        "status": "pass",
+        "message": "Released and source entity counts yield coverage between 95% and 100%.",
+        "details": {
+          "source": "补充_农兽药残留限量标准/GB 2763-2014 食品安全国家标准 食品中农药最大残留限量.pdf",
+          "released_unique_entities": 371,
+          "independently_counted_source_entries": 371,
+          "entity_count_coverage": 1.0,
+          "minimum_coverage": 0.95,
+          "maximum_coverage": 1.0,
+          "interpretation": "Count-based coverage proxy only; this check does not perform entity-name set matching."
+        }
+      },
+      {
+        "id": "source.entity_count_coverage.pesticide.2016",
+        "status": "pass",
+        "message": "Released and source entity counts yield coverage between 95% and 100%.",
+        "details": {
+          "source": "补充_农兽药残留限量标准/GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf",
+          "released_unique_entities": 417,
+          "independently_counted_source_entries": 417,
+          "entity_count_coverage": 1.0,
+          "minimum_coverage": 0.95,
+          "maximum_coverage": 1.0,
+          "interpretation": "Count-based coverage proxy only; this check does not perform entity-name set matching."
+        }
+      },
+      {
+        "id": "source.positional_traceback.pollutant.2022",
+        "status": "pass",
+        "message": "True-row traceback clears both the accuracy and shuffled-control thresholds.",
+        "details": {
+          "source": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+          "sample": 133,
+          "eligible_rows": 133,
+          "evaluated_rows": 133,
+          "sampling_scope": "eligible_row_census",
+          "decidable": 133,
+          "true_passed": 122,
+          "unmatched": 11,
+          "shuffled_passed": 54,
+          "minimum_decidable": 30,
+          "method": "food_value_global_census_with_shuffled_control",
+          "excluded_entities": [
+            "亚硝酸盐",
+            "总汞",
+            "总砷",
+            "无机砷",
+            "甲基汞",
+            "硝酸盐"
+          ],
+          "exclusion_reason": "Paired value-column analytes require coordinate-aware assignment and are outside this text-rendering diagnostic.",
+          "minimum_true_rate": 0.9,
+          "true_rate": 0.917293,
+          "shuffled_rate": 0.406015,
+          "diagnostic_gap": 0.511278
+        }
+      },
+      {
+        "id": "source.positional_traceback.pesticide.2016",
+        "status": "pass",
+        "message": "True-row traceback clears both the accuracy and shuffled-control thresholds.",
+        "details": {
+          "source": "补充_农兽药残留限量标准/GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf",
+          "sample": 4132,
+          "eligible_rows": 4132,
+          "evaluated_rows": 4132,
+          "sampling_scope": "eligible_row_census",
+          "decidable": 4132,
+          "true_passed": 3893,
+          "unmatched": 239,
+          "shuffled_passed": 2145,
+          "minimum_decidable": 30,
+          "method": "entity_food_value_section_census_with_shuffled_control",
+          "excluded_entities": [],
+          "exclusion_reason": null,
+          "minimum_true_rate": 0.9,
+          "true_rate": 0.942159,
+          "shuffled_rate": 0.519119,
+          "diagnostic_gap": 0.42304
+        }
+      },
+      {
+        "id": "source.positional_traceback.vetdrug.2019",
+        "status": "pass",
+        "message": "True-row traceback clears both the accuracy and shuffled-control thresholds.",
+        "details": {
+          "source": "补充_农兽药残留限量标准/GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf",
+          "sample": 692,
+          "eligible_rows": 692,
+          "evaluated_rows": 692,
+          "sampling_scope": "eligible_row_census",
+          "decidable": 692,
+          "true_passed": 625,
+          "unmatched": 67,
+          "shuffled_passed": 276,
+          "minimum_decidable": 30,
+          "method": "entity_food_value_section_census_with_shuffled_control",
+          "excluded_entities": [],
+          "exclusion_reason": null,
+          "minimum_true_rate": 0.9,
+          "true_rate": 0.903179,
+          "shuffled_rate": 0.398844,
+          "diagnostic_gap": 0.504335
+        }
+      },
+      {
+        "id": "source.positional_traceback.additive.2024",
+        "status": "pass",
+        "message": "True-row traceback clears both the accuracy and shuffled-control thresholds.",
+        "details": {
+          "source": "补充_其它限量标准/GB 2760-2024 食品安全国家标准 食品添加剂使用标准.pdf",
+          "sample": 1834,
+          "eligible_rows": 1834,
+          "evaluated_rows": 1834,
+          "sampling_scope": "eligible_row_census",
+          "decidable": 1820,
+          "true_passed": 1559,
+          "unmatched": 261,
+          "shuffled_passed": 275,
+          "minimum_decidable": 30,
+          "method": "entity_food_value_section_census_with_shuffled_control",
+          "excluded_entities": [],
+          "exclusion_reason": null,
+          "minimum_true_rate": 0.85,
+          "true_rate": 0.856593,
+          "shuffled_rate": 0.151099,
+          "diagnostic_gap": 0.705495
+        }
+      },
+      {
+        "id": "source.english_provenance.additive_names",
+        "status": "pass",
+        "message": "Vocabulary-occurrence screen found every released English label in the cited translation.",
+        "details": {
+          "source": "外部英译本/GAIN_GB2760-2014_en.pdf",
+          "labels": 221,
+          "not_found": 0,
+          "examples": [],
+          "interpretation_boundary": "Occurrence anywhere in the PDF does not validate a Chinese-English row pairing; pairing evidence is retained in the lookup tables and their generation audit."
+        }
+      },
+      {
+        "id": "source.english_provenance.additive_food_names",
+        "status": "pass",
+        "message": "Vocabulary-occurrence screen found every released English label in the cited translation.",
+        "details": {
+          "source": "外部英译本/GAIN_GB2760-2014_en.pdf",
+          "labels": 269,
+          "not_found": 0,
+          "examples": [],
+          "interpretation_boundary": "Occurrence anywhere in the PDF does not validate a Chinese-English row pairing; pairing evidence is retained in the lookup tables and their generation audit."
+        }
+      },
+      {
+        "id": "source.english_provenance.pesticide_food_names",
+        "status": "pass",
+        "message": "Vocabulary-occurrence screen found every released English label in the cited translation.",
+        "details": {
+          "source": "外部英译本/FSIS_GB2763-2016_en.pdf",
+          "labels": 125,
+          "not_found": 0,
+          "examples": [],
+          "interpretation_boundary": "Occurrence anywhere in the PDF does not validate a Chinese-English row pairing; pairing evidence is retained in the lookup tables and their generation audit."
+        }
+      },
+      {
+        "id": "source.input_selection",
+        "status": "pass",
+        "message": "Every source query selected a manifest-matched or content-identical input.",
+        "details": {
+          "selections": [
+            {
+              "query": "exact:GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GB 2762-2025 食品安全国家标准 食品中污染物限量.pdf",
+              "chosen": "污染物/GB 2762-2025 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2025 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2025 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 2760-2024*.pdf",
+              "chosen": "补充_其它限量标准/GB 2760-2024 食品安全国家标准 食品添加剂使用标准.pdf",
+              "candidates": [
+                "补充_其它限量标准/GB 2760-2024 食品安全国家标准 食品添加剂使用标准.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 2760-2014*.pdf",
+              "chosen": "补充_其它限量标准/GB 2760-2014 食品安全国家标准 食品添加剂使用标准.pdf",
+              "candidates": [
+                "补充_其它限量标准/GB 2760-2014 食品安全国家标准 食品添加剂使用标准.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 31650-2019*.pdf",
+              "chosen": "补充_农兽药残留限量标准/GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf",
+              "candidates": [
+                "补充_农兽药残留限量标准/GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 2763-2012*.pdf",
+              "chosen": "补充_农兽药残留限量标准/GB 2763-2012 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "candidates": [
+                "补充_农兽药残留限量标准/GB 2763-2012 食品安全国家标准 食品中农药最大残留限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 2763-2014*.pdf",
+              "chosen": "补充_农兽药残留限量标准/GB 2763-2014 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "candidates": [
+                "补充_农兽药残留限量标准/GB 2763-2014 食品安全国家标准 食品中农药最大残留限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 2763-2016*.pdf",
+              "chosen": "补充_农兽药残留限量标准/GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "candidates": [
+                "补充_农兽药残留限量标准/GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 2762-2022*.pdf",
+              "chosen": "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+              "candidates": [
+                "污染物/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf",
+                "补充_其它限量标准/GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 2763-2016*.pdf",
+              "chosen": "补充_农兽药残留限量标准/GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf",
+              "candidates": [
+                "补充_农兽药残留限量标准/GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 31650-2019*.pdf",
+              "chosen": "补充_农兽药残留限量标准/GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf",
+              "candidates": [
+                "补充_农兽药残留限量标准/GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "pattern:GB 2760-2024*.pdf",
+              "chosen": "补充_其它限量标准/GB 2760-2024 食品安全国家标准 食品添加剂使用标准.pdf",
+              "candidates": [
+                "补充_其它限量标准/GB 2760-2024 食品安全国家标准 食品添加剂使用标准.pdf"
+              ],
+              "manifest_hash_matched": true,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GAIN_GB2760-2014_en.pdf",
+              "chosen": "外部英译本/GAIN_GB2760-2014_en.pdf",
+              "candidates": [
+                "外部英译本/GAIN_GB2760-2014_en.pdf"
+              ],
+              "manifest_hash_matched": false,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:GAIN_GB2760-2014_en.pdf",
+              "chosen": "外部英译本/GAIN_GB2760-2014_en.pdf",
+              "candidates": [
+                "外部英译本/GAIN_GB2760-2014_en.pdf"
+              ],
+              "manifest_hash_matched": false,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            },
+            {
+              "query": "exact:FSIS_GB2763-2016_en.pdf",
+              "chosen": "外部英译本/FSIS_GB2763-2016_en.pdf",
+              "candidates": [
+                "外部英译本/FSIS_GB2763-2016_en.pdf"
+              ],
+              "manifest_hash_matched": false,
+              "manifest_hash_mismatch": false,
+              "ambiguous_distinct_files": false
+            }
+          ],
+          "problems": []
+        }
+      }
+    ]
+  },
+  "summary": {
+    "overall_status": "pass",
+    "status_counts": {
+      "pass": 51,
+      "fail": 0,
+      "skip": 0,
+      "not_run": 0
+    },
+    "self_contained_complete": true,
+    "source_dependent_complete": true,
+    "interpretation": "pass = check completed successfully; fail = completed and found a problem; skip = a supplied dependency lacked a required case; not_run = dependency or tool unavailable. skip and not_run are never counted as pass."
+  }
+}

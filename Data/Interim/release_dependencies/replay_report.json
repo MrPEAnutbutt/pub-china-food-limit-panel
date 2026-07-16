@@ -1,0 +1,131 @@
+{
+  "files": {
+    "food_taxonomy.csv": {
+      "rows": 798,
+      "sha256": "f5730ffcc4bfe4f54a427445a2a392fbdb473de609a6aa3b23584f6ced415f7d",
+      "derivation": "parser_derived_from_normative_appendix_a"
+    },
+    "category_alias.csv": {
+      "rows": 8,
+      "sha256": "59d4838dcf19b433308d2d850698bbc2a56599a0185a2e9f3279eeda347ffb66",
+      "derivation": "human_adjudication_seed"
+    },
+    "pollutant_old_path.csv": {
+      "rows": 677,
+      "sha256": "e05158cd82b8f5dc7cd0cb7c5a770e88c18fefa5e3d9d9593a3f142fbaa83c8f",
+      "derivation": "legacy_text_parser_plus_coordinate_double_column_rows"
+    },
+    "pollutant_doublecol_long.csv": {
+      "rows": 241,
+      "sha256": "e0955c56f5d3a048a1fb38b49c6cb7a750b4cd475fe9d68012a463b540fd1345",
+      "derivation": "frozen_coordinate_parser_sidecar"
+    },
+    "member_crosswalk_mycotoxin.csv": {
+      "rows": 55,
+      "sha256": "04fcaf11730263facb7e6be652fc51d7a2f121ce8a1c8f4f9b87ddee61967626",
+      "derivation": "deterministic_member_expansion"
+    },
+    "member_crosswalk_vetdrug.csv": {
+      "rows": 1132,
+      "sha256": "1ad4054e0fd2c51fcb05b27a30fd289cc37df00967350e369984195bdd8f3b35",
+      "derivation": "deterministic_member_expansion"
+    }
+  },
+  "manual_boundaries": {
+    "category_alias_rows": 8,
+    "category_alias_confirmed": 3,
+    "category_alias_pending_review": 5,
+    "pollutant_double_column_sidecar_rows": 241,
+    "pollutant_double_column_sidecar_status": "frozen coordinate-parser output; the surviving upstream generator contains four later category-text repairs and does not reproduce this archived digest",
+    "member_crosswalks": "fully replayed from locked project-local inputs"
+  },
+  "source_lineage": {
+    "pollutant_source_pdf_sha256": {
+      "2012": "8ebbcf11896b5a2684414e6f8d63de8bf4595b3547629a947d4eeda37bfe8647",
+      "2017": "3d03a0d9488bfc100d0d6830d370f1607a18a620852c7927a4db289305ce7ade",
+      "2022": "7ce8442362405a2b6381811ee6dca5aab75ee0b6613ea11888c2facc60d1ea39",
+      "2025": "a8cad4d17354ef28c7dc6dae3dc3c0bde0b1d9315260f8e630b531f0d19966b4"
+    },
+    "member_crosswalk_upstream_sha256": {
+      "mycotoxin_limits_by_version.csv": "1191fe47dbb3b036e880e7944ae9d0d72a27f19ccac6b138c596d5e74d16a0c6",
+      "vetdrug_limits_by_version.csv": "90c9211355751f1fc90d35562b6a00f89ee95bcb91b133e96938860c73de96d0"
+    },
+    "archived_generator_sha256": {
+      "build_food_taxonomy.py": "dede1bdf049eb02d2fb4d9e902e2ac716e913fed7e0f4f2ace373e0072fb3052",
+      "build_member_panel_三族.py": "a4177fabde21d7025d1983dfaff641d9ead429a53e26366ccdbe083c7c923fa6",
+      "build_pollutant_version_panel.py": "3b983e0f53c374679caca5d5e3887a90c4f6384cb7ee3773e669fce1f3675bc5",
+      "build_pollutant_doublecol.py": "3d929a7783f99a22e2284df34cad2ec92225374b8b8a87a336eacf876dd1bdc7"
+    }
+  },
+  "pending_alias_impact_audit": {
+    "audit_basis": "locked source PDFs and dependencies; each pending row was promoted alone over the confirmed-only baseline",
+    "confirmed_only_counts": {
+      "category_rows": 260,
+      "member_rows": 390
+    },
+    "all_pending_applied_counts": {
+      "category_rows": 256,
+      "member_rows": 390
+    },
+    "rows": [
+      {
+        "source": "麦片、面筋、粥类罐头、带馅面米制品",
+        "target": "麦片、面筋、八宝粥罐头、带馅面米制品",
+        "category_affected_keys": [
+          "铅|麦片面筋粥类罐头带馅面米制品",
+          "铅|麦片面筋八宝粥罐头带馅面米制品"
+        ],
+        "member_affected_keys": [],
+        "effect": "two two-edition categories merge into one four-edition stable row"
+      },
+      {
+        "source": "肉及肉制品",
+        "target": "肉制品",
+        "category_affected_keys": [
+          "总砷|肉及肉制品",
+          "总砷|肉制品",
+          "铬|肉及肉制品",
+          "铬|肉制品",
+          "镉|肉及肉制品",
+          "镉|肉制品"
+        ],
+        "member_affected_keys": [
+          "总砷|肉及肉制品",
+          "总砷|肉制品",
+          "铬|肉及肉制品",
+          "铬|肉制品",
+          "镉|肉及肉制品",
+          "镉|畜禽内脏"
+        ],
+        "effect": "renames or merges total-arsenic, chromium, and cadmium keys"
+      },
+      {
+        "source": "畜禽肝脏及其制品",
+        "target": "畜禽肝脏",
+        "category_affected_keys": [
+          "镉|畜禽肝脏",
+          "镉|畜禽肝脏及其制品"
+        ],
+        "member_affected_keys": [],
+        "effect": "two two-edition categories merge into one four-edition stable row"
+      },
+      {
+        "source": "畜禽肾脏及其制品",
+        "target": "畜禽肾脏",
+        "category_affected_keys": [
+          "镉|畜禽肾脏",
+          "镉|畜禽肾脏及其制品"
+        ],
+        "member_affected_keys": [],
+        "effect": "two two-edition categories merge into one four-edition stable row"
+      },
+      {
+        "source": "谷物碾磨加工品除外]",
+        "target": "谷物碾磨加工品",
+        "category_affected_keys": [],
+        "member_affected_keys": [],
+        "effect": "no effect on the current category or member crosswalk"
+      }
+    ]
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "pipeline": "mycotoxin_rebuild",
+  "status": "pass",
+  "environment": {
+    "python": "3.14.3",
+    "implementation": "CPython",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "pdftotext": "pdftotext version 26.02.0"
+  },
+  "source_manifest": {
+    "filename": "source_manifest.csv",
+    "file_size_bytes": 6244,
+    "sha256": "575d83a2309fcb2cf8a38634a1a2b3afd403da1ba459391e9b6e02c66eee7e64"
+  },
+  "sources": [
+    {
+      "source_id": "SRC0012",
+      "family": "mycotoxin",
+      "standard": "GB 2761",
+      "version_year": "2005",
+      "filename": "GB 2761-2005 食品中真菌毒素限量.pdf",
+      "source_format": "pdf",
+      "file_size_bytes": 77083,
+      "sha256": "08419d4ca6eb01bafac3b8dbd84e4af1e515d11b7ac9cd78e7860be24f208045",
+      "release_status": "extracted",
+      "released_limit_rows": 9,
+      "extraction_mode": "manual_page_image_transcription",
+      "document_identity": "full_standard"
+    },
+    {
+      "source_id": "SRC0013",
+      "family": "mycotoxin",
+      "standard": "GB 2761",
+      "version_year": "2011",
+      "filename": "GB 2761-2011 食品安全国家标准 食品中真菌毒素限量.pdf",
+      "source_format": "pdf",
+      "file_size_bytes": 157778,
+      "sha256": "3baaee973294fb0c34ed349e61b9a387a09cb4a226ae7186922e1c5aef5fe4f0",
+      "release_status": "extracted",
+      "released_limit_rows": 22,
+      "extraction_mode": "pdf_text_layer",
+      "document_identity": "full_standard"
+    },
+    {
+      "source_id": "SRC0014",
+      "family": "mycotoxin",
+      "standard": "GB 2761",
+      "version_year": "2017",
+      "filename": "GB 2761-2017 食品安全国家标准 食品中真菌毒素限量.pdf",
+      "source_format": "pdf",
+      "file_size_bytes": 253696,
+      "sha256": "301bf80484b36d097985a4b9b3a6145f31042941064869a130072767636d1dee",
+      "release_status": "extracted",
+      "released_limit_rows": 30,
+      "extraction_mode": "pdf_text_layer",
+      "document_identity": "full_standard"
+    }
+  ],
+  "source_acquisition": {
+    "filename": "source_acquisition.csv",
+    "file_size_bytes": 1816,
+    "sha256": "9a98d09b401677f85055d93a849f90fceb0c50f680520a74c4a91919ee5f253e",
+    "rows": 3,
+    "identity_verified": true
+  },
+  "frozen_inputs": [
+    {
+      "filename": "myco2005_manual.csv",
+      "file_size_bytes": 513,
+      "sha256": "209d99250e4555a2cf68addb22a49549e0edfb158f43f3cc94601f92d1883b9d",
+      "rows": 9,
+      "role": "manual_transcription_seed"
+    }
+  ],
+  "checks": {
+    "rows_per_version": {
+      "2005": 9,
+      "2011": 22,
+      "2017": 30
+    },
+    "manual_seed_required": true,
+    "source_identity_verified": true,
+    "output_identity_verified": true
+  },
+  "outputs": [
+    {
+      "filename": "mycotoxin_limits_by_version.csv",
+      "file_size_bytes": 4017,
+      "sha256": "1191fe47dbb3b036e880e7944ae9d0d72a27f19ccac6b138c596d5e74d16a0c6",
+      "rows": 61
+    },
+    {
+      "filename": "mycotoxin_strictness_change.csv",
+      "file_size_bytes": 3300,
+      "sha256": "7637611005672a71123c0b0b4897e86a889ea8c78f59352326f103e6269d61d3",
+      "rows": 40
+    }
+  ],
+  "replay_scope": {
+    "manual_seed_replay": true,
+    "downstream_rebuild": true,
+    "manual_seed_reextraction": false,
+    "independent_retranscription": false,
+    "description": "The replay verifies source identities, reuses the locked 2005 manual seed, reparses text-layer editions, and rebuilds the long table and panel. It does not recreate or independently retranscribe the 2005 seed from page images."
+  },
+  "provenance_gap": {
+    "status": "open",
+    "records": 9,
+    "description": "The 2005 manual seed is a single-author construction pass and does not contain an independent second transcription.",
+    "missing_fields": [
+      "source_page",
+      "source_table",
+      "printed_row",
+      "independent_reviewer",
+      "review_date"
+    ]
+  }
+}

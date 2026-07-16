@@ -1,0 +1,22 @@
+﻿record_id,source_id,family,standard,version_year,issue_date,effective_date,date_source,official_register_issue_date,official_register_effective_date,cross_check_official_register,date_status,date_resolution,source_filename
+VER00001,SRC0001,contaminant,GB 2762,2005,2005-01-25,2005-10-01,OCR,,,,complete,source_document_only,GB 2762-2005 食品中污染物限量.pdf
+VER00002,SRC0002,contaminant,GB 2762,2012,2012-11-13,2013-06-01,text layer,2012-11-13,2013-06-01,agrees,complete,cover_and_official_register_agree,GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf
+VER00003,SRC0003,contaminant,GB 2762,2017,2017-03-17,2017-09-17,OCR,2017-03-17,2017-09-17,agrees,complete,cover_and_official_register_agree,GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf
+VER00004,SRC0004,contaminant,GB 2762,2022,2022-06-30,2023-06-30,text layer,2022-06-30,2023-06-30,agrees,complete,cover_and_official_register_agree,GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf
+VER00005,SRC0005,contaminant,GB 2762,2025,2025-09-02,2026-09-02,text layer,2025-09-02,2026-09-02,agrees,complete,cover_and_official_register_agree,GB 2762-2025 食品安全国家标准 食品中污染物限量.pdf
+VER00006,SRC0006,pesticide,GB 2763,2012,2012-11-16,2013-03-01,text layer,,,,complete,source_document_only,GB 2763-2012 食品安全国家标准 食品中农药最大残留限量.pdf
+VER00007,SRC0007,pesticide,GB 2763,2014,2014-03-20,2014-08-01,text layer,,,,complete,source_document_only,GB 2763-2014 食品安全国家标准 食品中农药最大残留限量.pdf
+VER00008,SRC0008,pesticide,GB 2763,2016,2016-12-18,2017-06-18,text layer,,,,complete,source_document_only,GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf
+VER00009,SRC0009,pesticide,GB 2763,2019,2019-08-15,2020-02-15,OCR,2019-08-15,2020-02-15,agrees,complete,cover_and_official_register_agree,GB 2763-2019 食品安全国家标准 食品中农药最大残留限量.pdf
+VER00010,SRC0010,pesticide,GB 2763,2021,2021-03-03,2021-09-03,OCR,2021-03-03,2021-09-03,agrees,complete,cover_and_official_register_agree,GB 2763-2021 食品安全国家标准 食品中农药最大残留限量.pdf
+VER00011,SRC0011,pesticide,GB 2763,2026,2026-02-12,2026-03-01,coordinate layer,,,,complete,source_document_only,GB 2763-2026 食品安全国家标准 食品中农药最大残留限量.pdf
+VER00012,SRC0012,mycotoxin,GB 2761,2005,2005-01-25,2005-10-01,text layer,,,,complete,source_document_only,GB 2761-2005 食品中真菌毒素限量.pdf
+VER00013,SRC0013,mycotoxin,GB 2761,2011,2011-04-20,2011-10-20,text layer,2011-04-20,2011-10-20,agrees,complete,cover_and_official_register_agree,GB 2761-2011 食品安全国家标准 食品中真菌毒素限量.pdf
+VER00014,SRC0014,mycotoxin,GB 2761,2017,2017-03-17,2017-09-17,text layer,,,,complete,source_document_only,GB 2761-2017 食品安全国家标准 食品中真菌毒素限量.pdf
+VER00015,SRC0015,veterinary_drug,MOA Announcement 235,2002,2002-12-24,2002-12-24,announcement text,,,,complete,source_document_only,农业部235号公告-2002 动物性食品中兽药最高残留限量.doc
+VER00016,SRC0016,veterinary_drug,GB 31650,2019,2019-09-06,2020-04-01,text layer,,,,complete,source_document_only,GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf
+VER00017,SRC0017,veterinary_drug,GB 31650.1,2022,2022-09-20,2023-02-01,OCR,,,,complete,source_document_only,GB 31650.1-2022 食品安全国家标准 食品中兽药最大残留限量增补.pdf
+VER00018,SRC0018,additive,GB 2760,1996,,,not printed,,,,not_printed,not_printed_on_cover_and_absent_from_register,GB 2760-1996 食品添加剂使用卫生标准.pdf
+VER00019,SRC0019,additive,GB 2760,2011,2011-04-20,2011-06-20,text layer,,,,complete,source_document_only,GB 2760-2011 食品安全国家标准 食品添加剂使用标准.pdf
+VER00020,SRC0020,additive,GB 2760,2014,2014-12-24,2015-05-24,text layer,,,,complete,source_document_only,GB 2760-2014 食品安全国家标准 食品添加剂使用标准.pdf
+VER00021,SRC0021,additive,GB 2760,2024,2024-02-08,2025-02-08,text layer,2024-02-08,2025-02-08,agrees,complete,cover_and_official_register_agree,GB 2760-2024 食品安全国家标准 食品添加剂使用标准.pdf

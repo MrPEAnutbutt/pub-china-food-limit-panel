@@ -1,0 +1,100 @@
+{
+  "sources": {
+    "2012": {
+      "filename": "GB 2763-2012 食品安全国家标准 食品中农药最大残留限量.pdf",
+      "sha256": "a22ca0c525bfb0b1172cf61489e762a470bb4f7cde3d8ecf0c22ed8a6eb43eca"
+    },
+    "2014": {
+      "filename": "GB 2763-2014 食品安全国家标准 食品中农药最大残留限量.pdf",
+      "sha256": "078022a2db7d1c2d20e1f14b800dab77e4e0fc4a81faa666c1225b9343ea2042"
+    },
+    "2016": {
+      "filename": "GB 2763-2016 食品安全国家标准 食品中农药最大残留限量.pdf",
+      "sha256": "7e291366aac9562f349ee0ea0c03a457f8c7b7b0e1ff7f9619939a5d290ca41b"
+    },
+    "2026": {
+      "filename": "GB 2763-2026 食品安全国家标准 食品中农药最大残留限量.pdf",
+      "sha256": "98acde2f22614f184913c12bec745e7844ab1d5cbbeccf4c3617c1e064830b68"
+    }
+  },
+  "counts": {
+    "2012": {
+      "rows": 2165,
+      "entities": 307,
+      "sections": 307
+    },
+    "2014": {
+      "rows": 3462,
+      "entities": 370,
+      "sections": 371
+    },
+    "2016": {
+      "rows": 3940,
+      "entities": 416,
+      "sections": 417
+    },
+    "2026": {
+      "rows": 10612,
+      "entities": 568,
+      "sections": 568
+    }
+  },
+  "qualifier_counts": {
+    "2012": {
+      "qualified_rows": 280,
+      "temporary_rows": 280,
+      "by_qualifier": {
+        "*": 280
+      }
+    },
+    "2014": {
+      "qualified_rows": 507,
+      "temporary_rows": 507,
+      "by_qualifier": {
+        "*": 507
+      }
+    },
+    "2016": {
+      "qualified_rows": 604,
+      "temporary_rows": 604,
+      "by_qualifier": {
+        "*": 604
+      }
+    },
+    "2026": {
+      "qualified_rows": 1916,
+      "temporary_rows": 1906,
+      "by_qualifier": {
+        "(以原样计)": 3,
+        "(以脂肪计)": 7,
+        "∗": 1906
+      }
+    }
+  },
+  "outputs": {
+    "legacy": "pesticide_limits_2012_2016.csv",
+    "edition_2026": "pesticide_2026_long.csv",
+    "section_roster_2026": "pesticide_2026_section_roster.csv",
+    "section_roster_text_editions": "pesticide_text_section_roster.csv"
+  },
+  "edition_2026_reference": {
+    "official_mrl_count": 10749,
+    "official_pesticide_count": 585,
+    "extracted_value_rows": 10612,
+    "row_count_coverage_proxy": 0.9872546283375198,
+    "proxy_note": "Extracted-row count divided by the official MRL count; this is a row-count coverage proxy, not recall or precision.",
+    "unrecovered_value_count": 137,
+    "limited_pesticide_sections": 568,
+    "official_pesticide_minus_numbered_sections": 17,
+    "appendix_b_exempt_list_entries": 44
+  },
+  "edition_2026_parent_scope_validation": {
+    "checked_rows": {
+      "mammal_meat": 34,
+      "mammal_offal": 91,
+      "mammal_fat": 9,
+      "milk": 1
+    },
+    "violations": 0
+  }
+}

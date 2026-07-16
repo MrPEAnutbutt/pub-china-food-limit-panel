@@ -1,0 +1,20 @@
+{
+  "packet_id": "BR144-v1.1-c768195498bd8086",
+  "protocol_version": "1.1",
+  "packet_contract_sha256": "c768195498bd8086f6b0aaa58ae122d254d640911ffd43078dcc8c85f490659b",
+  "initial_transcriber_id": "Zilong Xu",
+  "reviewer_id": "",
+  "reviewer_role": "",
+  "review_date": "",
+  "independent_person": null,
+  "no_access_to_construction_seeds": null,
+  "no_access_to_release_values": null,
+  "source_files_verified_against_manifest": null,
+  "completed_entry_sha256": {
+    "mycotoxin_2005_blind_entry.csv": "",
+    "vetdrug_2019_blind_entry.csv": "",
+    "vetdrug_2022_blind_entry.csv": ""
+  },
+  "confirmation_statement": "I independently transcribed the specified source rows without viewing the construction seeds or released values before the completed entry files were frozen.",
+  "confirmation": ""
+}

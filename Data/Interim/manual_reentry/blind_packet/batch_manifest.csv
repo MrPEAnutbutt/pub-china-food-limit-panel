@@ -1,0 +1,4 @@
+﻿packet_id,batch_id,source_id,standard,version_year,source_filename,source_sha256,pdf_pages,printed_pages,tables,task_count,template_filename
+BR144-v1.1-c768195498bd8086,MYC2005,SRC0012,GB 2761,2005,GB 2761-2005 食品中真菌毒素限量.pdf,08419d4ca6eb01bafac3b8dbd84e4af1e515d11b7ac9cd78e7860be24f208045,3-4,1-2,1-4,9,mycotoxin_2005_blind_entry.csv
+BR144-v1.1-c768195498bd8086,VET2019,SRC0016,GB 31650,2019,GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf,cfc745f1ac1567a6e59c50b3b119916a619573b833685158a7b0942dc22c5273,19-20;23-24,10-11;14-15,26;38,13,vetdrug_2019_blind_entry.csv
+BR144-v1.1-c768195498bd8086,VET2022,SRC0017,GB 31650.1,2022,GB 31650.1-2022 食品安全国家标准 食品中兽药最大残留限量增补.pdf,f65065dfae6450f1495de7921176b08d0058165b89479b16e297f484f151a27e,5-15,1-11,1-41,122,vetdrug_2022_blind_entry.csv

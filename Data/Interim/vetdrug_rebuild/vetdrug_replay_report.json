@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "pipeline": "vetdrug_rebuild",
+  "status": "pass",
+  "environment": {
+    "python": "3.14.3",
+    "implementation": "CPython",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "pdftotext": "pdftotext version 26.02.0"
+  },
+  "source_manifest": {
+    "filename": "source_manifest.csv",
+    "file_size_bytes": 6244,
+    "sha256": "575d83a2309fcb2cf8a38634a1a2b3afd403da1ba459391e9b6e02c66eee7e64"
+  },
+  "sources": [
+    {
+      "source_id": "SRC0015",
+      "family": "veterinary_drug",
+      "standard": "MOA Announcement 235",
+      "version_year": "2002",
+      "filename": "农业部235号公告-2002 动物性食品中兽药最高残留限量.doc",
+      "source_format": "doc",
+      "file_size_bytes": 313856,
+      "sha256": "053802726b5b377bcb074987c72ec69318af7e91e74f2cc859d98747f92ce992",
+      "release_status": "extracted",
+      "released_limit_rows": 551,
+      "extraction_mode": "word_table_stream",
+      "document_identity": "official_announcement"
+    },
+    {
+      "source_id": "SRC0016",
+      "family": "veterinary_drug",
+      "standard": "GB 31650",
+      "version_year": "2019",
+      "filename": "GB 31650-2019 食品安全国家标准 食品中兽药最大残留限量.pdf",
+      "source_format": "pdf",
+      "file_size_bytes": 1614531,
+      "sha256": "cfc745f1ac1567a6e59c50b3b119916a619573b833685158a7b0942dc22c5273",
+      "release_status": "extracted",
+      "released_limit_rows": 692,
+      "extraction_mode": "pdf_text_with_manual_page_break_rows",
+      "document_identity": "full_standard"
+    },
+    {
+      "source_id": "SRC0017",
+      "family": "veterinary_drug",
+      "standard": "GB 31650.1",
+      "version_year": "2022",
+      "filename": "GB 31650.1-2022 食品安全国家标准 食品中兽药最大残留限量增补.pdf",
+      "source_format": "pdf",
+      "file_size_bytes": 6898293,
+      "sha256": "f65065dfae6450f1495de7921176b08d0058165b89479b16e297f484f151a27e",
+      "release_status": "extracted",
+      "released_limit_rows": 122,
+      "extraction_mode": "manual_page_image_transcription",
+      "document_identity": "supplementary_standard"
+    }
+  ],
+  "source_acquisition": {
+    "filename": "source_acquisition.csv",
+    "file_size_bytes": 1866,
+    "sha256": "a5e35c1f90b3995cc8fa3f18ddb7fe0377dc21cf868a40b99aeb229f58277ffc",
+    "rows": 3,
+    "identity_verified": true
+  },
+  "frozen_inputs": [
+    {
+      "filename": "vetdrug_2002_long.csv",
+      "file_size_bytes": 42949,
+      "sha256": "eb846756b187405a430425d25954f7dd68e708f8944d7e82a2aad7ecd142fa78",
+      "rows": 551,
+      "role": "word_table_rebuild"
+    },
+    {
+      "filename": "vetdrug_2002_quarantine.csv",
+      "file_size_bytes": 62,
+      "sha256": "b40e78bb867c90976d324d7f6971ca59c86ab36939af1f005f7c337b638bca6b",
+      "rows": 0,
+      "role": "word_table_quarantine"
+    },
+    {
+      "filename": "vetdrug_2019_manual.csv",
+      "file_size_bytes": 1263,
+      "sha256": "58d8907398b9c0059b04cbec22c3d184bc3bd578eb47bf3e855eabbe96f69fcb",
+      "rows": 13,
+      "role": "manual_page_break_seed"
+    },
+    {
+      "filename": "vetdrug_2022_manual.csv",
+      "file_size_bytes": 5902,
+      "sha256": "6d5e25a2455157ce6a26452b8cb4fb380698173babf52ae9656d4e780b6d82f8",
+      "rows": 122,
+      "role": "manual_scan_transcription_seed"
+    }
+  ],
+  "checks": {
+    "rows_per_version": {
+      "2019": 692,
+      "2002": 551,
+      "2022": 122
+    },
+    "rows_per_source": {
+      "text": 679,
+      "manual": 135,
+      "docx-block": 551
+    },
+    "drugs_per_version": {
+      "2002": 92,
+      "2019": 104,
+      "2022": 41
+    },
+    "blank_animal_rows": 0,
+    "automatic_2019_quarantine": [
+      {
+        "drug": "环丙氨嗪",
+        "reason": "块切分不唯一(2 解)"
+      },
+      {
+        "drug": "二硝托胺",
+        "reason": "块切分不唯一(2 解)"
+      }
+    ],
+    "manual_seeds_required": true,
+    "source_identity_verified": true,
+    "output_identity_verified": true
+  },
+  "outputs": [
+    {
+      "filename": "vetdrug_limits_by_version.csv",
+      "file_size_bytes": 102619,
+      "sha256": "90c9211355751f1fc90d35562b6a00f89ee95bcb91b133e96938860c73de96d0",
+      "rows": 1365
+    },
+    {
+      "filename": "vetdrug_strictness_change.csv",
+      "file_size_bytes": 38175,
+      "sha256": "95575a2ddf9e9a4402823633267f39e8cfcbb3a4248a2ef13ae252ddbfd2b62f",
+      "rows": 657
+    }
+  ],
+  "replay_scope": {
+    "manual_seed_replay": true,
+    "downstream_rebuild": true,
+    "manual_seed_reextraction": false,
+    "independent_retranscription": false,
+    "description": "The replay verifies the three source identities, reuses the locked 2019 and 2022 manual seeds plus the deterministic 2002 Word-table output, and rebuilds the family long table and panel. It does not independently recreate the manual seeds from the PDFs."
+  },
+  "provenance_gap": {
+    "status": "open",
+    "records": 135,
+    "description": "The 2019 page-break and 2022 scan seeds are single-author construction passes without an independent second transcription.",
+    "missing_fields": [
+      "source_page",
+      "source_table",
+      "printed_row",
+      "independent_reviewer",
+      "review_date"
+    ]
+  }
+}

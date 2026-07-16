@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "completed_utc": "2026-07-15T18:15:42+00:00",
+  "pipeline": {
+    "render": {
+      "tool": "pdftoppm",
+      "version": "pdftoppm version 26.05.0",
+      "dpi": 200,
+      "format": "png"
+    },
+    "preprocessing": {
+      "colour_channel": "red",
+      "linear_stretch_input_range": [
+        0,
+        230
+      ],
+      "seal_mask": "R-G>25 and R-B>25"
+    },
+    "ocr": {
+      "tool": "tesseract",
+      "version": "tesseract 5.5.2",
+      "language": "chi_sim",
+      "page_segmentation_mode": 6,
+      "output_format": "tsv",
+      "command_template": [
+        "tesseract",
+        "<prepared-page.png>",
+        "<output-base>",
+        "-l",
+        "chi_sim",
+        "--psm",
+        "6",
+        "tsv"
+      ],
+      "language_pack": {
+        "filename": "chi_sim.traineddata",
+        "file_size_bytes": 13077423,
+        "sha256": "4fef2d1306c8e87616d4d3e4c6c67faf5d44be3342290cf8f2f0f6e3aa7e735b"
+      }
+    }
+  },
+  "editions": {
+    "2019": {
+      "source_pdf": {
+        "filename": "GB 2763-2019 食品安全国家标准 食品中农药最大残留限量.pdf",
+        "file_size_bytes": 59380201,
+        "sha256": "bb83d0196565c786cb20618424e1b7b367b710bf5081745002ea0dd91c006ed9",
+        "page_count": 333
+      },
+      "ocr_tsv": {
+        "filename": "ocr_words_2019.tsv",
+        "file_size_bytes": 3059588,
+        "sha256": "f09a6313409fb87dd2d62ae89a5309ded6be0a1eb9aa32d3073cce00e74694a8",
+        "word_count": 91900,
+        "page_count": 333,
+        "first_page": 1,
+        "last_page": 333,
+        "page_word_counts_sha256": "d1ac2433a75eadaa7f78caa56b0e0ca435a5ebaea1789a8084679cb78259ac86"
+      }
+    },
+    "2021": {
+      "source_pdf": {
+        "filename": "GB 2763-2021 食品安全国家标准 食品中农药最大残留限量.pdf",
+        "file_size_bytes": 67033577,
+        "sha256": "686195fff70772a3d4cd4899adbc3752576c24391f1a81a81c9150bd2ef43d6b",
+        "page_count": 422
+      },
+      "ocr_tsv": {
+        "filename": "ocr_words_2021.tsv",
+        "file_size_bytes": 4163817,
+        "sha256": "9c651dcd29759a51011fd24524209e1ed386bd153d4a6532041c700d9687886c",
+        "word_count": 125852,
+        "page_count": 422,
+        "first_page": 1,
+        "last_page": 422,
+        "page_word_counts_sha256": "f197fb773b1b1db9c5207b75f359024df557c0d785462952ee0c7bf299f9c4d1"
+      }
+    }
+  }
+}

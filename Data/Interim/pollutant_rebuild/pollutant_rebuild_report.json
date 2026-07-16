@@ -1,0 +1,45 @@
+{
+  "inputs": {
+    "GB 2762-2012 食品安全国家标准 食品中污染物限量.pdf": "8ebbcf11896b5a2684414e6f8d63de8bf4595b3547629a947d4eeda37bfe8647",
+    "GB 2762-2017 食品安全国家标准 食品中污染物限量.pdf": "3d03a0d9488bfc100d0d6830d370f1607a18a620852c7927a4db289305ce7ade",
+    "GB 2762-2022 食品安全国家标准 食品中污染物限量.pdf": "7ce8442362405a2b6381811ee6dca5aab75ee0b6613ea11888c2facc60d1ea39",
+    "GB 2762-2025 食品安全国家标准 食品中污染物限量.pdf": "a8cad4d17354ef28c7dc6dae3dc3c0bde0b1d9315260f8e630b531f0d19966b4",
+    "pollutant_old_path.csv": "e05158cd82b8f5dc7cd0cb7c5a770e88c18fefa5e3d9d9593a3f142fbaa83c8f",
+    "food_taxonomy.csv": "f5730ffcc4bfe4f54a427445a2a392fbdb473de609a6aa3b23584f6ced415f7d",
+    "category_alias.csv": "59d4838dcf19b433308d2d850698bbc2a56599a0185a2e9f3279eeda347ffb66"
+  },
+  "counts": {
+    "bbox_rows_before_gate": 737,
+    "legacy_rows_before_gate": 677,
+    "long_rows": 739,
+    "quarantined_rows": 6,
+    "member_rows": 390,
+    "category_rows": 260,
+    "mg_per_litre_rows": 41,
+    "basis_rows": 53
+  },
+  "alias_adjudications": {
+    "confirmed_applied": 3,
+    "pending_review_excluded": 5,
+    "pending_review_sources": [
+      "麦片、面筋、粥类罐头、带馅面米制品",
+      "肉及肉制品",
+      "畜禽肝脏及其制品",
+      "畜禽肾脏及其制品",
+      "谷物碾磨加工品除外]"
+    ]
+  },
+  "quarantine_reasons": {
+    "missing_category_head": 1,
+    "leading_separator_or_closing_bracket": 3,
+    "unclosed_bracket": 2
+  },
+  "outputs": {
+    "pollutant_limits_long.csv": "352fca6126d2f94e9b25a33541446616b32180ce77f6afd0bea6caef7322efeb",
+    "pollutant_quarantine.csv": "41b1ca944915196240b7b6612eacbbf0ce8c43ab1674933b2fce194c1770cc6b",
+    "pollutant_member_panel.csv": "663736241595cacf5a44440090c9e55ff4c1fb7c63023a496c9c08228ad75fe0",
+    "pollutant_limits_by_version.csv": "352fca6126d2f94e9b25a33541446616b32180ce77f6afd0bea6caef7322efeb",
+    "member_crosswalk.csv": "58fa66657243b286561cd91fd6206ae6838ab96cf862d1e37a975cd50cc13fc6",
+    "category_crosswalk.csv": "d67a53e09c233f148a5e5091ec9544fcd0e362a75489b2d1af158e0672eb692a"
+  }
+}

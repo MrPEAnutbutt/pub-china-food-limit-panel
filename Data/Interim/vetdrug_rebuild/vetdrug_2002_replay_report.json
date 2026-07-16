@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "pipeline": "vetdrug_2002_word_rebuild",
+  "status": "pass",
+  "environment": {
+    "python": "3.14.3",
+    "implementation": "CPython",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "python_docx": "1.2.0",
+    "libreoffice": "LibreOfficeDev 26.8.0.0.alpha0 2c87e51eeaa2b413ff4ae097b2705eea1995d8e5"
+  },
+  "source_manifest": {
+    "filename": "source_manifest.csv",
+    "file_size_bytes": 6244,
+    "sha256": "575d83a2309fcb2cf8a38634a1a2b3afd403da1ba459391e9b6e02c66eee7e64"
+  },
+  "sources": [
+    {
+      "source_id": "SRC0015",
+      "family": "veterinary_drug",
+      "standard": "MOA Announcement 235",
+      "version_year": "2002",
+      "filename": "农业部235号公告-2002 动物性食品中兽药最高残留限量.doc",
+      "source_format": "doc",
+      "file_size_bytes": 313856,
+      "sha256": "053802726b5b377bcb074987c72ec69318af7e91e74f2cc859d98747f92ce992",
+      "release_status": "extracted",
+      "released_limit_rows": 551,
+      "extraction_mode": "word_table_stream",
+      "document_identity": "official_announcement"
+    }
+  ],
+  "source_acquisition": {
+    "filename": "source_acquisition.csv",
+    "file_size_bytes": 1866,
+    "sha256": "a5e35c1f90b3995cc8fa3f18ddb7fe0377dc21cf868a40b99aeb229f58277ffc",
+    "rows": 3,
+    "matched_rows": 1,
+    "identity_verified": true
+  },
+  "conversion": {
+    "filename": "src.docx",
+    "retained": false,
+    "digest_gate": false,
+    "reason": "Temporary DOCX container metadata may vary; the reconstructed CSV identities are the deterministic conversion gates."
+  },
+  "checks": {
+    "accepted_rows": 551,
+    "unique_drugs": 92,
+    "blank_animal_rows": 0,
+    "quarantined_drugs": 0,
+    "animal_distribution": {
+      "牛": 86,
+      "猪": 65,
+      "鸡": 58,
+      "牛/羊": 42,
+      "所有食品动物": 41,
+      "羊": 32,
+      "禽": 27,
+      "鸡/火鸡": 21,
+      "其他动物": 16,
+      "牛/羊/猪": 12,
+      "家禽": 12,
+      "牛/猪": 11,
+      "牛/猪/羊": 8,
+      "牛/羊/猪/禽": 8,
+      "鱼": 7,
+      "牛/猪/马": 7,
+      "猪/禽": 7,
+      "火鸡": 7,
+      "猪/兔": 6,
+      "牛/绵羊/山羊": 5,
+      "牛/猪/禽": 4,
+      "牛/羊/猪/鸡/兔": 4,
+      "绵羊/禽/兔": 4,
+      "猪/羊/鹿": 4,
+      "牛/马/猪/羊": 4,
+      "羊/马": 4,
+      "牛/羊/猪/鸡/火鸡/鸭": 4,
+      "牛/猪/鸡": 4,
+      "牛/羊/猪/鸡": 4,
+      "牛/绵羊/猪/鸡": 4,
+      "牛/猪/绵羊/山羊": 4,
+      "牛/绵羊": 4,
+      "马": 4,
+      "鸡/火鸡/猪/牛": 4,
+      "蜜蜂": 3,
+      "牛/羊/马": 3,
+      "猪/羊": 3,
+      "牛/羊/猪/禽/马": 3,
+      "猪/鸡": 1,
+      "兔": 1,
+      "鱼/虾": 1,
+      "牛/山羊": 1,
+      "绵羊": 1
+    },
+    "source_identity_verified": true,
+    "output_identity_verified": true
+  },
+  "outputs": [
+    {
+      "filename": "vetdrug_2002_long.csv",
+      "file_size_bytes": 42949,
+      "sha256": "eb846756b187405a430425d25954f7dd68e708f8944d7e82a2aad7ecd142fa78",
+      "rows": 551
+    },
+    {
+      "filename": "vetdrug_2002_quarantine.csv",
+      "file_size_bytes": 62,
+      "sha256": "b40e78bb867c90976d324d7f6971ca59c86ab36939af1f005f7c337b638bca6b",
+      "rows": 0
+    },
+    {
+      "filename": "vetdrug_2002_row_locators.csv",
+      "file_size_bytes": 32788,
+      "sha256": "bc5e299f6320b124b3ff5e5ea6ae594246d22a4faad32056719a0f0c5e179aea",
+      "rows": 551
+    }
+  ],
+  "replay_scope": {
+    "source_table_reextraction": true,
+    "downstream_rebuild": true,
+    "manual_seed_replay": false,
+    "independent_retranscription": false,
+    "description": "The replay converts the byte-identified official Word file, re-extracts its five-column table, and rebuilds the frozen 2002 CSV plus row-locator sidecar. It does not constitute an independent second transcription."
+  },
+  "manual_transcription_gap": {
+    "status": "none",
+    "description": "No manual transcription seed contributes to the 2002 output; rows are reconstructed from the Word table stream."
+  },
+  "row_locator_gap": {
+    "status": "open",
+    "records": 551,
+    "available_fields": [
+      "source_table_index",
+      "source_table_row",
+      "animal_block_index",
+      "tissue_index"
+    ],
+    "missing_fields": [
+      "source_page",
+      "printed_row_label"
+    ],
+    "description": "The sidecar identifies the Word table row and within-cell block for every output row. The binary DOC has no stable rendered-page locator, and the printed table does not label each row."
+  }
+}
