@@ -3,12 +3,11 @@
 Curated code-and-evidence archive behind the Data Descriptor "A cross-edition panel
 of chemical limits in China's food safety standards". The dataset itself (26 CSV
 files holding 46,337 limit records from five mandatory Chinese food-safety standard
-families, 2002–2026) is deposited at figshare under the reserved DOI
-`10.6084/m9.figshare.33005717`, which becomes active when the record is published.
-This repository holds the extraction, alignment, release-assembly, testing and
+families, 2002–2026) is deposited at figshare under the DOI
+`10.6084/m9.figshare.33005717`. This repository holds the extraction, alignment, release-assembly, testing and
 validation code, plus frozen intermediate and verification evidence, exported from
-the private build workspace. Archive version 1.1.0 matches release v1.1 of the
-dataset (see "Versions").
+the private build workspace. Archive versions 1.1.0 to 1.1.2 match release v1.1
+of the dataset, and 1.1.2 is the current one (see "Versions").
 
 Licences: the code is MIT-licensed (see `LICENSE`); the released dataset carries
 CC BY 4.0 (see `Data/Final/china_food_limit_panel_v1/LICENSE.md`). Source standards
@@ -173,6 +172,14 @@ difference tables should be archived first.
 
 All versions share the Zenodo concept DOI `10.5281/zenodo.21397471`.
 
+- **1.1.2** — the manuscript tables and figure captions as revised in the first
+  round of peer review (Table 2 with one column per extraction method, Tables 4 and
+  6 condensed, source-class terminology), the data package's README and data
+  dictionary describing the date register as a register of current national
+  food-safety standards, and the validation report regenerated for these files.
+  No released data value changed.
+- **1.1.1** — created from the same commit as 1.1.0 before the 1.1.2 changes were
+  pushed; its content is identical to 1.1.0.
 - **1.1.0** — code and evidence behind dataset release v1.1, prepared in the first
   round of peer review: corrected pesticide categories, temporary-limit marks and
   veterinary-drug labels; stricter panel comparability rules; row-level source,

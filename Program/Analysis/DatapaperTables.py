@@ -12,7 +12,6 @@ tab1Restructuring / tab1IndependentVerification / tab1NaturalKeys)。
 """
 import argparse
 import csv
-import importlib.util
 import json
 import os
 import re
@@ -150,20 +149,29 @@ def table1():
 
 
 # ── Table 2 · 各抽取方法的记录数与占比 ────────────────────────────
-T2_SPEC = (r"@{}>{\raggedright\arraybackslash}p{0.16\textwidth}"
+T2_SPEC = (r"@{}>{\raggedright\arraybackslash}p{0.19\textwidth}"
            r">{\raggedright\arraybackslash}p{0.08\textwidth}"
            r">{\raggedleft\arraybackslash}p{0.09\textwidth}"
-           r">{\raggedleft\arraybackslash}p{0.08\textwidth}"
-           r">{\raggedright\arraybackslash}p{0.44\textwidth}@{}")
-T2_CAP = ("Released records by extraction method. Each row is an edition and the method recorded "
-          "in the \\texttt{extraction\\_method} field of its long-table rows; the last rows total "
-          "each method across the release. Shares are percentages of all released records. The "
-          "same counts, with shares within each family, are released in "
-          "\\texttt{extraction\\_method\\_summary.csv}. The coordinate parser assigns rows and "
-          "columns from word positions in the PDF text layer. The 2019 and 2021 pesticide "
-          "editions were read from government-hosted text-layer copies, and OCR of the edition "
-          "scans served only as a cross-check.")
-T2_HEAD = "Standard & Version & Records & Share & Extraction method"
+           r">{\raggedleft\arraybackslash}p{0.12\textwidth}"
+           r">{\raggedleft\arraybackslash}p{0.12\textwidth}"
+           r">{\raggedleft\arraybackslash}p{0.12\textwidth}"
+           r">{\raggedleft\arraybackslash}p{0.12\textwidth}@{}")
+T2_CAP = ("Released records by edition and extraction method. Each count is the number of "
+          "long-table rows with that value of \\texttt{extraction\\_method}; in column order the "
+          "values are \\texttt{pdf\\_text\\_and\\_coordinate\\_parser}, \\texttt{pdf\\_text\\_layer}, "
+          "\\texttt{word\\_table\\_stream} and \\texttt{manual\\_page\\_image\\_transcription}. The "
+          "coordinate parser assigns rows and columns from word positions in the PDF text layer. "
+          "The last rows total each method and give its share of all released records. The same "
+          "counts, with shares within each family, are released in "
+          "\\texttt{extraction\\_method\\_summary.csv}. "
+          "\\textsuperscript{a}Read from a government-hosted copy; OCR of the edition scan, an "
+          "audit-only copy, served only as a cross-check. "
+          "\\textsuperscript{b}The text layer is corrupt. "
+          "\\textsuperscript{c}Rows at page breaks.")
+T2_HEAD = ("Standard & Version & Records & Coordinate parser & Text layer & Word table & "
+           "Page image (manual)")
+METHODS = ("pdf_text_and_coordinate_parser", "pdf_text_layer", "word_table_stream",
+           "manual_page_image_transcription")
 LONG_TABLE = OrderedDict([("contaminant", "pollutant_limits_long.csv"),
                           ("pesticide", "pesticide_limits_long.csv"),
                           ("mycotoxin", "mycotoxin_limits_long.csv"),
@@ -173,12 +181,12 @@ FAMILY_LABEL = {"contaminant": "Contaminants", "pesticide": "Pesticide residues"
                 "mycotoxin": "Mycotoxins", "veterinary_drug": "Veterinary drug residues",
                 "additive": "Food additives"}
 STANDARD_LABEL = {"MOA Announcement 235": "Announcement No.~235"}
-COPY_NOTE = "read from a government-hosted text-layer copy, with OCR of the scan as a cross-check"
+# 计数格上的表注标记(a/b/c 的含义写在 T2_CAP 末尾)。
 METHOD_NOTE = {
-    ("pesticide", "2019"): COPY_NOTE,
-    ("pesticide", "2021"): COPY_NOTE,
-    ("mycotoxin", "2005"): "the text layer is corrupt",
-    ("veterinary_drug", "2019", "manual_page_image_transcription"): "rows at page breaks",
+    ("pesticide", "2019", "pdf_text_and_coordinate_parser"): "a",
+    ("pesticide", "2021", "pdf_text_and_coordinate_parser"): "a",
+    ("mycotoxin", "2005", "manual_page_image_transcription"): "b",
+    ("veterinary_drug", "2019", "manual_page_image_transcription"): "c",
 }
 
 
@@ -196,27 +204,36 @@ def table2():
     if counted != Counter({(r["family"], r["version_year"], r["extraction_method"]):
                           int(r["records"]) for r in summary}):
         raise ValueError("extraction_method_summary.csv disagrees with the long tables")
-    body, previous = [], None
+    if {method for _, _, method in counted} != set(METHODS):
+        raise ValueError("extraction methods differ from the four table columns")
+    # 每版一行、每种方法一列;前三格(标准、年份、该版记录数)是验证器解析的格式,不能动。
+    editions = OrderedDict()
     for r in summary:
-        if r["family"] != previous:
-            previous = r["family"]
-            body.append(f"\\addlinespace \\multicolumn{{5}}{{@{{}}l}}"
-                        f"{{\\emph{{{FAMILY_LABEL[previous]}}}}}")
         if share(r["records"], total) != r["share_of_release_pct"]:
             raise ValueError(f"share of release differs for {r}")
-        note = (METHOD_NOTE.get((r["family"], r["version_year"], r["extraction_method"]))
-                or METHOD_NOTE.get((r["family"], r["version_year"])))
-        method = f"\\path{{{r['extraction_method']}}}" + (f"; {note}" if note else "")
-        body.append(f"{STANDARD_LABEL.get(r['standard'], r['standard'])} & "
-                    f"{r['version_year']} & {int(r['records']):,} & "
-                    f"{r['share_of_release_pct']} & {method}")
+        key = (r["family"], r["standard"], r["version_year"])
+        editions.setdefault(key, {})[r["extraction_method"]] = int(r["records"])
+    body, previous = [], None
+    for (family, standard, year), by_method in editions.items():
+        if family != previous:
+            previous = family
+            body.append(f"\\addlinespace \\multicolumn{{7}}{{@{{}}l}}"
+                        f"{{\\emph{{{FAMILY_LABEL[family]}}}}}")
+        cells = []
+        for method in METHODS:
+            n = by_method.get(method)
+            mark = METHOD_NOTE.get((family, year, method))
+            cells.append("" if n is None else f"{n:,}"
+                         + (f"\\textsuperscript{{{mark}}}" if mark else ""))
+        body.append(f"{STANDARD_LABEL.get(standard, standard)} & {year} & "
+                    f"{sum(by_method.values()):,} & " + " & ".join(cells))
     methods = Counter()
     for (_, _, method), n in counted.items():
         methods[method] += n
-    for i, (method, n) in enumerate(methods.most_common()):
-        lead = "\\midrule " if i == 0 else ""
-        body.append(f"{lead}All editions & & {n:,} & {share(n, total)} & \\path{{{method}}}")
-    body.append(f"Total & & {total:,} & 100.00 &")
+    body.append("\\midrule All editions & & " + f"{total:,} & "
+                + " & ".join(f"{methods[m]:,}" for m in METHODS))
+    body.append("Share of release, \\% & & 100.00 & "
+                + " & ".join(share(methods[m], total) for m in METHODS))
     write_tab("tab1ExtractionMethod", T2_SPEC, T2_CAP, T2_HEAD, body)
 
 
@@ -324,118 +341,60 @@ def table3(validation_report):
 
 
 # ── Table 3 · 存放清单 ────────────────────────────────────────────
-T4_SPEC = (r"@{}>{\raggedright\arraybackslash}p{0.34\textwidth}"
+T4_SPEC = (r"@{}>{\raggedright\arraybackslash}p{0.37\textwidth}"
            r">{\raggedleft\arraybackslash}p{0.07\textwidth}"
-           r">{\raggedright\arraybackslash}p{0.51\textwidth}@{}")
+           r">{\raggedright\arraybackslash}p{0.48\textwidth}@{}")
 T4_HEAD = "File & Rows & Contents"
 
 # 组 → [(文件名, 说明)]。行数一律从发布文件现数,不写死;文件集合与 Data/Final
 # 不符即报错,避免稿件清单与发布包分家(README 行数过期的老病)。
 DEPOSIT_INVENTORY = OrderedDict([
     ("Family-specific long tables", [
-        ("pollutant_limits_long.csv",
-         "Contaminant limits as printed, with the basis of expression, normalisation "
-         "status, extraction path, and a normalised value only where conversion is "
-         "justified."),
-        ("pesticide_limits_long.csv",
-         "Pesticide maximum residue limits with cleaned and raw name strings, printed "
-         "qualifiers, stable pesticide and food keys, review status, source page and "
-         "coordinates, and separate edition and extraction source identifiers."),
-        ("mycotoxin_limits_long.csv",
-         "Mycotoxin limits as printed, with a per-record confidence field."),
-        ("vetdrug_limits_long.csv",
-         "Veterinary-drug limits with the printed target-animal cell alongside its "
-         "canonical animal representation. The 2002 records carry Word-table locators."),
-        ("additive_limits_long.csv",
-         "Additive maximum-use entries with CNS and INS identifiers, food-category "
-         "codes and use-condition notes."),
+        ("pollutant_limits_long.csv", "Contaminant limits with basis and units."),
+        ("pesticide_limits_long.csv", "Pesticide limits with qualifiers, keys and pages."),
+        ("mycotoxin_limits_long.csv", "Mycotoxin limits with a confidence field."),
+        ("vetdrug_limits_long.csv", "Veterinary-drug limits with animal labels."),
+        ("additive_limits_long.csv", "Additive uses with CNS, INS and food codes."),
     ]),
     ("Aligned category panels", [
-        ("pollutant_category_panel.csv",
-         "Contaminant values by version with per-version units, bases, source "
-         "categories and cell status."),
-        ("pesticide_panel.csv",
-         "Pesticide cells retaining every candidate value, unit, rule object and "
-         "source record identifier, with stable keys and explicit status fields."),
-        ("mycotoxin_panel.csv",
-         "Mycotoxin values by version at the aligned category level."),
-        ("vetdrug_panel.csv",
-         "Veterinary-drug values by version at the aligned category level."),
-        ("additive_panel.csv",
-         "Additive cells retained at the exact CNS and food-code level, with every "
-         "candidate and rule object preserved."),
+        ("pollutant_category_panel.csv", "Contaminant values by edition, units and bases."),
+        ("pesticide_panel.csv", "Pesticide cells with every candidate rule."),
+        ("mycotoxin_panel.csv", "Mycotoxin values by edition."),
+        ("vetdrug_panel.csv", "Veterinary-drug values by printed animal group."),
+        ("additive_panel.csv", "Additive cells by CNS and food code."),
     ]),
     ("Member-level panels", [
-        ("pollutant_member_panel.csv",
-         "Contaminant members with the applicable host category by version and the "
-         "category-restructuring flag."),
-        ("mycotoxin_member_panel.csv",
-         "Mycotoxin members with the applicable host category by version and the "
-         "category-restructuring flag."),
-        ("vetdrug_member_panel.csv",
-         "Animal and tissue pairs expanded from the printed animal groups, with "
-         "values and a trend for each pair."),
+        ("pollutant_member_panel.csv", "Contaminant members with host by edition."),
+        ("mycotoxin_member_panel.csv", "Mycotoxin members with host by edition."),
+        ("vetdrug_member_panel.csv", "Animal--tissue pairs with values and trend."),
     ]),
     ("English-name lookups", [
-        ("entity_names_en.csv",
-         "English substance names printed by the standards themselves."),
-        ("food_category_names_en.csv",
-         "Food-category labels linked to published translations, with the match "
-         "method, evidence and source document. Partial; additives and pesticides only."),
-        ("additive_names_en.csv",
-         "Additive names linked to a published translation by CNS code. Partial."),
+        ("entity_names_en.csv", "Substance names printed in English."),
+        ("food_category_names_en.csv", "Category labels from translations; partial."),
+        ("additive_names_en.csv", "Additive names from a translation; partial."),
     ]),
     ("Metadata, audit and quarantine", [
-        ("source_manifest.csv",
-         "The source-identity key for the release. Covers 21 edition sources, two "
-         "text-layer extraction copies and two identity-audit copies, each with its "
-         "digest, role, source class, release status and attributed row count."),
-        ("extraction_method_summary.csv",
-         "Released records by family, edition and row-level extraction method, with "
-         "shares of the family and of the release."),
-        ("record_id_changes.csv",
-         "Record identifiers replaced, removed or added since release v1.0, paired on "
-         "each table's natural key."),
-        ("version_dates.csv",
-         "Issue and effective dates for the coverage editions, with date provenance "
-         "and the official-register cross-check."),
-        ("standard_version_timeline.csv",
-         "The wider history of food-safety national standards as dated edition and "
-         "amendment events. Ancillary to the five-family panel."),
-        ("standard_timeline_conflicts.csv",
-         "Two ranked candidate rows for the one metadata conflict met in the "
-         "wider-history build."),
-        ("pesticide_edition_reconciliation.csv",
-         "Visible Chapter 4 rule counts and section rosters against each edition's "
-         "declared aggregate, with printed qualifier counts."),
-        ("pesticide_ocr_crosscheck.csv",
-         "Text-layer against OCR comparison groups for the two scanned editions, with "
-         "matched values, one-sided rows, matching level and status."),
-        ("quarantined_rows.csv",
-         "Fragments rejected by the extraction gates, with the rejection reason and "
-         "source path."),
-        ("data_dictionary.csv",
-         "Every released field, with type, nullability, allowed values, key role and "
-         "a bilingual description."),
+        ("source_manifest.csv", "Identity, digest and class of each source file."),
+        ("extraction_method_summary.csv", "Records by family, edition and method."),
+        ("record_id_changes.csv", "Identifiers changed since release v1.0."),
+        ("version_dates.csv", "Dates, their provenance and register check."),
+        ("standard_version_timeline.csv", "Wider history of food-safety standards."),
+        ("standard_timeline_conflicts.csv", "Candidates for one timeline conflict."),
+        ("pesticide_edition_reconciliation.csv", "Visible against declared rule counts."),
+        ("pesticide_ocr_crosscheck.csv", "OCR comparison groups for 2019 and 2021."),
+        ("quarantined_rows.csv", "Rejected fragments with the reason."),
+        ("data_dictionary.csv", "Definition of every released field."),
     ]),
 ])
 
 # 非 CSV 存放物。行数列留 ---(不是表格)。
 NON_CSV_FILES = [
-    ("README.md",
-     "Package overview, file list and the five-family language-coverage matrix."),
-    ("LICENSE.md",
-     "CC BY 4.0 terms for the author-created compilation and the source-rights "
-     "boundary."),
-    ("SOURCE_ACQUISITION.md",
-     "Public locator and byte-identity status for all 25 Chinese source files and "
-     "the four translations."),
-    ("_build_stats.json",
-     "Deterministic build statistics written by the release assembler."),
-    ("validate.py",
-     "The distributed validation suite."),
-    ("validation_report.json",
-     "Machine-readable status and evidence for every catalogued check."),
+    ("README.md", "Package overview and file list."),
+    ("LICENSE.md", "CC BY 4.0 terms and source rights."),
+    ("SOURCE_ACQUISITION.md", "Where to obtain each source file."),
+    ("_build_stats.json", "Deterministic build statistics."),
+    ("validate.py", "The validation suite."),
+    ("validation_report.json", "Status and evidence for every check."),
 ]
 
 
@@ -463,15 +422,12 @@ def table4():
         counts[f] for f, _ in DEPOSIT_INVENTORY["Family-specific long tables"]
     )
     caption = (
-        "Inventory of the data deposit. The package is a flat directory of "
-        f"{len(listed)} CSV files together with the documentation, the release "
-        "licence, deterministic build statistics, the validation script and its "
-        "machine-readable report. Row counts exclude the header row and are read "
-        f"from the released files. The five long tables hold the {long_total:,} "
-        "released limit records; the panels, lookups and audit tables are derived "
-        "from those records and are not additional limits. Each long table ends with "
-        "row-level source-reference, extraction-method and verification fields, and "
-        "every panel links its cells to the contributing long-table records."
+        f"Inventory of the data deposit, {len(listed)} CSV files and "
+        f"{len(NON_CSV_FILES)} documentation and code files in a flat directory. Row "
+        "counts exclude the header row and are read from the released files. The five "
+        f"long tables hold the {long_total:,} released limit records; the panels, "
+        "lookups and audit tables are derived from those records and are not "
+        "additional limits."
     )
 
     body = []
@@ -489,15 +445,12 @@ def table4():
 
 
 # ── Table 5 · 长表状况到面板与趋势 ────────────────────────────────
-T5_SPEC = (r"@{}>{\raggedright\arraybackslash}p{0.21\textwidth}"
-           r">{\raggedright\arraybackslash}p{0.43\textwidth}"
-           r">{\raggedright\arraybackslash}p{0.28\textwidth}@{}")
+T5_SPEC = (r"@{}>{\raggedright\arraybackslash}p{0.20\textwidth}"
+           r">{\raggedright\arraybackslash}p{0.40\textwidth}"
+           r">{\raggedright\arraybackslash}p{0.32\textwidth}@{}")
 T5_HEAD = "Condition kept in the long tables & Treatment in the panels & Trend state (panel rows)"
-T5_CAP = ("How conditions retained in the long tables carry into the panels and trends. "
-          "Counts refer to release v1.1 and are panel rows unless stated otherwise. A trend "
-          "is assigned only when consecutive editions each contribute one rule with the same "
-          "unit, basis and scope; otherwise the row receives the named state. No trend field "
-          "records the appearance or withdrawal of a limit.")
+T5_CAP = ("How conditions kept in the long tables carry into the panels. Counts are panel "
+          "rows in release v1.1 unless stated otherwise.")
 YEARS = {
     "pesticide_panel.csv": ("2012", "2014", "2016", "2019", "2021", "2026"),
     "additive_panel.csv": ("2011", "2014", "2024"),
@@ -560,106 +513,81 @@ def table5():
                 add_rows[r["record_id"]] = r["trend"]
     add_judged = sum(t in JUDGED for t in add_rows.values())
 
-    # 认定的同物与包含关系以发布包验证器里冻结的常量为准。
-    spec = importlib.util.spec_from_file_location("release_validate", os.path.join(REL, "validate.py"))
-    validator = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(validator)
-    renames = len(validator.POLLUTANT_CONFIRMED_ALIASES)
-    containment = len(validator.POLLUTANT_CONFIRMED_CONTAINMENT)
-
     pest = rd("pesticide_panel.csv")
     pest_judged = [r for r in pest if r["trend"] in JUDGED]
     pest_flagged = sum(1 for r in pest_judged if json.loads(r["count_mismatch_editions"]))
     t = trend
 
     rows = [
-        ("Several rules for one entity, food and edition (a multi-value cell)",
-         f"Pesticide and additive cells keep every candidate value, rule and source record "
-         f"and leave the scalar value blank ({multi_pest} pesticide and {multi_add} additive "
-         "cells). Contaminant category rows are keyed by analyte, category and basis, and no "
-         "contaminant cell holds two rules. The veterinary-drug summary keeps printed animal "
-         "groups; its member panel compares one animal at a time.",
+        ("Several rules in one cell (entity, food and edition)",
+         f"Pesticide and additive cells keep every candidate rule, with the scalar value blank "
+         f"({multi_pest} and {multi_add} cells). Contaminant rows are keyed by analyte, category "
+         "and basis, so none holds two rules.",
          f"{tt('incomparable_multiple_rules')}: pesticide "
          f"{t['pesticide_panel.csv']['incomparable_multiple_rules']}, additive "
          f"{t['additive_panel.csv']['incomparable_multiple_rules']}, veterinary-drug member "
-         f"{t['vetdrug_member_panel.csv']['incomparable_multiple_rules']}; "
+         f"{t['vetdrug_member_panel.csv']['incomparable_multiple_rules']}. "
          f"{tt('unresolved_multiple_animals')}: veterinary-drug summary "
          f"{t['vetdrug_panel.csv']['unresolved_multiple_animals']}"),
-        ("Printed qualifier or basis of expression",
-         f"A contaminant basis such as dry weight or solid product ({with_basis} long-table "
-         "rows) is part of the category-row key, so rows on different bases are never "
-         "compared; in the member panel a basis that changes across editions blocks the "
-         "trend. Pesticide qualifiers, including the temporary-limit asterisk, enter the "
-         "scope signature that must agree across editions.",
+        ("Qualifier or basis of expression",
+         f"A contaminant basis such as dry weight ({with_basis} long-table rows) is part of the "
+         "row key and blocks a member trend when it changes. Pesticide qualifiers, including "
+         "the temporary-limit asterisk, must agree.",
          f"{tt('incomparable_basis_unit_or_value')}: contaminant member "
-         f"{t['pollutant_member_panel.csv']['incomparable_basis_unit_or_value']} (basis or "
-         f"unit); {tt('incomparable_unresolved_review_or_source_qualifier')}: pesticide "
-         f"{t['pesticide_panel.csv']['incomparable_unresolved_review_or_source_qualifier']} "
-         "(source marker c)"),
-        ("Units that cannot be converted",
-         "Mass-per-mass units are converted before comparison. A volume-based value needs a "
-         f"density and keeps a blank normalised value ({density} contaminant long-table "
-         "rows). The additive grams-per-serving unit is not converted, and GMP is compared "
-         "only with GMP.",
+         f"{t['pollutant_member_panel.csv']['incomparable_basis_unit_or_value']}. "
+         f"{tt('incomparable_unresolved_review_or_source_qualifier')}: pesticide "
+         f"{t['pesticide_panel.csv']['incomparable_unresolved_review_or_source_qualifier']}"),
+        ("Unit that cannot be converted",
+         "Mass-per-mass units are converted. Volume-based values "
+         f"({density} contaminant long-table rows) and grams per serving are not, and GMP is "
+         "compared only with GMP.",
          f"{tt('incomparable_unit_dimension_or_value')}: contaminant category "
-         f"{t['pollutant_category_panel.csv']['incomparable_unit_dimension_or_value']}; "
-         f"{tt('incomparable_units')}: additive {t['additive_panel.csv']['incomparable_units']}; "
+         f"{t['pollutant_category_panel.csv']['incomparable_unit_dimension_or_value']}. "
+         f"{tt('incomparable_units')}: additive {t['additive_panel.csv']['incomparable_units']}. "
          f"{tt('stable_gmp')}: additive {t['additive_panel.csv']['stable_gmp']}"),
-        ("Scope text that changes (exclusion list, food label, use condition, animals covered)",
+        ("Scope text changes (exclusions, food label, use condition, animals)",
          "Compared after Unicode and punctuation normalisation. Confirmed contaminant renames "
-         "count as equal. Where a contaminant member heads its host category, that "
-         "category's exclusions must also agree.",
+         "count as equal, and a member's host exclusions must also agree.",
          f"{tt('incomparable_scope_text')}: contaminant category "
-         f"{t['pollutant_category_panel.csv']['incomparable_scope_text']} and member "
+         f"{t['pollutant_category_panel.csv']['incomparable_scope_text']}, member "
          f"{t['pollutant_member_panel.csv']['incomparable_scope_text']}, pesticide "
          f"{t['pesticide_panel.csv']['incomparable_scope_text']:,}, mycotoxin "
          f"{t['mycotoxin_panel.csv']['incomparable_scope_text']}, veterinary-drug summary "
          f"{t['vetdrug_panel.csv']['incomparable_scope_text']}, additive "
          f"{t['additive_panel.csv']['incomparable_scope_text']}"),
         ("Category without a counterpart in another edition",
-         "A row present in one edition carries no trend. A contaminant category that is no "
-         "longer printed is not read as withdrawn; its foods are followed in the member "
-         "panel, which releases a member only when at least two editions have a "
-         f"determinable host. {tt('coverage_status')} records when a printed name is present "
-         "and does not date a limit.",
+         "No trend. A contaminant category no longer printed is not read as withdrawn, and its "
+         "foods are followed in the member panel.",
          f"{tt('single_version')}: contaminant "
          f"{t['pollutant_category_panel.csv']['single_version']}, pesticide "
          f"{t['pesticide_panel.csv']['single_version']}, mycotoxin "
          f"{t['mycotoxin_panel.csv']['single_version']}, additive "
-         f"{t['additive_panel.csv']['single_version']}; {tt('single_version_unmatched')}: "
-         f"mycotoxin member {t['mycotoxin_member_panel.csv']['single_version_unmatched']}; "
-         f"{tt('single_2002_unmatched')} and {tt('single_2019_unmatched')}: veterinary-drug "
-         f"summary {t['vetdrug_panel.csv']['single_2002_unmatched']} and "
-         f"{t['vetdrug_panel.csv']['single_2019_unmatched']}; "
-         f"{tt('incomparable_category_disappeared')}: contaminant category "
+         f"{t['additive_panel.csv']['single_version']}. {tt('single_*_unmatched')}: mycotoxin member "
+         f"{t['mycotoxin_member_panel.csv']['single_version_unmatched']}, veterinary-drug "
+         f"summary {t['vetdrug_panel.csv']['single_2002_unmatched'] + t['vetdrug_panel.csv']['single_2019_unmatched']}. "
+         f"{tt('incomparable_category_disappeared')}: contaminant "
          f"{t['pollutant_category_panel.csv']['incomparable_category_disappeared']}"),
-        ("Host category of a contaminant member not determinable",
-         "The edition cell and its host are left blank, and note gives the reason: the "
-         f"inherited rule excludes the member ({blanks['excluded']} cells), the member spans "
-         f"two printed rules ({blanks['spans two printed rules']}), or another edition names "
-         "the member in an exclusion list that differs from this rule's "
-         f"({blanks['host not determinable']}). Manually confirmed renames ({renames}) and "
-         f"containment links ({containment}) fix the host where the printed text does not.",
+        ("Contaminant member host not determinable",
+         "Cell and host are left blank, with the reason in note: excluded by the inherited rule "
+         f"({blanks['excluded']} cells), spanning two rules ({blanks['spans two printed rules']}) "
+         f"or under differing exclusion lists ({blanks['host not determinable']}).",
          f"Trend from the remaining editions; {noted} rows carry a note"),
         ("Quarantined fragment",
-         f"Excluded from every long table and panel and kept in {tt('quarantined_rows.csv')}. "
-         f"Each of the {len(pol_q)} contaminant fragments duplicates a released rule of the "
-         f"same edition, analyte and value, so no contaminant cell is lost. The {len(add_q)} additive "
-         f"fragments leave the 2011 or 2014 cell of {len(add_rows)} additive rows blank.",
-         f"Trend from the editions present; {add_judged} of the {len(add_rows)} additive rows "
-         "carry one. A blank cell is not read as absence"),
-        ("Edition skipped between two editions that hold the rule",
+         f"Kept only in {tt('quarantined_rows.csv')}. The {len(pol_q)} contaminant fragments "
+         f"duplicate released rules, so no cell is lost. The {len(add_q)} additive fragments "
+         f"blank the 2011 or 2014 cell of {len(add_rows)} additive rows.",
+         f"Trend from the editions present ({add_judged} of the {len(add_rows)} rows). A blank "
+         "is not read as absence"),
+        ("Rule missing from an intermediate edition",
          "No trend spans the gap.",
          f"{tt('incomparable_edition_gap')}: pesticide "
          f"{t['pesticide_panel.csv']['incomparable_edition_gap']}, additive "
          f"{t['additive_panel.csv']['incomparable_edition_gap']}, veterinary-drug member "
          f"{t['vetdrug_member_panel.csv']['incomparable_edition_gap']}"),
-        ("Edition whose visible rule count differs from its declared total (GB 2763-2016 and "
-         "GB 2763-2019)",
-         f"Trends are kept, and {tt('count_mismatch_editions')} names the editions a trend "
-         "relies on, so users can exclude them. The archived GB 2762-2005 and GB 2760-1996 "
-         "editions were not extracted, and no panel spans them.",
-         f"{pest_flagged:,} of {len(pest_judged):,} judged pesticide rows are flagged"),
+        ("Declared rule total not matched (GB 2763-2016 and -2019)",
+         f"Trends are kept, and {tt('count_mismatch_editions')} names the editions each relies "
+         "on.",
+         f"{pest_flagged:,} of {len(pest_judged):,} judged pesticide rows flagged"),
     ]
     body = [("\\addlinespace " if i else "") + " & ".join(row) for i, row in enumerate(rows)]
     write_tab("tab1PanelRules", T5_SPEC, T5_CAP, T5_HEAD, body)
@@ -738,8 +666,8 @@ def table6():
          f"Six rows, one per edition, sharing \\texttt{{{tea['pesticide_key']}}} and "
          f"\\texttt{{{tea['food_key']}}}, e.g. {rid(last)} (2026; source page "
          f"{last['source_page']}, y = {float(last['source_y']):.1f}). The 2019 and 2021 rows "
-         "come from the text-layer extraction copies and agree with the OCR cross-check of "
-         "the scans.",
+         "come from the government-hosted copies and agree with the OCR cross-check of "
+         "the edition scans.",
          f"Four rows. The 2012 and 2017 rows keep unit mg/L, "
          f"{tt('normalization_status')} {tt('density_required')} and a blank "
          f"{tt('limit_mgkg')}; the 2022 and 2025 rows are already in mg/kg.",
@@ -952,24 +880,25 @@ T8_SPEC = (r"@{}>{\raggedright\arraybackslash}p{0.21\textwidth}"
            r">{\raggedleft\arraybackslash}p{0.18\textwidth}"
            r">{\raggedleft\arraybackslash}p{0.11\textwidth}"
            r">{\raggedleft\arraybackslash}p{0.14\textwidth}@{}")
-T8_HEAD = ("Stratum & Rows & Round 1 errors / read & Round 1 rate, \\% (95\\% CI) & "
+T8_HEAD = ("Stratum & Rows in stratum & Round 1 errors / read & Round 1 rate, \\% (95\\% CI) & "
            "v1.1 errors / read & v1.1 upper 95\\% bound, \\%")
 STRATA = (("2019", "consistent", "2019, OCR agrees"),
           ("2019", "text_only", "2019, text layer only"),
           ("2021", "consistent", "2021, OCR agrees"),
           ("2021", "text_only", "2021, text layer only"))
 T8_CAP = ("Independent reading of the GB 2763-2019 and GB 2763-2021 rows against the "
-          "issuing-authority scans. Rows are stratified by edition and by whether the OCR "
+          "edition scans. Rows are stratified by edition and by whether the OCR "
           "comparison recovered the row (OCR agrees) or not (text layer only). Within a "
           "stratum, rows were drawn in proportion to stratum size by ranking a seeded SHA-256 "
           "digest of the record identifier. Round 1 read release v1.0: its errors are seven "
           "foods filed under a long food label instead of their category and one "
-          "temporary-limit asterisk printed in the text-layer copy but not on the scan; two "
-          "reviewer misreadings are not counted. After the category rule was corrected in all "
+          "temporary-limit asterisk printed in the government-hosted copy but not on the edition scan; two "
+          "verifier misreadings are not counted. After the category rule was corrected in all "
           "six editions, round 2 redrew the three strata with errors at the same sizes, "
           "skipping rows already read. The v1.1 columns combine round 2 with the round-1 rows "
           "of the stratum that was not redrawn; every row counted there is unchanged in "
-          "release v1.1. Intervals are Clopper--Pearson. The nine OCR conflict rows and three "
+          "release v1.1. Rates are errors per row read. Intervals and upper bounds are two-sided "
+          "95\\% Clopper--Pearson limits. The nine OCR conflict rows and three "
           "OCR-only groups were read in full and are reported in the text.")
 
 

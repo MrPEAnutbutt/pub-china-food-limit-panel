@@ -524,8 +524,8 @@ if __name__ == "__main__":
         "fig1Coverage",
         "Coverage matrix. Rows are the five standard families and columns are version years "
         "from 1996 to 2026. Each cell gives the number of released limit records and is shaded "
-        "by read path. The 2019 and 2021 pesticide cells use government-hosted text-layer "
-        "extraction copies; the corresponding scans anchor edition identity and supply a frozen "
+        "by read path. The 2019 and 2021 pesticide cells use government-hosted copies; the "
+        "edition scans, kept as audit-only copies, anchor edition identity and supply a frozen "
         "optical-character-recognition (OCR) cross-check. A star marks a mainly machine-read "
         "cell with hand-transcribed rows. "
         "The two hatched cells, GB 2762-2005 and GB 2760-1996, are archived but unextracted. "
@@ -549,10 +549,10 @@ if __name__ == "__main__":
     write_figure_tex(
         "fig1Timeline",
         "Version timeline from issue date to effective date. Dates are read from source covers "
-        "or the 2002 announcement and released in \\texttt{version\\_dates.csv}; 20 of 21 "
-        "archived editions have both dates, while GB 2760-1996 records an explicit missing date. "
-        f"All {timeline['n_agree']} of {timeline['n_cross_checked']} dates represented in the "
-        f"official current-standard register agree with the source reading; "
+        "or the 2002 announcement and released in \\texttt{version\\_dates.csv}; 20 of the 21 "
+        "coverage editions have both dates, while GB 2760-1996 records an explicit missing date. "
+        f"{timeline['n_cross_checked']} editions are listed in a register of current standards, "
+        f"and for {timeline['n_agree']} of them both register dates agree with the source reading; "
         f"{timeline['n_ocr_covers']} covers required OCR. Across extracted editions, the "
         f"transition-period median is {timeline['median_months']:.0f} months. The 2002 "
         "announcement took effect on its issue date.",

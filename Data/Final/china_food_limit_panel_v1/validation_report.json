@@ -1,6 +1,6 @@
 {
   "report_schema_version": "3.0",
-  "generated_utc": "2026-10-26T15:33:11.419297+00:00",
+  "generated_utc": "2026-10-26T20:53:08.781047+00:00",
   "target": "china_food_limit_panel_v1",
   "inputs": {
     "package_root": ".",
@@ -15,14 +15,14 @@
     "results_tab": "Results/tab"
   },
   "environment": {
-    "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
-    "python_executable": "python3.14",
-    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "python": "3.11.7 (main, Dec 15 2023, 12:09:56) [Clang 14.0.6 ]",
+    "python_executable": "python",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
     "pdftotext": "pdftotext version 26.02.0\nCopyright 2005-2026 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC"
   },
   "git": {
     "available": true,
-    "commit": "744cd0b1af46b3b3e4c722f6699ba29465f02f73",
+    "commit": "08a2dc528def19d8be2dcde626b151010991356d",
     "dirty": true,
     "root": "01食品标准数据"
   },
@@ -32,8 +32,8 @@
       "bytes": 1938
     },
     "README.md": {
-      "sha256": "808132a9c0e2d26073357d96b2aa404162ca2198434d90f4fb43452eed0f5814",
-      "bytes": 33855
+      "sha256": "eaa7dac4134521c15785beca9e1ee80cfd9a916d1ba05262ebb92083d456e0bc",
+      "bytes": 33875
     },
     "SOURCE_ACQUISITION.md": {
       "sha256": "f5ba639ff4a160c6965540f3ac8c2f016446e7a4161c127faec4e37ba090df4f",
@@ -56,8 +56,8 @@
       "bytes": 3242904
     },
     "data_dictionary.csv": {
-      "sha256": "b02c6b6c0e477b4fed4f4343a8d38a35b2fa8c7567e12f37da4d26f8d57c82ea",
-      "bytes": 62060
+      "sha256": "479c5e74d3fef682c8d23afc1a0752fe4b67d9ae0977d52df12e0bbd6774c8fe",
+      "bytes": 62204
     },
     "entity_names_en.csv": {
       "sha256": "b683a65e06ce4ed5e3fcd0ba9a77d61b3aefb83db0a12bd217b5cd69b5659a69",
@@ -158,8 +158,8 @@
       "bytes": 2693
     },
     "results_tab/tab1ExtractionMethod.tex": {
-      "sha256": "aca6cbdbb5f2788247fd487c965fd2d437d3dae00367525c31996b6191d91ea5",
-      "bytes": 3308
+      "sha256": "4488f6b49fb161ff22d8e2c255ac25b0adb77d1fc8945be20ad9a2a6d536a9c1",
+      "bytes": 2821
     },
     "source_roots/外部英译本/FSIS_GB2763-2016_en.pdf": {
       "sha256": "b28b87fb4a50759cd40c9889349ee59be24f9e49ea890af103d913fccccda542",

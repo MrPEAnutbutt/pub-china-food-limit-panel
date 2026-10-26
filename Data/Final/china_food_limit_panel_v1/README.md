@@ -36,8 +36,8 @@ Future releases follow these rules:
   new edition source, extracted with the family's documented method and
   validated before release; records of earlier editions are kept.
 - **Superseded or replaced source files.** A frozen source file is never
-  replaced silently. A replacement or newly matched official file receives its
-  own `source_id` in `source_manifest.csv`, and rows re-extracted from it are
+  replaced silently. A replacement or newly matched issuing-authority file
+  receives its own `source_id` in `source_manifest.csv`, and rows re-extracted from it are
   listed in `record_id_changes.csv`.
 
 ## Edition coverage
@@ -54,7 +54,7 @@ The 21 edition-source cells consist of 19 extracted editions and two archived
 editions. `version_dates.csv` therefore has 21 rows. Twenty rows contain a
 complete issue/effective-date pair. The GB 2760-1996 row deliberately leaves
 both dates blank because they were not printed on the archived cover and were
-absent from the official register used for the cross-check; its `date_status`
+absent from the register used for the cross-check; its `date_status`
 is `not_printed`.
 
 ## Why cross-edition comparison needs more than a number
@@ -614,5 +614,6 @@ panel = panel.merge(entity_en, on="pesticide_key", how="left", validate="many_to
 ## Reuse and legal caution
 
 This is a derived research resource and is not an authoritative legal source.
-Verify consequential limits against the official standard. The package license,
+Verify consequential limits against an issuing-authority file of the standard.
+The package license,
 source-text boundaries, and third-party-label notices are in `LICENSE.md`.
