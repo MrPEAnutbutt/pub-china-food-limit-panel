@@ -1,0 +1,11 @@
+﻿blind_id,outcome,verdict,scan_pdf_page,note
+PA2019-025,not_found,extraction_error,75,"Table 83 prints 棉籽 0.1 under 油料和油脂; the released value agrees. The text layer places 棉籽 at the x position of the category column, so the release took 棉籽 as its own parent category."
+PA2019-031,asterisk_differs,text_layer_error,93,"Table 111 prints 大豆 0.01 with no temporary-limit mark, as for every row of the table on that page. The government-hosted text layer prints 0.01∗ and the release follows it (is_temporary=true). The value agrees. The OCR crosscheck compares numbers only, so the group was consistent."
+PA2019-035,value_differs,reviewer_misreading,102,Table 125 prints 大豆 0.4. The 4 lies under the watermark letter E; the red channel of a 300 dpi render shows it clearly. The released 0.4 agrees.
+PA2019-039,not_found,extraction_error,108,"Table 136 (cont.) prints 豌豆(鲜) 1∗ under 蔬菜; the released value and mark agree. The release gives the parent 豆类蔬菜(食荚豌豆、豌豆(鲜)、菜豆和菜用大豆除外), a food row whose long name reaches the category column and was read as a category heading."
+PA2019-065,value_differs,reviewer_misreading,173,"Table 237 (cont.) prints 番木瓜 0.03 under the watermark; the released 0.03 agrees. The next row, 葡萄干, prints 0.3."
+PA2019-079,not_found,extraction_error,198,Table 272 (cont.) prints 醋栗(红、黑) 0.5 under 水果; the released value agrees. The parent was taken from the long food row 浆果和其他小型水果[醋栗(红、黑)、葡萄、草莓除外].
+PA2019-100,not_found,extraction_error,252,Table 363 (cont.) prints 山药 0.1 under 蔬菜; the released value agrees. The parent was taken from the long food row 根茎类和薯芋类蔬菜(甘薯、马铃薯、木薯、山药除外).
+PA2021-007,not_found,extraction_error,37,Table 21 prints 梨 2 under 水果; the released value agrees. The parent was taken from the long food row 水果(苹果、梨、桃、樱桃、油桃、李子、蓝莓、越橘、西瓜、甜瓜类水果、除外).
+PA2021-093,not_found,extraction_error,229,Table 291 (cont.) prints 茎用莴苣 1∗ under 蔬菜; the released value and mark agree. The parent was taken from the long food row 叶菜类蔬菜(蕹菜、油麦菜、叶芥菜、萝卜叶、茎用莴苣叶、芹菜除外).
+PA2021-096,not_found,extraction_error,236,Table 298 (cont.) prints 瓜类蔬菜(黄瓜、腌制用小黄瓜、西葫芦、笋瓜除外) 1 under 蔬菜; the released value agrees. The parent was taken from the long food row 芸薹属类蔬菜(结球甘蓝、球茎甘蓝、羽衣甘蓝、花椰菜、青花菜、芥蓝、菜薹除外).

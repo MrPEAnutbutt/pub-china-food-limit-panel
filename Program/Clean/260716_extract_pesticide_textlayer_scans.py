@@ -36,6 +36,33 @@ VALUE_COLUMN_X = 400.0
 PARENT_LEFT_X = 115.0
 HEADER_CONFIRM_GAP = 20
 
+# A row that carries a value and starts in the left column opens a parent scope
+# only when it names one of the standard's food categories.  Long food labels
+# such as "豆类蔬菜(食荚豌豆、豌豆(鲜)、菜豆和菜用大豆除外)" also reach the left
+# column, and some text layers place single foods there (2021 Table 156 "柑").
+# The list holds every category heading of the six editions; the independent
+# reading of 2019 and 2021 (Data/Interim/pesticide_audit) found the leak.
+PARENT_HEADINGS = frozenset(
+    {
+        "谷物", "谷物及制品", "油料和油脂", "油料", "油料及制品", "油料制品",
+        "蔬菜", "干制蔬菜", "水果", "干制水果", "坚果", "糖料", "糖料类",
+        "糖类", "饮料类", "饮料", "食用菌", "调味料", "药用植物",
+        "哺乳动物肉类(海洋哺乳动物除外)",
+        "哺乳动物肉类(海洋哺乳动物除外),以脂肪中的残留量计",
+        "哺乳动物肉类(海洋哺乳动物除外),以脂肪中残留量表示",
+        "哺乳动物肉类(海洋哺乳动物除外),以脂肪中的残留量表示",
+        "哺乳动物肉类及其制品", "哺乳动物肉类及其制品(海洋哺乳动物除外)",
+        "哺乳动物内脏", "哺乳动物内脏(海洋哺乳动物除外)",
+        "哺乳动物脂肪", "哺乳动物脂肪(乳脂肪除外)", "哺乳动物脂肪(海洋哺乳动物除外)",
+        "肝脏(牛、羊、猪)", "肾脏(牛、羊、猪)",
+        "禽肉类", "禽肉类(以脂肪计)", "禽肉类(包括内脏)",
+        "禽肉类,以脂肪中的残留量计", "禽肉类,以脂肪中残留量表示",
+        "禽肉类,以脂肪中的残留量表示",
+        "禽类内脏", "禽类脂肪", "蛋类", "蛋类(鲜)", "生乳", "奶类", "乳脂肪",
+        "水产品",
+    }
+)
+
 SOURCE_CONFIG = {
     "2012": {
         "edition": "GB 2763-2012",
@@ -194,6 +221,15 @@ MISSING_GLYPH_NAME_FIXES = {
     "clomazone": "异噁草酮",
 }
 
+# Temporary-limit marks printed in the government-hosted text layer but absent
+# from the edition-identity scan; the value is (year, section, food) -> scan
+# PDF page checked by the author.  The independent reading of 2019 found the
+# first one (Data/Interim/pesticide_audit, PA2019-031).
+SCAN_TEMPORARY_MARK_FIXES = {
+    ("2019", 111, food): 93
+    for food in ("稻谷", "糙米", "麦类", "旱粮类", "棉籽", "大豆")
+}
+
 NOISE = re.compile(
     r"GB\s*2763|食品类别|食品名称|最大残留限量|检测方法|主要用途|残留物|ADI|"
     r"该限量|^表\d|食品安全国家标准|附录|索引"
@@ -282,6 +318,22 @@ def compact(value: str) -> str:
 def canonical_scope(value: str) -> str:
     value = compact(normalize_text(value))
     return value.translate(str.maketrans({"，": ",", "（": "(", "）": ")"}))
+
+
+def parent_heading(value: str) -> str:
+    """Return the category a valued left-column row opens, or "" for a food.
+
+    A residual group named after a category, such as
+    "哺乳动物内脏(猪肾、牛肾、羊肾除外)", opens that category.
+    """
+
+    if value in PARENT_HEADINGS:
+        return value
+    if value.endswith("除外)") and "(" in value:
+        base = value[: value.index("(")]
+        if base in PARENT_HEADINGS:
+            return base
+    return ""
 
 
 def english_key(value: str) -> str:
@@ -693,6 +745,7 @@ def extract_edition(
 
     roster: list[SectionHeader] = []
     records: list[dict[str, object]] = []
+    applied_mark_fixes: set[tuple[str, int, str]] = set()
     pending: SectionHeader | None = None
     current: SectionHeader | None = None
     active_parent = ""
@@ -864,8 +917,9 @@ def extract_edition(
             if value_match is None:
                 continue
 
-            if category_x <= parent_left_x:
-                active_parent = category
+            heading = parent_heading(category) if category_x <= parent_left_x else ""
+            if heading and (heading == category or heading != active_parent):
+                active_parent = heading
                 active_parent_raw = category_raw
                 parent_method = "explicit_left_column_scope"
             elif active_parent:
@@ -876,6 +930,17 @@ def extract_edition(
             limit_value = canonical_decimal(value_match.group(1))
             suffix = value_text[value_match.end() :]
             qualifier, temporary, qualifier_review = parse_qualifier(suffix)
+            mark_fix = (year, current.section_number, category)
+            if mark_fix in SCAN_TEMPORARY_MARK_FIXES:
+                if (
+                    qualifier != "temporary_mrl_asterisk"
+                    or mark_fix in applied_mark_fixes
+                ):
+                    raise ExtractionValidationError(
+                        f"scan temporary-mark fix does not apply: {mark_fix}"
+                    )
+                qualifier, temporary = "", False
+                applied_mark_fixes.add(mark_fix)
             review_status = "text_layer_auto_extracted"
             if margin_overlap_salvaged:
                 review_status = add_status(
@@ -893,6 +958,11 @@ def extract_edition(
                 transitions["food_value_multiline_joined"] += 1
             if current.name_correction:
                 review_status = add_status(review_status, "source_glyph_correction")
+            if mark_fix in applied_mark_fixes:
+                review_status = add_status(
+                    review_status, "scan_temporary_mark_correction"
+                )
+                transitions["scan_temporary_mark_correction"] += 1
             if qualifier_review:
                 review_status = add_status(review_status, qualifier_review)
             if parent_method.startswith("unresolved"):
@@ -955,6 +1025,9 @@ def extract_edition(
         )
     if any(page >= config["appendix_a_page"] for page in row_pages):
         raise ExtractionValidationError(f"{year} Appendix A leakage detected")
+    unapplied = {key for key in SCAN_TEMPORARY_MARK_FIXES if key[0] == year} - applied_mark_fixes
+    if unapplied:
+        raise ExtractionValidationError(f"{year} scan temporary-mark fixes unused: {sorted(unapplied)}")
     sections_with_rows = {int(record["section_number"]) for record in records}
     if sections_with_rows != set(expected_sections):
         missing = sorted(set(expected_sections) - sections_with_rows)

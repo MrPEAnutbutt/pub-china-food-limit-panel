@@ -1,7 +1,8 @@
 # Portable release dependencies
 
 This directory freezes the five CSV inputs that the release builder previously
-read from an external processing tree. It is an interim evidence layer. The
+read from an external processing tree, plus one human-authored containment
+seed added in revision round 1. It is an interim evidence layer. The
 release builder may read these files, while downstream analysis must continue
 to read only `Data/Final/`.
 
@@ -10,10 +11,11 @@ to read only `Data/Final/`.
 | File | Data rows | SHA-256 | Evidential status |
 |---|---:|---|---|
 | `food_taxonomy.csv` | 798 | `f5730ffcc4bfe4f54a427445a2a392fbdb473de609a6aa3b23584f6ced415f7d` | Parser-derived GB 2762 Appendix A parent-child edges; source-PDF replay is byte-identical. |
-| `category_alias.csv` | 8 | `59d4838dcf19b433308d2d850698bbc2a56599a0185a2e9f3279eeda347ffb66` | Human-authored adjudication seed: 3 rows are marked `已确认`; 5 remain `待核`. |
+| `category_alias.csv` | 10 | `3137a085f1c25e73c4d2962fd6c8d787b80159d56d4d3474c109d741af6f531f` | Human-authored adjudication seed: 5 rows are marked `已确认`; 5 remain `待核`. |
+| `category_containment.csv` | 7 | `9f94d87716553d3bc119e3605e5d757153ba54b1c1d401853e4fe302c32d1346` | Human-authored adjudication seed: 7 confirmed "member lies within category" links, each citing its source page. |
 | `pollutant_old_path.csv` | 677 | `e05158cd82b8f5dc7cd0cb7c5a770e88c18fefa5e3d9d9593a3f142fbaa83c8f` | Historical text-parser recall backstop; 676 rows are `high` and one is `review_cat`. |
 | `member_crosswalk_mycotoxin.csv` | 55 | `04fcaf11730263facb7e6be652fc51d7a2f121ce8a1c8f4f9b87ddee61967626` | Deterministically regenerated from the project-local 61-row mycotoxin long table and frozen taxonomy. |
-| `member_crosswalk_vetdrug.csv` | 1,132 | `1ad4054e0fd2c51fcb05b27a30fd289cc37df00967350e369984195bdd8f3b35` | Deterministically regenerated from the project-local 1,365-row veterinary-drug long table. |
+| `member_crosswalk_vetdrug.csv` | 1,157 | `02e8ee1e47c5d786cc51b544ae730096e32c0a67646bc76bffc3b4052420402e` | Deterministically regenerated from the project-local 1,365-row veterinary-drug long table; `归属<year>` names the printed animal label of each rule used. |
 
 The header is excluded from each data-row count. All tracked CSV files use
 UTF-8 with a byte-order mark and LF line endings.
@@ -96,10 +98,16 @@ differs from the locked source identity.
   `3b983e0f53c374679caca5d5e3887a90c4f6384cb7ee3773e669fce1f3675bc5`,
   and `build_pollutant_doublecol.py` =
   `3d929a7783f99a22e2284df34cad2ec92225374b8b8a87a336eacf876dd1bdc7`.
-- `category_alias.csv` is the only human-authored mapping table in this bundle.
-  Five of its eight rows retain the literal `待核` status. The formal pollutant
-  rebuild applies only `已确认` rows, excludes and counts all five `待核` rows,
-  and fails on any unknown status, blank key, or duplicate source label.
+- `category_alias.csv` and `category_containment.csv` are the only
+  human-authored mapping tables in this bundle. Five of the ten alias rows
+  retain the literal `待核` status. The formal pollutant rebuild applies only
+  `已确认` rows, excludes and counts all five `待核` alias rows, and fails on
+  any unknown status, blank key, or duplicate source label.
+- On 2026-10-25 the author confirmed two renames (`矿泉水` = `饮用天然矿泉水`,
+  `咖啡豆` = `生咖啡豆及烘焙咖啡豆`) and seven containment links (for example
+  `白酒` within `蒸馏酒`) against the cited GB 2762 pages. A rename merges two
+  names in both pollutant panels; a containment link is used only to find a
+  member's host rule in the member panel.
 - `pollutant_old_path.csv` is a historical recall input. Its one `review_cat`
   row and the malformed category hosts inherited from the archived sidecar are
   handled by the newer pollutant rebuild's quarantine and coordinate-source

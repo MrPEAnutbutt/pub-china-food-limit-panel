@@ -41,9 +41,28 @@ class SourceManifestContractTests(unittest.TestCase):
                     ),
                     "acquisition_file_url": document.acquisition_file_url,
                     "retrieved_date": document.retrieved_date,
+                    "source_class": UTILS.source_class(document),
                 }
             )
         return rows
+
+    def test_source_classes_reserve_issuer_and_audit_roles(self):
+        classes = {
+            document.source_id: UTILS.source_class(document)
+            for document in MODULE.SOURCE_DOCUMENTS
+        }
+
+        self.assertEqual(
+            Counter(classes.values()),
+            {"issuing_authority_file": 19, "audit_only_copy": 4,
+             "government_hosted_copy": 2},
+        )
+        self.assertEqual(
+            {source_id for source_id, value in classes.items()
+             if value == "audit_only_copy"},
+            {"SRC0009", "SRC0010", "SRC0022", "SRC0023"},
+        )
+        self.assertTrue(set(classes.values()) < set(UTILS.SOURCE_CLASSES))
 
     def test_source_role_and_release_status_counts_are_explicit(self):
         roles = Counter(document.source_role for document in MODULE.SOURCE_DOCUMENTS)

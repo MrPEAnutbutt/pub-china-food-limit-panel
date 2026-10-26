@@ -139,6 +139,10 @@ class AliasAdjudicationTests(unittest.TestCase):
             args.alias_path,
             MODULE.DEFAULT_DEPENDENCY_DIR / "category_alias.csv",
         )
+        self.assertEqual(
+            args.containment_path,
+            MODULE.DEFAULT_DEPENDENCY_DIR / "category_containment.csv",
+        )
 
     def test_formal_rebuild_rejects_mutated_dependency_before_source_read(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -159,6 +163,9 @@ class AliasAdjudicationTests(unittest.TestCase):
                         MODULE.DEFAULT_DEPENDENCY_DIR / "food_taxonomy.csv"
                     ),
                     alias_path=alias,
+                    containment_path=(
+                        MODULE.DEFAULT_DEPENDENCY_DIR / "category_containment.csv"
+                    ),
                     output_dir=directory / "output",
                 )
 
@@ -189,6 +196,7 @@ class PollutantRebuildIntegrationTests(unittest.TestCase):
             processing_dir / "pollutant_old_path.csv",
             processing_dir / "food_taxonomy.csv",
             processing_dir / "category_alias.csv",
+            processing_dir / "category_containment.csv",
         ]
         if not all(path.exists() for path in required):
             raise unittest.SkipTest("The local GB 2762 source bundle is unavailable")
@@ -199,6 +207,7 @@ class PollutantRebuildIntegrationTests(unittest.TestCase):
             legacy_path=processing_dir / "pollutant_old_path.csv",
             taxonomy_path=processing_dir / "food_taxonomy.csv",
             alias_path=processing_dir / "category_alias.csv",
+            containment_path=processing_dir / "category_containment.csv",
             output_dir=cls.output_dir,
         )
         cls.long_rows = read_csv(cls.output_dir / "pollutant_limits_long.csv")
@@ -428,6 +437,7 @@ class PollutantRebuildIntegrationTests(unittest.TestCase):
                 "归属类别2017",
                 "归属类别2022",
                 "归属类别2025",
+                "note",
             }.issubset(member_fields)
         )
         self.assertTrue(
@@ -445,11 +455,47 @@ class PollutantRebuildIntegrationTests(unittest.TestCase):
             }.issubset(category_fields)
         )
 
+    def test_confirmed_relations_fix_misassigned_hosts(self):
+        members = {
+            (row["analyte"], row["food_member"]): row for row in self.members
+        }
+
+        def values(analyte, member):
+            row = members[(analyte, member)]
+            return [row[f"v{year}"] for year in MODULE.YEARS], row["trend"]
+
+        stable = [
+            ("铅", "白酒", "0.5"),
+            ("铅", "八宝粥罐头", "0.5"),
+            ("铅", "蔓越莓", "0.2"),
+            ("铅", "醋栗", "0.2"),
+            ("铅", "带馅(料)面米制品", "0.5"),
+            ("铅", "多种香辛料混合的香辛料", "3.0"),
+            ("镉", "肝脏制品", "0.5"),
+            ("镉", "肾脏制品", "1.0"),
+            ("镉", "大米", "0.2"),
+        ]
+        for analyte, member, value in stable:
+            with self.subTest(analyte=analyte, member=member):
+                observed, trend = values(analyte, member)
+                self.assertEqual([float(item) for item in observed], [float(value)] * 4)
+                self.assertEqual(trend, "stable")
+        self.assertEqual(values("铅", "蒸馏酒")[0], ["0.5", "0.5", "", ""])
+        self.assertIn("spans two printed rules", members[("铅", "蒸馏酒")]["note"])
+        self.assertEqual(values("镉", "姬松茸")[0][:2], ["", ""])
+        self.assertEqual(values("苯并[a]芘", "大米"), (["5.0", "5.0", "2.0", "2.0"], "tightened"))
+        # Renamed categories merge into one row.
+        self.assertNotIn(("镉", "矿泉水"), members)
+        self.assertNotIn(("铅", "咖啡豆"), members)
+        # Total arsenic leaves husked and milled rice to inorganic arsenic.
+        for member in ("大米", "糙米", "大米(粉)"):
+            self.assertNotIn(("总砷", member), members)
+
     def test_pending_aliases_are_excluded_and_reported(self):
         self.assertEqual(
             self.report["alias_adjudications"],
             {
-                "confirmed_applied": 3,
+                "confirmed_applied": 5,
                 "pending_review_excluded": 5,
                 "pending_review_sources": [
                     "麦片、面筋、粥类罐头、带馅面米制品",

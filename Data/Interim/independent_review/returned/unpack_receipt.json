@@ -1,0 +1,12 @@
+{
+  "workbooks": {
+    "01_第一部分_手录144行_已核验.xlsx": "a9ac8089f4ed5007ebdd0ce78e9d5b31dca569892286f475a93ba543d294f7f6",
+    "02_第二部分_农残300行_已核验.xlsx": "500a6a82449cad1c954f226a2665bed37bd85e49f240919da2be0f4d2773f389"
+  },
+  "csv": {
+    "mycotoxin_2005_blind_entry.csv": "b47b9cdc53cf0f266663754680362f24b1c9ce4f566696797b57455c4a88dd44",
+    "vetdrug_2019_blind_entry.csv": "54389bdb473487a86f0e2386ca60bc299876edcd3a7110a4558cb162ec4edbf7",
+    "vetdrug_2022_blind_entry.csv": "d37c9c7d6e728bced4157f46ef5b7df09cafe1cecda114f4361a347b63bcc9f5",
+    "pesticide_blind_read_completed.csv": "eb8814650a540e99c91876dda7a142dab53136e00f41c6702b785e0056340847"
+  }
+}

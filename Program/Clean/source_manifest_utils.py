@@ -385,7 +385,28 @@ OUTPUT_COLUMNS = (
     "acquisition_file_url",
     "retrieved_date",
     "page_count",
+    "source_class",
 )
+
+SOURCE_CLASSES = (
+    "issuing_authority_file",
+    "government_hosted_copy",
+    "third_party_translation",
+    "audit_only_copy",
+)
+
+
+def source_class(document: SourceDocument) -> str:
+    """Classify a Chinese source file; translations are listed separately."""
+
+    if document.source_role == "extraction_copy":
+        return "government_hosted_copy"
+    if (
+        document.source_role == "identity_audit_copy"
+        or document.release_status == "identity_anchor_crosscheck"
+    ):
+        return "audit_only_copy"
+    return "issuing_authority_file"
 
 
 def source_documents_by_id() -> dict[str, SourceDocument]:

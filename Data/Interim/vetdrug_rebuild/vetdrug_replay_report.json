@@ -5,13 +5,13 @@
   "environment": {
     "python": "3.14.3",
     "implementation": "CPython",
-    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
     "pdftotext": "pdftotext version 26.02.0"
   },
   "source_manifest": {
     "filename": "source_manifest.csv",
-    "file_size_bytes": 6244,
-    "sha256": "575d83a2309fcb2cf8a38634a1a2b3afd403da1ba459391e9b6e02c66eee7e64"
+    "file_size_bytes": 7847,
+    "sha256": "f6bd5dc5f381ce0ec4ba4fbdb08905c7149a86f639b6b524cabfd682cc30507a"
   },
   "sources": [
     {
@@ -88,8 +88,8 @@
     },
     {
       "filename": "vetdrug_2022_manual.csv",
-      "file_size_bytes": 5902,
-      "sha256": "6d5e25a2455157ce6a26452b8cb4fb380698173babf52ae9656d4e780b6d82f8",
+      "file_size_bytes": 5930,
+      "sha256": "9c12d1a4ee1e198621d4380bb6df09c60705a5985bba2efa345e6aec32d2c628",
       "rows": 122,
       "role": "manual_scan_transcription_seed"
     }
@@ -128,14 +128,14 @@
   "outputs": [
     {
       "filename": "vetdrug_limits_by_version.csv",
-      "file_size_bytes": 102619,
-      "sha256": "90c9211355751f1fc90d35562b6a00f89ee95bcb91b133e96938860c73de96d0",
+      "file_size_bytes": 102953,
+      "sha256": "c682b212c6ec2f7d1677d582ac8250067953d71edc71aa4403bbaab72d686c60",
       "rows": 1365
     },
     {
       "filename": "vetdrug_strictness_change.csv",
-      "file_size_bytes": 38175,
-      "sha256": "95575a2ddf9e9a4402823633267f39e8cfcbb3a4248a2ef13ae252ddbfd2b62f",
+      "file_size_bytes": 38197,
+      "sha256": "0d78a6af21539497f35b50dbea0ffe35f452db22d7e3aa89193d949841d61e76",
       "rows": 657
     }
   ],

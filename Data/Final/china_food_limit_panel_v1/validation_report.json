@@ -1,6 +1,6 @@
 {
   "report_schema_version": "3.0",
-  "generated_utc": "2026-07-16T08:40:55.635396+00:00",
+  "generated_utc": "2026-10-26T15:33:11.419297+00:00",
   "target": "china_food_limit_panel_v1",
   "inputs": {
     "package_root": ".",
@@ -17,12 +17,12 @@
   "environment": {
     "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
     "python_executable": "python3.14",
-    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
     "pdftotext": "pdftotext version 26.02.0\nCopyright 2005-2026 The Poppler Developers - http://poppler.freedesktop.org\nCopyright 1996-2011, 2022 Glyph & Cog, LLC"
   },
   "git": {
     "available": true,
-    "commit": "b99ac8f164630ddc6da2fd8a918f69705f569b4f",
+    "commit": "744cd0b1af46b3b3e4c722f6699ba29465f02f73",
     "dirty": true,
     "root": "01食品标准数据"
   },
@@ -32,88 +32,96 @@
       "bytes": 1938
     },
     "README.md": {
-      "sha256": "17d09017d020a625175a61bffe7d48e77f3793e69b0fad626e4adc308d7bb186",
-      "bytes": 23806
+      "sha256": "808132a9c0e2d26073357d96b2aa404162ca2198434d90f4fb43452eed0f5814",
+      "bytes": 33855
     },
     "SOURCE_ACQUISITION.md": {
-      "sha256": "25bc725641975ccc90113190f6b93855180dc2e11fb85b6a11b3225159cb6fd1",
-      "bytes": 15248
+      "sha256": "f5ba639ff4a160c6965540f3ac8c2f016446e7a4161c127faec4e37ba090df4f",
+      "bytes": 16631
     },
     "_build_stats.json": {
-      "sha256": "d14430a5c1a45ea723ace5453c9b002d8b0ed329e9190da8cf594ebac2037a64",
-      "bytes": 1678
+      "sha256": "7c4e26a412ca90c280e84008f6302140b13d3615d7e592aa71b594e40eafbf47",
+      "bytes": 1731
     },
     "additive_limits_long.csv": {
-      "sha256": "f0a2407fe914ebc97773a6817cc3b0288ddc1449ff727be449fcfd07de7d36d6",
-      "bytes": 1017981
+      "sha256": "42d7f176ccc2b6d80a209923bd0588068e9c65327707505c305cbad26d36f9db",
+      "bytes": 1891071
     },
     "additive_names_en.csv": {
       "sha256": "6e7d37e2addd873c8ce3e3a81dea7bbdff5a05142d7d213e765b2b2977681561",
       "bytes": 30358
     },
     "additive_panel.csv": {
-      "sha256": "8cfa5b52639c161527ba47ef77efd68d8446332ef33d6e709b81dafd4f1b089c",
-      "bytes": 3242890
+      "sha256": "bee073a71caa75a30fd7517df6746524590d304970e95d541999010c21c6a6bf",
+      "bytes": 3242904
     },
     "data_dictionary.csv": {
-      "sha256": "eec41f428f81efd2ed6dff29e538c83aa3ffc606737552d8bb9dd189a636a63e",
-      "bytes": 53552
+      "sha256": "b02c6b6c0e477b4fed4f4343a8d38a35b2fa8c7567e12f37da4d26f8d57c82ea",
+      "bytes": 62060
     },
     "entity_names_en.csv": {
-      "sha256": "debcf612093c0f1a3a9b3054abd8b11bc649e5743181ee6d1dcf0dbc7acae936",
-      "bytes": 66946
+      "sha256": "b683a65e06ce4ed5e3fcd0ba9a77d61b3aefb83db0a12bd217b5cd69b5659a69",
+      "bytes": 66974
+    },
+    "extraction_method_summary.csv": {
+      "sha256": "09945c9a6ca51a67eaa628710704c24c1a5311d84dea2b36edfa722c62401b9c",
+      "bytes": 1425
     },
     "food_category_names_en.csv": {
       "sha256": "d4eda6577519f5a17612af3297c22c9f310377311dbbe73006a44febf0238c26",
       "bytes": 70756
     },
     "mycotoxin_limits_long.csv": {
-      "sha256": "671472834fb45f9683639ef70bf02a4157a8f4c70f83ef1bc1cecdbd71f1e344",
-      "bytes": 7617
+      "sha256": "8a5eeec0fafd32b70a62ccf28b3dd3a68d2bdf7cc1f6aa4cdf3c47ad32ba5374",
+      "bytes": 16632
     },
     "mycotoxin_member_panel.csv": {
-      "sha256": "e52a67ec5b5bba443bd5c0b0240122edd5c1f50fd5074697a8bade8f5294e9c1",
-      "bytes": 8026
+      "sha256": "3f323c85f6799c603dc40412f63c217295f6c27837fdf45adaf0499750c0a8ba",
+      "bytes": 11040
     },
     "mycotoxin_panel.csv": {
-      "sha256": "6bf04957ae009b7e33aa8f8cfb14e688c34fe5eb5fc60c6156118afd03c93933",
-      "bytes": 4301
+      "sha256": "11c1c7d929654781dcdfb8b5750ceb5d6d131a3706e11bd7afe7fc17644d6ae3",
+      "bytes": 6272
     },
     "pesticide_edition_reconciliation.csv": {
-      "sha256": "a04c003611eab9e5bd4f5e5beb3ef53a81a82ab5a57d82dd71d9b5b05ff621bf",
+      "sha256": "6a996b17fefb142bb4bef1f6538c097a81ee4b5afd97e7c1194ef7ad762e78a3",
       "bytes": 2018
     },
     "pesticide_limits_long.csv": {
-      "sha256": "dd67d2998220e787a041e13827544493966bff1fe4cf848280e7e64f9b900de4",
-      "bytes": 14342044
+      "sha256": "01e060358a8b65e0424bbac4fb8ab076f24140b1b6b48e4d2f8293a12cf7016e",
+      "bytes": 21636250
     },
     "pesticide_ocr_crosscheck.csv": {
-      "sha256": "41ec312a187386564acde9ecc17697ebce68c3aaf2bd011f3ee36ef26dfeb785",
-      "bytes": 1210280
+      "sha256": "d3bc7cc6f7906c10d81cf994fdfabb69ad88da71ff765a9dfafc9102a184999c",
+      "bytes": 1185249
     },
     "pesticide_panel.csv": {
-      "sha256": "f47f5e8ade71d94cefd319ab4ec254c4fd3e7ba9f7b7a56ec21767239c4e8922",
-      "bytes": 43312648
+      "sha256": "29bf9f0f525075aa5939c4cc57e69397ea9acfef7d5d10f470948bb7053a215b",
+      "bytes": 43317398
     },
     "pollutant_category_panel.csv": {
-      "sha256": "9bce9eb33453ad191590d4f198aeabaffa85198648ef95c6542fd5faa939cc7b",
-      "bytes": 67705
+      "sha256": "7b3ccabff53cc8dae114c8fe5e44181e88e062e0f6c03a6672634529dfaf5574",
+      "bytes": 88866
     },
     "pollutant_limits_long.csv": {
-      "sha256": "d6d28f131bea152ff3c58bc9be012ac379f1a9b468e5fbf732c51f74ddfe2bf9",
-      "bytes": 113293
+      "sha256": "6b497d8cdf925097afa3701bb7fb8196f5bdfeeba58095d41453f23ededd091d",
+      "bytes": 234017
     },
     "pollutant_member_panel.csv": {
-      "sha256": "70d8b667d01d081ea181b57edaf6e8af6b2b147be320d477a80b60da13095bdd",
-      "bytes": 99062
+      "sha256": "7d25d2b6f28591b7beb369c576e0faf075a3b90633a09c750545b9e87d5d4210",
+      "bytes": 136419
     },
     "quarantined_rows.csv": {
       "sha256": "1b57cb8e106b1d68fb6717b05d2d3d1344b5640f32e0f6b1997b36ec1a1d64b2",
       "bytes": 3384
     },
+    "record_id_changes.csv": {
+      "sha256": "a9ad43369fe60a84a4b9345d078655ef26e2aa3d74b67942d68e5c96f116dd9b",
+      "bytes": 211124
+    },
     "source_manifest.csv": {
-      "sha256": "f6bd5dc5f381ce0ec4ba4fbdb08905c7149a86f639b6b524cabfd682cc30507a",
-      "bytes": 7847
+      "sha256": "c6c2e41e587a60d3d2c948ea5891756abbe794d66e36f9e23268a02ee4220874",
+      "bytes": 8407
     },
     "standard_timeline_conflicts.csv": {
       "sha256": "cc3b4ded6e18b960eed805a826b0a3246c34f18521f5c4f9b1c85924c0f8b2fb",
@@ -124,34 +132,34 @@
       "bytes": 187668
     },
     "validate.py": {
-      "sha256": "635ca4a71b542987d42c2aa1cadce8a9c28cf389ba53d50d939144c186b7c776",
-      "bytes": 202204
+      "sha256": "c5949a2fa2dd874d18f3c40339eb80ff5b35f967f870c04339af0cda8ad7cfe4",
+      "bytes": 229500
     },
     "version_dates.csv": {
       "sha256": "74f0d46db8e8f1b06018ef4c652af07dd3895b2d475a931cb0b39327da15166f",
       "bytes": 4240
     },
     "vetdrug_limits_long.csv": {
-      "sha256": "c9dd7c88fe9ce3630cf978157e3b5637f508cb25b95c41e4b48353251dc5eecd",
-      "bytes": 180582
+      "sha256": "4ebe79797bdee4b544dbb24ea3ee3fca51985433cc2015d0c0412b863bb80672",
+      "bytes": 386535
     },
     "vetdrug_member_panel.csv": {
-      "sha256": "8b9fc53cfd1c4726eac5d088c8c069248012d16ec766c25fb6af432f46c80144",
-      "bytes": 99558
+      "sha256": "770439297195e9f7953ca749d611217a0e8f52115a6a01ed8a04b8dca4c2ef8f",
+      "bytes": 170175
     },
     "vetdrug_panel.csv": {
-      "sha256": "f98403757539d20041927053f63bc12e42e922b495008a7bed1d0adeed69efd5",
-      "bytes": 51885
+      "sha256": "f8b86364b8e9291ec4821178458912b6beb3ae73789a20e588d9b501f5403cc7",
+      "bytes": 86879
     }
   },
   "external_input_hashes": {
     "results_tab/tab1AlignmentFailures.tex": {
-      "sha256": "ce6ba2c8999e8f9170bd4ba1d6f6681c19b595ff07dd9068bbc1735fa25c2cd6",
-      "bytes": 2542
+      "sha256": "e9def4e9a2e2570629950f16e0e02ed0899ce665e4d834d24043473470c18a7b",
+      "bytes": 2693
     },
     "results_tab/tab1ExtractionMethod.tex": {
-      "sha256": "19acae5d4728398ded33967c8e75f1d74074bc64edfc6873cbec220e4d1a3dba",
-      "bytes": 2348
+      "sha256": "aca6cbdbb5f2788247fd487c965fd2d437d3dae00367525c31996b6191d91ea5",
+      "bytes": 3308
     },
     "source_roots/外部英译本/FSIS_GB2763-2016_en.pdf": {
       "sha256": "b28b87fb4a50759cd40c9889349ee59be24f9e49ea890af103d913fccccda542",
@@ -282,7 +290,7 @@
         "message": "All required release files are present.",
         "details": {
           "missing": [],
-          "required": 29
+          "required": 31
         }
       },
       {
@@ -293,7 +301,7 @@
           "inventory": {
             "additive_limits_long.csv": {
               "rows": 6148,
-              "columns": 14
+              "columns": 18
             },
             "additive_names_en.csv": {
               "rows": 221,
@@ -304,12 +312,16 @@
               "columns": 34
             },
             "data_dictionary.csv": {
-              "rows": 255,
+              "rows": 271,
               "columns": 10
             },
             "entity_names_en.csv": {
               "rows": 753,
               "columns": 6
+            },
+            "extraction_method_summary.csv": {
+              "rows": 20,
+              "columns": 7
             },
             "food_category_names_en.csv": {
               "rows": 394,
@@ -317,15 +329,15 @@
             },
             "mycotoxin_limits_long.csv": {
               "rows": 61,
-              "columns": 12
+              "columns": 16
             },
             "mycotoxin_member_panel.csv": {
               "rows": 55,
-              "columns": 13
+              "columns": 16
             },
             "mycotoxin_panel.csv": {
               "rows": 40,
-              "columns": 11
+              "columns": 14
             },
             "pesticide_edition_reconciliation.csv": {
               "rows": 6,
@@ -333,7 +345,7 @@
             },
             "pesticide_limits_long.csv": {
               "rows": 38024,
-              "columns": 29
+              "columns": 33
             },
             "pesticide_ocr_crosscheck.csv": {
               "rows": 17203,
@@ -341,27 +353,31 @@
             },
             "pesticide_panel.csv": {
               "rows": 11718,
-              "columns": 76
+              "columns": 77
             },
             "pollutant_category_panel.csv": {
-              "rows": 260,
-              "columns": 29
+              "rows": 255,
+              "columns": 33
             },
             "pollutant_limits_long.csv": {
               "rows": 739,
-              "columns": 17
+              "columns": 21
             },
             "pollutant_member_panel.csv": {
-              "rows": 390,
-              "columns": 25
+              "rows": 384,
+              "columns": 29
             },
             "quarantined_rows.csv": {
               "rows": 12,
               "columns": 12
             },
+            "record_id_changes.csv": {
+              "rows": 1215,
+              "columns": 5
+            },
             "source_manifest.csv": {
               "rows": 25,
-              "columns": 19
+              "columns": 20
             },
             "standard_timeline_conflicts.csv": {
               "rows": 2,
@@ -377,15 +393,15 @@
             },
             "vetdrug_limits_long.csv": {
               "rows": 1365,
-              "columns": 18
+              "columns": 22
             },
             "vetdrug_member_panel.csv": {
-              "rows": 1132,
-              "columns": 11
+              "rows": 1157,
+              "columns": 14
             },
             "vetdrug_panel.csv": {
               "rows": 559,
-              "columns": 9
+              "columns": 11
             }
           },
           "malformed": []
@@ -435,7 +451,7 @@
                 "table",
                 "column"
               ],
-              "rows": 255,
+              "rows": 271,
               "blank": 0,
               "duplicates": 0
             },
@@ -444,6 +460,17 @@
                 "record_id"
               ],
               "rows": 753,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "extraction_method_summary.csv": {
+              "key": [
+                "family",
+                "standard",
+                "version_year",
+                "extraction_method"
+              ],
+              "rows": 20,
               "blank": 0,
               "duplicates": 0
             },
@@ -521,7 +548,7 @@
               "key": [
                 "record_id"
               ],
-              "rows": 260,
+              "rows": 255,
               "blank": 0,
               "duplicates": 0
             },
@@ -537,7 +564,7 @@
               "key": [
                 "record_id"
               ],
-              "rows": 390,
+              "rows": 384,
               "blank": 0,
               "duplicates": 0
             },
@@ -546,6 +573,16 @@
                 "record_id"
               ],
               "rows": 12,
+              "blank": 0,
+              "duplicates": 0
+            },
+            "record_id_changes.csv": {
+              "key": [
+                "table",
+                "record_id_previous",
+                "record_id_current"
+              ],
+              "rows": 1215,
               "blank": 0,
               "duplicates": 0
             },
@@ -594,7 +631,7 @@
               "key": [
                 "record_id"
               ],
-              "rows": 1132,
+              "rows": 1157,
               "blank": 0,
               "duplicates": 0
             },
@@ -778,8 +815,8 @@
         "status": "pass",
         "message": "Every released field is documented and conforms to its declared type.",
         "details": {
-          "documented_fields": 413,
-          "actual_fields": 413,
+          "documented_fields": 466,
+          "actual_fields": 466,
           "uncovered": [],
           "unmatched_patterns": [],
           "type_errors": [],
@@ -845,11 +882,11 @@
         "status": "pass",
         "message": "Pollutant category and member cells preserve edition units, bases, and long-table lineage.",
         "details": {
-          "category_rows": 260,
-          "member_rows": 390,
+          "category_rows": 255,
+          "member_rows": 384,
           "problems": [],
           "problem_count": 0,
-          "interpretation_boundary": "Edition host/value cells are linked to released long-table rules; canonical category labels and member-to-host expansion are supplied by frozen crosswalks that are not revalidated from this package alone."
+          "interpretation_boundary": "Edition host/value cells are linked to released long-table rules, and no populated member cell takes a host rule that excludes the member, covers only part of it, or follows a rewritten exclusion list; canonical category labels and the taxonomy behind member-to-host expansion are supplied by frozen crosswalks that are not revalidated from this package alone."
         }
       },
       {
@@ -871,7 +908,7 @@
         "message": "Veterinary-drug summary and member values reproduce released long-table rules.",
         "details": {
           "panel_rows": 559,
-          "member_rows": 1132,
+          "member_rows": 1157,
           "long_rows": 1365,
           "problems": [],
           "problem_count": 0,
@@ -981,6 +1018,27 @@
           "date_problems": [],
           "date_problem_count": 0,
           "extra_archived_entries": 0
+        }
+      },
+      {
+        "id": "package.source_and_verification",
+        "status": "pass",
+        "message": "Row sources, extraction methods, verification evidence and the method summary are consistent.",
+        "details": {
+          "long_rows": 46337,
+          "problems": [],
+          "problem_count": 0
+        }
+      },
+      {
+        "id": "package.record_id_changes",
+        "status": "pass",
+        "message": "Listed record-identifier changes agree with the current tables.",
+        "details": {
+          "changes": 1215,
+          "problems": [],
+          "problem_count": 0,
+          "interpretation_boundary": "The previous release is not shipped, so completeness of the list is established by the build, not by this package alone."
         }
       },
       {
@@ -1662,15 +1720,15 @@
           "decidable": 4132,
           "true_passed": 3893,
           "unmatched": 239,
-          "shuffled_passed": 2145,
+          "shuffled_passed": 2168,
           "minimum_decidable": 30,
           "method": "entity_food_value_section_census_with_shuffled_control",
           "excluded_entities": [],
           "exclusion_reason": null,
           "minimum_true_rate": 0.9,
           "true_rate": 0.942159,
-          "shuffled_rate": 0.519119,
-          "diagnostic_gap": 0.42304
+          "shuffled_rate": 0.524685,
+          "diagnostic_gap": 0.417473
         }
       },
       {
@@ -1686,15 +1744,15 @@
           "decidable": 692,
           "true_passed": 625,
           "unmatched": 67,
-          "shuffled_passed": 276,
+          "shuffled_passed": 299,
           "minimum_decidable": 30,
           "method": "entity_food_value_section_census_with_shuffled_control",
           "excluded_entities": [],
           "exclusion_reason": null,
           "minimum_true_rate": 0.9,
           "true_rate": 0.903179,
-          "shuffled_rate": 0.398844,
-          "diagnostic_gap": 0.504335
+          "shuffled_rate": 0.432081,
+          "diagnostic_gap": 0.471098
         }
       },
       {
@@ -2046,7 +2104,7 @@
   "summary": {
     "overall_status": "pass",
     "status_counts": {
-      "pass": 51,
+      "pass": 53,
       "fail": 0,
       "skip": 0,
       "not_run": 0

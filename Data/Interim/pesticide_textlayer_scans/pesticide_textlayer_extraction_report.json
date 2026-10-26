@@ -2626,10 +2626,11 @@
       "qualifier_counts": {
         "as_fat": 10,
         "as_presented": 3,
-        "none": 5398,
-        "temporary_mrl_asterisk": 1697
+        "none": 5404,
+        "temporary_mrl_asterisk": 1691
       },
       "review_status_counts": {
+        "scan_temporary_mark_correction": 6,
         "source_glyph_correction": 63,
         "source_structure_exception": 370,
         "text_layer_auto_extracted": 7108
@@ -2644,6 +2645,7 @@
         "item_4_fallback_label_split": 11,
         "parent_from_centered_table_scope": 6,
         "parent_from_left_column": 1626,
+        "scan_temporary_mark_correction": 6,
         "section_header_candidate": 578,
         "section_header_confirmed": 467,
         "semantic_maximum_limit_item_3": 1,
@@ -5077,8 +5079,8 @@
     "ocr_crosscheck": "pesticide_textlayer_ocr_crosscheck.csv",
     "section_roster": "pesticide_textlayer_section_roster.csv",
     "sha256": {
-      "pesticide_textlayer_limits.csv": "cd01350ca9a33fcde163572980948dc2176c3ff9873ef588591ec5f6c32286c6",
-      "pesticide_textlayer_ocr_crosscheck.csv": "41ec312a187386564acde9ecc17697ebce68c3aaf2bd011f3ee36ef26dfeb785",
+      "pesticide_textlayer_limits.csv": "ed9d61a59bad525edb26e949bcf76a2252e671aefec8c73f88cd4f6897975ab7",
+      "pesticide_textlayer_ocr_crosscheck.csv": "d3bc7cc6f7906c10d81cf994fdfabb69ad88da71ff765a9dfafc9102a184999c",
       "pesticide_textlayer_section_roster.csv": "baeeba76318a8db1dba7c1c6f5063c926fd0fc9fe1d080bb2a8d40132d46e960"
     }
   },
@@ -5469,8 +5471,8 @@
       "qualifier_counts": {
         "as_fat": 10,
         "as_presented": 3,
-        "none": 5398,
-        "temporary_mrl_asterisk": 1697
+        "none": 5404,
+        "temporary_mrl_asterisk": 1691
       },
       "section_roster_complete": true,
       "standard_declared_mrl_items": 7107,

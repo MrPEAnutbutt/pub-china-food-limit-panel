@@ -1,0 +1,17 @@
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedleft\arraybackslash}p{0.08\textwidth}>{\raggedleft\arraybackslash}p{0.11\textwidth}>{\raggedleft\arraybackslash}p{0.18\textwidth}>{\raggedleft\arraybackslash}p{0.11\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}@{}}
+\caption{Independent reading of the GB 2763-2019 and GB 2763-2021 rows against the issuing-authority scans. Rows are stratified by edition and by whether the OCR comparison recovered the row (OCR agrees) or not (text layer only). Within a stratum, rows were drawn in proportion to stratum size by ranking a seeded SHA-256 digest of the record identifier. Round 1 read release v1.0: its errors are seven foods filed under a long food label instead of their category and one temporary-limit asterisk printed in the text-layer copy but not on the scan; two reviewer misreadings are not counted. After the category rule was corrected in all six editions, round 2 redrew the three strata with errors at the same sizes, skipping rows already read. The v1.1 columns combine round 2 with the round-1 rows of the stratum that was not redrawn; every row counted there is unchanged in release v1.1. Intervals are Clopper--Pearson. The nine OCR conflict rows and three OCR-only groups were read in full and are reported in the text.}\label{tab1IndependentVerification}\tabularnewline
+\toprule
+Stratum & Rows & Round 1 errors / read & Round 1 rate, \% (95\% CI) & v1.1 errors / read & v1.1 upper 95\% bound, \% \\
+\midrule
+\endfirsthead
+\toprule
+Stratum & Rows & Round 1 errors / read & Round 1 rate, \% (95\% CI) & v1.1 errors / read & v1.1 upper 95\% bound, \% \\
+\midrule
+\endhead
+2019, OCR agrees & 1,929 & 2 / 32 & 6.3 (0.8--20.8) & 0 / 32 & 10.9 \\
+2019, text layer only & 5,175 & 3 / 87 & 3.4 (0.7--9.7) & 0 / 87 & 4.2 \\
+2021, OCR agrees & 1,772 & 0 / 30 & 0.0 (0.0--11.6) & 0 / 30 & 11.6 \\
+2021, text layer only & 8,315 & 3 / 139 & 2.2 (0.4--6.2) & 0 / 139 & 2.6 \\
+\addlinespace All four strata & 17,191 & 8 / 288 & 2.8 (1.2--5.4) & 0 / 288 & 1.3 \\
+\bottomrule
+\end{longtable}

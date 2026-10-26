@@ -1,32 +1,36 @@
 # China Food Safety Maximum-Limit Panel: code and build evidence
 
 Curated code-and-evidence archive behind the Data Descriptor "A cross-edition panel
-of chemical limits in China's food safety standards". The dataset itself (24 CSV
+of chemical limits in China's food safety standards". The dataset itself (26 CSV
 files holding 46,337 limit records from five mandatory Chinese food-safety standard
 families, 2002–2026) is deposited at figshare under the reserved DOI
-`10.6084/m9.figshare.33005717` and becomes public upon journal acceptance. This
-repository holds the extraction, alignment, release-assembly, testing and validation
-code, plus frozen intermediate evidence, exported from the private build workspace.
+`10.6084/m9.figshare.33005717`, which becomes active when the record is published.
+This repository holds the extraction, alignment, release-assembly, testing and
+validation code, plus frozen intermediate and verification evidence, exported from
+the private build workspace. Archive version 1.1.0 matches release v1.1 of the
+dataset (see "Versions").
 
 Licences: the code is MIT-licensed (see `LICENSE`); the released dataset carries
 CC BY 4.0 (see `Data/Final/china_food_limit_panel_v1/LICENSE.md`). Source standards
 are not redistributed; the data package's `SOURCE_ACQUISITION.md` explains how to
 obtain them from the issuing bodies. A good entry point is
-`Data/Final/china_food_limit_panel_v1/validate.py`, whose 21 self-contained checks
+`Data/Final/china_food_limit_panel_v1/validate.py`, whose 23 self-contained checks
 run offline.
 
 ## Layout
 
 | Path | Contents |
 |---|---|
-| `Program/Clean/` | Extraction, release assembly, source manifest, English-label linkage, timeline generation, and tests |
-| `Program/Analysis/` | Generates the manuscript tables and figures from `Data/Final` |
-| `Data/Interim/` | Frozen build evidence (manual-transcription replays, blind re-entry packet, OCR adjudications, text-layer reconciliation) |
-| `Data/Final/china_food_limit_panel_v1/` | Data-package documentation, licence, `validate.py` and the frozen validation report |
+| `Program/Clean/` | Extraction, release assembly, source manifest, English-label linkage, timeline generation, independent-verification sampling and comparison, identifier-change tracking, and tests |
+| `Program/Analysis/` | Generates the manuscript tables, figures and number macros; `DatapaperUsage.py` is a worked example that links panels to long tables and source files |
+| `Data/Interim/` | Frozen build evidence (manual-transcription replays, OCR adjudications, text-layer reconciliation, panel-trend audits) and independent-verification evidence (see below) |
+| `Data/Final/china_food_limit_panel_v1/` | Data-package documentation, data dictionary, licence, `validate.py` and the frozen validation report |
 | `Results/tab/`, `Results/fig/` | The standard result interface used by the manuscript |
 
-Not included: source-standard PDFs (not redistributed), the manuscript source, and
-the per-word OCR dumps (see "Reproducibility boundary").
+Not included: source-standard PDFs (not redistributed), the manuscript source, the
+per-word OCR dumps (see "Reproducibility boundary"), and the verifier's signed
+declarations, completed workbooks and handoff packets (see "Independent
+verification evidence").
 
 ## Release at a glance
 
@@ -36,8 +40,14 @@ the per-word OCR dumps (see "Reproducibility boundary").
   contributing released data, 2 archived unextracted), 2 government text-layer
   extraction copies, and 2 audit copies titled "Amendment No. 1" whose rendered
   content is the full standard text (excluded from extraction).
-- The release ships 24 CSV files; derived panels, lookups and the 12 quarantined
-  rows do not count toward the 46,337 long-table total.
+- The release ships 26 CSV files; derived panels, lookups, summaries, the
+  identifier-change table and the 12 quarantined rows do not count toward the
+  46,337 long-table total.
+- Every long-table row names its source edition and file (`source_reference`),
+  its extraction method (`extraction_method`, summarised in
+  `extraction_method_summary.csv`) and its independent cross-check status
+  (`verification_status`, `verification_basis`). `record_id_changes.csv` lists
+  the 1,215 identifiers that changed from v1.0 to v1.1.
 - The 2019 and 2021 pesticide rows were parsed from government-hosted text-layer
   copies. The archived edition scans carry edition identity and provide a frozen OCR
   cross-check: of 17,203 comparison groups, 3,701 agree, 9 conflict, 13,490 appear
@@ -53,9 +63,12 @@ Offline, from any working directory:
 python Data/Final/china_food_limit_panel_v1/validate.py
 ```
 
-This runs the 21 self-contained checks; the 30 optional external-input checks are
-recorded as `not_run` and the overall status is `partial`. With a legally held
-source tree and the generated tables, the full run is:
+The self-contained checks need the data package files next to `validate.py`;
+download the package from figshare into
+`Data/Final/china_food_limit_panel_v1/` first. This runs the 23 self-contained
+checks; the 30 optional external-input checks are recorded as `not_run` and the
+overall status is `partial`. With a legally held source tree and the generated
+tables, the full run is:
 
 ```bash
 python Data/Final/china_food_limit_panel_v1/validate.py \
@@ -64,7 +77,7 @@ python Data/Final/china_food_limit_panel_v1/validate.py \
   --require-source-checks
 ```
 
-The frozen report passes 51 of 51: 21 in-package checks, 28 source-tree checks and
+The frozen report passes 53 of 53: 23 in-package checks, 28 source-tree checks and
 2 generated-table checks, with zero `fail`, `skip` or `not_run`. Catalogue size is
 not a pass count, and skipped or unrun checks never count as passes. The report
 records status and evidence per check, and pins the sha256 of package files and of
@@ -80,13 +93,59 @@ in the data package's `SOURCE_ACQUISITION.md`.
 ```bash
 python Program/Analysis/DatapaperTables.py
 python Program/Analysis/DatapaperFigures.py --source-root /path/to/source-library
+python Program/Analysis/DatapaperUsage.py
 ```
 
-Four tables are written to `Results/tab/` and three figures to `Results/fig/`. The
-scripts read `Data/Final` directly and assert on key cases, per-edition row counts,
-the shipped file inventory and standard identities. The figure script accepts only
-the `edition_source` byte streams registered in `source_manifest.csv` and fails
-rather than guessing.
+Nine tables and the number macros `DatapaperNumbers.tex` are written to
+`Results/tab/` and three figures to `Results/fig/`. The scripts read `Data/Final`
+directly and assert on key cases, per-edition row counts, the shipped file
+inventory and standard identities; the independent-verification table and its
+macros also read the frozen evidence in `Data/Interim/pesticide_audit/`,
+`Data/Interim/pesticide_audit_round2/` and
+`Data/Interim/manual_reentry/reconciliation/04_attested/`. The figure script
+accepts only the `edition_source` byte streams registered in `source_manifest.csv`
+and fails rather than guessing. `DatapaperUsage.py` needs only pandas; with
+`--release-dir` it runs against a downloaded copy of the package and writes the
+example counts to `Results/tab/DatapaperUsageNumbers.tex`.
+
+## Independent verification evidence
+
+A university researcher who took no part in building the database (pseudonym
+IR-01) read sampled rows from the source standards without access to the
+released values. The archive keeps the protocol, the sample, what was returned,
+the comparison and the adjudication:
+
+| Path | Contents |
+|---|---|
+| `Data/Interim/manual_reentry/blind_packet/` | Blind re-entry protocol and packet manifest for the 144 manually transcribed mycotoxin and veterinary-drug records |
+| `Data/Interim/independent_review/returned/` | Round 1 returns: the three completed re-entry files, the 300-row pesticide reading, the reviewer attestation and receipts |
+| `Data/Interim/manual_reentry/reconciliation/` | Field-by-field comparison of the re-entry with the construction seeds, in four stages from the initial comparison to the attested result, with the author's adjudications |
+| `Data/Interim/pesticide_audit/` | Round 1 pesticide sample (288 random rows from GB 2763-2019 and GB 2763-2021, plus 9 conflict rows and 3 OCR-only groups), comparison and adjudication |
+| `Data/Interim/independent_review_round2/returned/` | Round 2 return: the 258-row pesticide reading and receipts |
+| `Data/Interim/pesticide_audit_round2/` | Round 2 redraw after the category-rule correction, its comparison, and `category_corrections.csv` listing the 1,019 corrected pesticide categories |
+
+The `README.md` in `blind_packet/`, `pesticide_audit/` and
+`pesticide_audit_round2/` is the protocol as frozen before the reading; its digest
+is pinned in `packet_manifest.json` or `audit_manifest.json`, so its "Status:
+awaiting …" line records the state at that point and is not updated. The results
+are in `reconciliation/04_attested/` and in each `comparison/` directory. The
+blank `blind_packet/reviewer_attestation.json` is the form handed out; the
+completed one is in `independent_review/returned/`. The receipts pin the sha256 of the signed declarations
+and completed workbooks, which are withheld because they can carry the verifier's
+signature or editing-account metadata.
+
+## Tests
+
+```bash
+python -m unittest discover -s Program/Clean/tests
+```
+
+In the build workspace the suite runs 351 tests with 4 skipped. Some tests need
+files this archive does not ship: the data package (download it into
+`Data/Final/china_food_limit_panel_v1/`), the withheld OCR dumps, the additive
+interim tables regenerated from the source PDFs, and the workspace's
+`.gitignore` rules for source documents. Without them those tests fail or error
+rather than pass.
 
 ## Reproducibility boundary
 
@@ -109,3 +168,15 @@ An early internal LLM image re-reading lacked records of the model, prompts and 
 outputs, and its results were withdrawn from the formal Technical Validation
 evidence. If it is ever reinstated, the run metadata, page images, raw outputs and
 difference tables should be archived first.
+
+## Versions
+
+All versions share the Zenodo concept DOI `10.5281/zenodo.21397471`.
+
+- **1.1.0** — code and evidence behind dataset release v1.1, prepared in the first
+  round of peer review: corrected pesticide categories, temporary-limit marks and
+  veterinary-drug labels; stricter panel comparability rules; row-level source,
+  extraction-method and verification fields; identifier-change tracking; the
+  independent-verification evidence; nine manuscript tables and the usage example.
+- **1.0.0** (`10.5281/zenodo.21397472`) — code and evidence behind dataset release
+  v1.0, as first submitted.

@@ -1,5 +1,5 @@
 \begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.34\textwidth}>{\raggedleft\arraybackslash}p{0.07\textwidth}>{\raggedright\arraybackslash}p{0.51\textwidth}@{}}
-\caption{Inventory of the data deposit. The package is a flat directory of 24 CSV files together with the documentation, the release licence, deterministic build statistics, the validation script and its machine-readable report. Row counts exclude the header row and are read from the released files. The five long tables hold the 46,337 released limit records; the panels, lookups and audit tables are derived from those records and are not additional limits.}\label{tab1FileInventory}\tabularnewline
+\caption{Inventory of the data deposit. The package is a flat directory of 26 CSV files together with the documentation, the release licence, deterministic build statistics, the validation script and its machine-readable report. Row counts exclude the header row and are read from the released files. The five long tables hold the 46,337 released limit records; the panels, lookups and audit tables are derived from those records and are not additional limits. Each long table ends with row-level source-reference, extraction-method and verification fields, and every panel links its cells to the contributing long-table records.}\label{tab1FileInventory}\tabularnewline
 \toprule
 File & Rows & Contents \\
 \midrule
@@ -15,28 +15,30 @@ File & Rows & Contents \\
 \path{vetdrug_limits_long.csv} & 1,365 & Veterinary-drug limits with the printed target-animal cell alongside its canonical animal representation. The 2002 records carry Word-table locators. \\
 \path{additive_limits_long.csv} & 6,148 & Additive maximum-use entries with CNS and INS identifiers, food-category codes and use-condition notes. \\
 \addlinespace \multicolumn{3}{@{}l}{\emph{Aligned category panels}} \\
-\path{pollutant_category_panel.csv} & 260 & Contaminant values by version with per-version units, bases, source categories and cell status. \\
+\path{pollutant_category_panel.csv} & 255 & Contaminant values by version with per-version units, bases, source categories and cell status. \\
 \path{pesticide_panel.csv} & 11,718 & Pesticide cells retaining every candidate value, unit, rule object and source record identifier, with stable keys and explicit status fields. \\
 \path{mycotoxin_panel.csv} & 40 & Mycotoxin values by version at the aligned category level. \\
 \path{vetdrug_panel.csv} & 559 & Veterinary-drug values by version at the aligned category level. \\
 \path{additive_panel.csv} & 2,762 & Additive cells retained at the exact CNS and food-code level, with every candidate and rule object preserved. \\
 \addlinespace \multicolumn{3}{@{}l}{\emph{Member-level panels}} \\
-\path{pollutant_member_panel.csv} & 390 & Contaminant members with the applicable host category by version and the category-restructuring flag. \\
+\path{pollutant_member_panel.csv} & 384 & Contaminant members with the applicable host category by version and the category-restructuring flag. \\
 \path{mycotoxin_member_panel.csv} & 55 & Mycotoxin members with the applicable host category by version and the category-restructuring flag. \\
-\path{vetdrug_member_panel.csv} & 1,132 & Animal and tissue pairs expanded from the printed animal groups, with values and a trend for each pair. \\
+\path{vetdrug_member_panel.csv} & 1,157 & Animal and tissue pairs expanded from the printed animal groups, with values and a trend for each pair. \\
 \addlinespace \multicolumn{3}{@{}l}{\emph{English-name lookups}} \\
 \path{entity_names_en.csv} & 753 & English substance names printed by the standards themselves. \\
 \path{food_category_names_en.csv} & 394 & Food-category labels linked to published translations, with the match method, evidence and source document. Partial; additives and pesticides only. \\
 \path{additive_names_en.csv} & 221 & Additive names linked to a published translation by CNS code. Partial. \\
 \addlinespace \multicolumn{3}{@{}l}{\emph{Metadata, audit and quarantine}} \\
-\path{source_manifest.csv} & 25 & The source-identity key for the release. Covers 21 edition sources, two text-layer extraction copies and two identity-audit copies, each with its digest, role, release status and attributed row count. \\
+\path{source_manifest.csv} & 25 & The source-identity key for the release. Covers 21 edition sources, two text-layer extraction copies and two identity-audit copies, each with its digest, role, source class, release status and attributed row count. \\
+\path{extraction_method_summary.csv} & 20 & Released records by family, edition and row-level extraction method, with shares of the family and of the release. \\
+\path{record_id_changes.csv} & 1,215 & Record identifiers replaced, removed or added since release v1.0, paired on each table's natural key. \\
 \path{version_dates.csv} & 21 & Issue and effective dates for the coverage editions, with date provenance and the official-register cross-check. \\
 \path{standard_version_timeline.csv} & 1,504 & The wider history of food-safety national standards as dated edition and amendment events. Ancillary to the five-family panel. \\
 \path{standard_timeline_conflicts.csv} & 2 & Two ranked candidate rows for the one metadata conflict met in the wider-history build. \\
 \path{pesticide_edition_reconciliation.csv} & 6 & Visible Chapter 4 rule counts and section rosters against each edition's declared aggregate, with printed qualifier counts. \\
 \path{pesticide_ocr_crosscheck.csv} & 17,203 & Text-layer against OCR comparison groups for the two scanned editions, with matched values, one-sided rows, matching level and status. \\
 \path{quarantined_rows.csv} & 12 & Fragments rejected by the extraction gates, with the rejection reason and source path. \\
-\path{data_dictionary.csv} & 255 & Every released field, with type, nullability, allowed values, key role and a bilingual description. \\
+\path{data_dictionary.csv} & 271 & Every released field, with type, nullability, allowed values, key role and a bilingual description. \\
 \addlinespace \multicolumn{3}{@{}l}{\emph{Documentation and code}} \\
 \path{README.md} & --- & Package overview, file list and the five-family language-coverage matrix. \\
 \path{LICENSE.md} & --- & CC BY 4.0 terms for the author-created compilation and the source-rights boundary. \\

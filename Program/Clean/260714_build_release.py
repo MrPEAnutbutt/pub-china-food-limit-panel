@@ -14,8 +14,10 @@
 import argparse
 import csv
 import hashlib
+import importlib.util
 import json
 import os
+import sys
 from collections import Counter, defaultdict, deque
 
 from release_dependency_utils import (
@@ -27,12 +29,16 @@ from release_panel_utils import (
     PESTICIDE_YEARS,
     build_additive_panel,
     build_pesticide_panel_v2,
+    VETDRUG_SUMMARY_YEARS,
+    _normalise_vetdrug_english,
     build_vetdrug_summary_panel,
     food_entity_id,
+    link_source_records,
     panel_columns,
     pesticide_entity_id,
 )
-from source_manifest_utils import source_ids_by_edition
+from source_acquisition_metadata import source_locators_by_id
+from source_manifest_utils import source_documents_by_id, source_ids_by_edition
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 REL = os.path.join(PROJECT_ROOT, "Data/Final/china_food_limit_panel_v1")
@@ -44,6 +50,9 @@ PESTICIDE_INTERIM = os.path.join(
 MYCOTOXIN_INTERIM = os.path.join(PROJECT_ROOT, "Data/Interim/mycotoxin_rebuild")
 VETDRUG_INTERIM = os.path.join(PROJECT_ROOT, "Data/Interim/vetdrug_rebuild")
 DEPENDENCY_INTERIM = os.path.join(PROJECT_ROOT, "Data/Interim/release_dependencies")
+AUDIT_INTERIM = os.path.join(PROJECT_ROOT, "Data/Interim")
+PESTICIDE_AUDIT_ROUNDS = ("pesticide_audit", "pesticide_audit_round2")
+BLIND_REENTRY_REPORT = "manual_reentry/reconciliation/04_attested/blind_reentry_report.json"
 TIMELINE = os.path.join(PROJECT_ROOT, "Data/Interim/standard_timeline")
 DATE_DIR = TIMELINE
 
@@ -61,6 +70,9 @@ ANALYTE_EN = {
     "脱氧雪腐镰刀菌烯醇": "Deoxynivalenol", "展青霉素": "Patulin",
     "赭曲霉毒素A": "Ochratoxin A", "玉米赤霉烯酮": "Zearalenone",
 }
+POLLUTANT_YEARS = ("2012", "2017", "2022", "2025")
+MYCOTOXIN_YEARS = ("2005", "2011", "2017")
+VETDRUG_MEMBER_YEARS = ("2002", "2019", "2022")
 MASS_PER_MASS_FACTOR = {"mg/kg": 1.0, "μg/kg": 0.001, "µg/kg": 0.001, "g/kg": 1000.0}
 LIQUID_UNITS = {"mg/L", "μg/L", "µg/L", "g/L"}
 
@@ -74,6 +86,9 @@ TREND_CODES = {
     "不可比(类别消失,见成员级面板)": "incomparable_category_disappeared",
     "不可比(单位维度或值缺失)": "incomparable_unit_dimension_or_value",
     "不可比(基准、单位或值缺失)": "incomparable_basis_unit_or_value",
+    "不可比(范围文字不同)": "incomparable_scope_text",
+    "不可比(同版多规则)": "incomparable_multiple_rules",
+    "不可比(跨过缺失版本)": "incomparable_edition_gap",
     "仅2005版(无跨版对应:该类别被删除或新增)": "single_version_unmatched",
     "仅2011版(无跨版对应:该类别被删除或新增)": "single_version_unmatched",
     "仅2017版(无跨版对应:该类别被删除或新增)": "single_version_unmatched",
@@ -369,7 +384,7 @@ def pesticide_panel_output_columns():
                 f"distinct_value_count_{year}",
             ]
         )
-    columns.extend(["n_versions", "trend"])
+    columns.extend(["n_versions", "trend", "count_mismatch_editions"])
     return columns
 
 
@@ -444,6 +459,228 @@ def vetdrug_2002_locator_queues(release_rows, replay_rows, locator_rows):
     return queues
 
 
+ROW_EXTRACTION_METHODS = (
+    "pdf_text_and_coordinate_parser",
+    "pdf_text_layer",
+    "word_table_stream",
+    "manual_page_image_transcription",
+)
+BYTE_EXACT_LOCATORS = {"byte_exact_official_file", "recorded_acquisition_url"}
+# GB 31650-2019 的文件级方法是文本层加跨页手录，逐行按上游 source 列拆开。
+VETDRUG_ROW_METHODS = {
+    "text": "pdf_text_layer",
+    "docx-block": "word_table_stream",
+    "manual": "manual_page_image_transcription",
+}
+
+
+def load_blind_tasks():
+    """Return the blind re-entry task contract that locates the manual rows."""
+
+    path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "260716_blind_manual_reentry.py"
+    )
+    spec = importlib.util.spec_from_file_location("blind_manual_reentry_release", path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module.build_tasks()
+
+
+def manual_row_locators(tasks, released, seeds, fields):
+    """Map record_id to PDF page, table and row for one manual batch.
+
+    Tasks name their construction seed row; each released row is first checked
+    against that seed row, so order alone never places a locator.
+    """
+    if len(released) != len(seeds) or len(tasks) != len(seeds):
+        raise ValueError("manual rows, seed rows and blind tasks differ in number")
+    for position, (row, seed) in enumerate(zip(released, seeds), start=1):
+        if any(row[ours].casefold() != seed[theirs].casefold() for ours, theirs in fields):
+            raise ValueError(f"manual row {position} differs from its seed row")
+    by_seed_row = {int(task["construction_seed_row"]): task for task in tasks}
+    return {
+        row["record_id"]: (
+            f"PDF p. {by_seed_row[position]['pdf_page']}, "
+            f"table {by_seed_row[position]['printed_table']}, "
+            f"row {by_seed_row[position]['printed_row']}"
+        )
+        for position, row in enumerate(released, start=1)
+    }
+
+
+def add_source_columns(rows, locate=None, row_method=None):
+    """Append source_reference and extraction_method after record IDs exist."""
+
+    documents = source_documents_by_id()
+    locators = source_locators_by_id()
+    for row in rows:
+        source_id = row["extraction_source_id"]
+        method = documents[source_id].extraction_mode
+        if row_method is not None:
+            method = row_method(row, method)
+        if method not in ROW_EXTRACTION_METHODS:
+            raise ValueError(f"no row-level extraction method for {row['record_id']}: {method}")
+        standard, year = row["standard"], row["version_year"]
+        citation = f"{standard}-{year}" if standard.startswith("GB") else f"{standard} ({year})"
+        locator = locators[source_id]
+        # 文件直链只给字节一致的副本；其余给标准身份页，字节状态见 SOURCE_ACQUISITION.md。
+        if locator.locator_status in BYTE_EXACT_LOCATORS and locator.file_url:
+            url = locator.file_url
+        else:
+            url = locator.landing_url or locator.file_url
+        parts = (citation, locate(row) if locate else "", url)
+        row["source_reference"] = "; ".join(part for part in parts if part)
+        row["extraction_method"] = method
+
+
+def extraction_method_summary(tables):
+    """Count released records by family, edition and row-level extraction method."""
+
+    counts = Counter()
+    for family, rows in tables:
+        for row in rows:
+            counts[(family, row["standard"], row["version_year"], row["extraction_method"])] += 1
+    total = sum(len(rows) for _, rows in tables)
+    if sum(counts.values()) != total:
+        raise ValueError("extraction-method counts differ from released records")
+    family_totals = Counter()
+    for (family, *_), count in counts.items():
+        family_totals[family] += count
+    order = {family: position for position, (family, _) in enumerate(tables)}
+    return [
+        {
+            "family": family, "standard": standard, "version_year": year,
+            "extraction_method": method, "records": str(count),
+            "share_of_family_pct": f"{100 * count / family_totals[family]:.2f}",
+            "share_of_release_pct": f"{100 * count / total:.2f}",
+        }
+        for (family, standard, year, method), count in sorted(
+            counts.items(), key=lambda item: (order[item[0][0]], item[0][2], item[0][3])
+        )
+    ]
+
+
+VERIFICATION_BASES = (
+    "ocr_crosscheck",
+    "independent_audit_reading",
+    "independent_blind_reentry",
+    "author_scan_check",
+)
+
+
+def pesticide_ocr_evidence(groups, rows):
+    """Link each text-layer OCR group to its one released 2019/2021 row."""
+
+    keys = {
+        "strict_scope": ("section_number", "parent_category", "food"),
+        "unique_section_food": ("section_number", "food"),
+    }
+    row_columns = {"section_number": "section_number", "parent_category": "parent_category_zh",
+                   "food": "food_zh"}
+    audited = [row for row in rows if row["version_year"] in ("2019", "2021")]
+    indexes = {level: defaultdict(list) for level in keys}
+    for row in audited:
+        for level, columns in keys.items():
+            key = (row["version_year"], *(row[row_columns[column]] for column in columns))
+            indexes[level][key].append(row)
+    evidence = {}
+    outcomes = {"consistent": "agree", "conflict": "disagree"}
+    for group in groups:
+        if group["status"] == "ocr_only":
+            continue
+        columns = keys[group["key_level"]]
+        matches = indexes[group["key_level"]][(group["year"], *(group[c] for c in columns))]
+        if len(matches) != 1 or group["text_row_count"] != "1":
+            raise ValueError(f"OCR group does not link to one row: {group}")
+        row = matches[0]
+        if row["record_id"] in evidence or group["text_source_pages"] != row["source_page"]:
+            raise ValueError(f"OCR group links inconsistently: {row['record_id']}")
+        evidence[row["record_id"]] = (
+            [("ocr_crosscheck", outcomes[group["status"]])] if group["status"] in outcomes else []
+        )
+    if set(evidence) != {row["record_id"] for row in audited}:
+        raise ValueError("OCR groups do not cover every 2019/2021 pesticide row")
+    return {record_id: items for record_id, items in evidence.items() if items}
+
+
+def pesticide_audit_evidence(rows):
+    """Adjudicated outcome of each 2019/2021 pesticide row read independently.
+
+    A reading still settles its row only if the fields it saw are unchanged,
+    or, for an adjudicated release error, if the release has since been fixed.
+    """
+
+    index = defaultdict(list)
+    for row in rows:
+        index[(row["version_year"], row["section_number"], row["food_zh"], row["limit_value"])].append(row)
+    evidence = defaultdict(list)
+    for round_dir in PESTICIDE_AUDIT_ROUNDS:
+        base = os.path.join(AUDIT_INTERIM, round_dir, "comparison")
+        for reading in read("pesticide_audit_comparison.csv", base=base):
+            if not reading["record_id"]:
+                continue  # OCR-only group: no released row exists
+            key = (reading["edition"], reading["section_number"], reading["food_zh"],
+                   reading["released_limit_value"])
+            if len(index[key]) != 1:
+                raise ValueError(f"audited row is not unique in the release: {reading['blind_id']}")
+            row = index[key][0]
+            same_category = row["parent_category_zh"] == reading["parent_category_zh"]
+            same_mark = row["is_temporary"] == reading["released_is_temporary"]
+            outcome = (reading["outcome"], reading["verdict"])
+            if outcome in (("agree", ""), ("value_differs", "reviewer_misreading")):
+                if not (same_category and same_mark):
+                    raise ValueError(f"audited row changed after it was read: {reading['blind_id']}")
+                settled = True
+            elif outcome == ("not_found", "extraction_error"):
+                if not same_mark:
+                    raise ValueError(f"audited row changed after it was read: {reading['blind_id']}")
+                settled = not same_category
+            elif outcome == ("asterisk_differs", "text_layer_error"):
+                settled = not same_mark
+            else:
+                raise ValueError(f"unknown audit outcome for {reading['blind_id']}: {outcome}")
+            evidence[row["record_id"]].append(
+                ("independent_audit_reading", "agree" if settled else "disagree"))
+    return evidence
+
+
+def check_blind_reentry(seed_paths):
+    """Require a passed blind re-entry audit of the current construction seeds."""
+
+    with open(os.path.join(AUDIT_INTERIM, BLIND_REENTRY_REPORT), encoding="utf-8") as handle:
+        report = json.load(handle)
+    if report["status"] != "pass" or report["provenance_gap"]["status"] != "closed":
+        raise ValueError("blind re-entry audit has not passed")
+    for batch, path in seed_paths.items():
+        with open(path, "rb") as handle:
+            digest = hashlib.sha256(handle.read()).hexdigest()
+        if digest != report["inputs"]["construction_seeds"][batch]["sha256"]:
+            raise ValueError(f"{batch} seed changed after the blind re-entry audit")
+
+
+def add_verification_columns(rows, evidence=None):
+    """Append verification_status and verification_basis after record IDs exist.
+
+    A reading against the source (independent or by the author) settles a row;
+    the automated OCR comparison decides only rows that no one read.
+    """
+    evidence = evidence or {}
+    for row in rows:
+        items = evidence.get(row["record_id"], [])
+        readings = [outcome for basis, outcome in items if basis != "ocr_crosscheck"]
+        decisive = readings or [outcome for _, outcome in items]
+        if not decisive:
+            status = "no_cross_source_comparison"
+        elif "disagree" in decisive:
+            status = "unresolved_disagreement"
+        else:
+            status = "confirmed_agreement"
+        bases = [basis for basis in VERIFICATION_BASES if any(b == basis for b, _ in items)]
+        row["verification_status"] = status
+        row["verification_basis"] = ";".join(bases) or "none"
+
+
 def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--release-dir", default=REL)
@@ -453,6 +690,7 @@ def parse_args(argv=None):
     parser.add_argument("--mycotoxin-interim", default=MYCOTOXIN_INTERIM)
     parser.add_argument("--vetdrug-interim", default=VETDRUG_INTERIM)
     parser.add_argument("--dependency-interim", default=DEPENDENCY_INTERIM)
+    parser.add_argument("--audit-interim", default=AUDIT_INTERIM)
     parser.add_argument("--timeline-dir", default=TIMELINE)
     parser.add_argument("--date-dir", default=DATE_DIR)
     return parser.parse_args(argv)
@@ -461,6 +699,7 @@ def parse_args(argv=None):
 def main(argv=None):
     global ADD_INTERIM, DATE_DIR, DEPENDENCY_INTERIM, MYCOTOXIN_INTERIM
     global PESTICIDE_INTERIM, POLLUTANT_INTERIM, REL, TIMELINE, VETDRUG_INTERIM
+    global AUDIT_INTERIM
 
     args = parse_args(argv)
     TIMELINE = os.path.abspath(args.timeline_dir)
@@ -472,6 +711,7 @@ def main(argv=None):
     MYCOTOXIN_INTERIM = os.path.abspath(args.mycotoxin_interim)
     VETDRUG_INTERIM = os.path.abspath(args.vetdrug_interim)
     DEPENDENCY_INTERIM = os.path.abspath(args.dependency_interim)
+    AUDIT_INTERIM = os.path.abspath(args.audit_interim)
     required_inputs = {
         ADD_INTERIM: (
             "additive_raw_long.csv",
@@ -501,6 +741,7 @@ def main(argv=None):
         DEPENDENCY_INTERIM: (
             "food_taxonomy.csv",
             "category_alias.csv",
+            "category_containment.csv",
             "pollutant_old_path.csv",
             "pollutant_doublecol_long.csv",
             "member_crosswalk_mycotoxin.csv",
@@ -511,6 +752,11 @@ def main(argv=None):
             "standard_timeline_conflicts.csv",
         ),
         DATE_DIR: ("coverage_version_dates.csv",),
+        AUDIT_INTERIM: (
+            *(f"{round_dir}/comparison/pesticide_audit_comparison.csv"
+              for round_dir in PESTICIDE_AUDIT_ROUNDS),
+            BLIND_REENTRY_REPORT,
+        ),
     }
     missing_inputs = []
     for directory, filenames in required_inputs.items():
@@ -561,11 +807,15 @@ def main(argv=None):
             **relation,
         })
     rows, nx, nc = dedup_and_id(rows, ["version_year", "analyte_zh", "food_category_zh"], "POL")
+    add_source_columns(rows)
+    add_verification_columns(rows)
+    pollutant_long = rows
     stats["pollutant_limits"] = {"rows": write("pollutant_limits_long.csv", rows,
         ["record_id", "standard", "version_year", "analyte_zh", "analyte_en", "food_category_zh",
          "limit_value", "unit", "limit_mgkg", "normalization_status", "limit_basis", "note",
          "confidence", "extraction_path", "edition_source_id", "extraction_source_id",
-         "conflict"]),
+         "conflict", "source_reference", "extraction_method", "verification_status",
+         "verification_basis"]),
         "exact_dups_removed": nx, "rows_with_conflicting_key": nc}
 
     # ---------- 2. 污染物 类别级面板 ----------
@@ -591,6 +841,14 @@ def main(argv=None):
             },
         })
     rows, nx, nc = dedup_and_id(rows, ["analyte_zh", "food_category_zh"], "PCP")
+    # Back-links are added after the IDs so that unchanged rows keep their IDs.
+    link_source_records(
+        rows, pollutant_long, POLLUTANT_YEARS,
+        lambda row, year: [] if row[f"cell_status_{year}"] == "missing" else [
+            (year, row["analyte_zh"], row[f"source_category_{year}"], row[f"basis_{year}"])
+        ],
+        lambda r: (r["version_year"], r["analyte_zh"], r["food_category_zh"], r["limit_basis"]),
+    )
     stats["pollutant_category_panel"] = {"rows": write("pollutant_category_panel.csv", rows,
         ["record_id", "standard", "analyte_zh", "analyte_en", "food_category_zh",
          "v2012", "v2017", "v2022", "v2025",
@@ -598,7 +856,8 @@ def main(argv=None):
          "basis_2012", "basis_2017", "basis_2022", "basis_2025",
          "cell_status_2012", "cell_status_2017", "cell_status_2022", "cell_status_2025",
          "source_category_2012", "source_category_2017", "source_category_2022",
-         "source_category_2025", "unit_summary", "n_versions", "coverage_status", "trend"]),
+         "source_category_2025", "unit_summary", "n_versions", "coverage_status", "trend",
+         *(f"source_record_ids_{year}" for year in POLLUTANT_YEARS)]),
         "exact_dups_removed": nx}
 
     # ---------- 3. 污染物 成员级面板(★核心贡献) ----------
@@ -621,13 +880,23 @@ def main(argv=None):
             "note": r.get("note", ""),
         })
     rows, nx, nc = dedup_and_id(rows, ["analyte_zh", "food_member_zh"], "PMP")
+    link_source_records(
+        rows, pollutant_long, POLLUTANT_YEARS,
+        lambda row, year: [(
+            year, row["analyte_zh"], row[f"host_category_{year}"], row[f"v{year}"],
+            row[f"unit_{year}"], row[f"basis_{year}"],
+        )] if row[f"v{year}"] else [],
+        lambda r: (r["version_year"], r["analyte_zh"], r["food_category_zh"],
+                   r["limit_value"], r["unit"], r["limit_basis"]),
+    )
     stats["pollutant_member_panel"] = {"rows": write("pollutant_member_panel.csv", rows,
         ["record_id", "standard", "analyte_zh", "analyte_en", "food_member_zh",
          "v2012", "v2017", "v2022", "v2025",
          "unit_2012", "unit_2017", "unit_2022", "unit_2025",
          "basis_2012", "basis_2017", "basis_2022", "basis_2025",
          "limit_basis", "trend", "category_restructured",
-         "host_category_2012", "host_category_2017", "host_category_2022", "host_category_2025", "note"]),
+         "host_category_2012", "host_category_2017", "host_category_2022", "host_category_2025", "note",
+         *(f"source_record_ids_{year}" for year in POLLUTANT_YEARS)]),
         "exact_dups_removed": nx}
 
     # ---------- 4. 农残 GB2763 ----------
@@ -639,6 +908,21 @@ def main(argv=None):
         read("pesticide_textlayer_limits.csv", base=PESTICIDE_INTERIM),
         pesticide_source_ids,
     )
+    add_source_columns(rows, locate=lambda row: (
+        "government-hosted copy, "
+        if row["extraction_source_id"] != row["edition_source_id"] else ""
+    ) + f"PDF p. {row['source_page']}")
+    ocr_crosscheck = read(
+        "pesticide_textlayer_ocr_crosscheck.csv", base=PESTICIDE_INTERIM
+    )
+    evidence = pesticide_ocr_evidence(ocr_crosscheck, rows)
+    for record_id, items in pesticide_audit_evidence(rows).items():
+        evidence.setdefault(record_id, []).extend(items)
+    for row in rows:
+        if "scan_temporary_mark_correction" in row["review_status"].split(";"):
+            evidence.setdefault(row["record_id"], []).append(("author_scan_check", "agree"))
+    add_verification_columns(rows, evidence)
+    pesticide_long = rows
     stats["pesticide_limits"] = {"rows": write("pesticide_limits_long.csv", rows,
         ["record_id", "standard", "version_year", "section_number",
          "pesticide_key", "pesticide_zh", "pesticide_en", "pesticide_zh_raw",
@@ -646,19 +930,10 @@ def main(argv=None):
          "food_key", "food_zh", "food_raw", "limit_value", "unit",
          "limit_qualifier", "is_temporary", "value_raw", "source_page", "source_y",
          "food_x", "parent_assignment_method", "table_open_method", "review_status",
-         "edition_source_id", "extraction_source_id", "source_copy_role", "conflict"]),
+         "edition_source_id", "extraction_source_id", "source_copy_role", "conflict",
+         "source_reference", "extraction_method", "verification_status",
+         "verification_basis"]),
         "exact_dups_removed": 0, "rows_with_conflicting_key": nc}
-
-    rows = build_pesticide_panel_v2(rows)
-    rows, nx, nc = preserve_rules_and_id(
-        rows,
-        ["pesticide_key", "food_key"],
-        ["pesticide_key", "food_key"],
-        "PSP",
-    )
-    stats["pesticide_panel"] = {"rows": write("pesticide_panel.csv", rows,
-        pesticide_panel_output_columns()),
-        "exact_dups_removed": nx}
 
     with open(
         os.path.join(PESTICIDE_INTERIM, "pesticide_textlayer_extraction_report.json"),
@@ -668,6 +943,29 @@ def main(argv=None):
     if pesticide_report.get("validation_passed") is not True:
         raise ValueError("pesticide text-layer report did not pass validation gates")
     reconciliation_rows = pesticide_reconciliation_rows(pesticide_report)
+    mismatch_years = [
+        row["version_year"] for row in reconciliation_rows
+        if int(row["visible_rules_minus_declared"]) != 0
+    ]
+
+    rows = build_pesticide_panel_v2(rows)
+    rows, nx, nc = preserve_rules_and_id(
+        rows,
+        ["pesticide_key", "food_key"],
+        ["pesticide_key", "food_key"],
+        "PSP",
+    )
+    # Editions whose visible rule count differs from the declared count; added
+    # after the IDs so that unchanged rows keep their IDs.
+    for row in rows:
+        row["count_mismatch_editions"] = json.dumps(
+            [year for year in mismatch_years if row[f"status_{year}"] != "missing"],
+            separators=(",", ":"),
+        )
+    stats["pesticide_panel"] = {"rows": write("pesticide_panel.csv", rows,
+        pesticide_panel_output_columns()),
+        "exact_dups_removed": nx}
+
     stats["pesticide_edition_reconciliation"] = {
         "rows": write(
             "pesticide_edition_reconciliation.csv",
@@ -688,9 +986,6 @@ def main(argv=None):
         ),
         "exact_dups_removed": 0,
     }
-    ocr_crosscheck = read(
-        "pesticide_textlayer_ocr_crosscheck.csv", base=PESTICIDE_INTERIM
-    )
     crosscheck_columns = list(ocr_crosscheck[0]) if ocr_crosscheck else []
     if not crosscheck_columns:
         raise ValueError("pesticide OCR crosscheck is empty")
@@ -713,13 +1008,40 @@ def main(argv=None):
             **relation,
         })
     rows, nx, nc = dedup_and_id(rows, ["version_year", "toxin_zh", "food_category_zh"], "MYC")
+    check_blind_reentry({
+        "MYC2005": os.path.join(MYCOTOXIN_INTERIM, "myco2005_manual.csv"),
+        "VET2019": os.path.join(VETDRUG_INTERIM, "vetdrug_2019_manual.csv"),
+        "VET2022": os.path.join(VETDRUG_INTERIM, "vetdrug_2022_manual.csv"),
+    })
+    blind_tasks = load_blind_tasks()
+    manual_locators = manual_row_locators(
+        blind_tasks["MYC2005"],
+        [row for row in rows if row["version_year"] == "2005"],
+        read("myco2005_manual.csv", base=MYCOTOXIN_INTERIM),
+        (("toxin_zh", "toxin"), ("food_category_zh", "food_category"),
+         ("limit_value", "limit_value"), ("unit", "unit")),
+    )
+
+    def mycotoxin_method(row, mode):
+        if (row["confidence"] == "manual") != (mode == "manual_page_image_transcription"):
+            raise ValueError(f"mycotoxin confidence differs from source mode: {row['record_id']}")
+        return mode
+
+    add_source_columns(rows, locate=lambda row: manual_locators.get(row["record_id"], ""),
+                       row_method=mycotoxin_method)
+    reentered = {record_id: [("independent_blind_reentry", "agree")] for record_id in manual_locators}
+    add_verification_columns(rows, reentered)
+    mycotoxin_long = rows
     stats["mycotoxin_limits"] = {"rows": write("mycotoxin_limits_long.csv", rows,
         ["record_id", "standard", "version_year", "toxin_zh", "toxin_en", "food_category_zh",
          "limit_value", "unit", "confidence", "edition_source_id", "extraction_source_id",
-         "conflict"]), "exact_dups_removed": nx}
+         "conflict", "source_reference", "extraction_method", "verification_status",
+         "verification_basis"]), "exact_dups_removed": nx}
 
     rows = []
+    mycotoxin_printed = {}
     for r in read("mycotoxin_strictness_change.csv", base=MYCOTOXIN_INTERIM):
+        mycotoxin_printed[(r["toxin"], r["food_canon"])] = r
         rows.append({
             "standard": "GB 2761", "toxin_zh": r["toxin"], "toxin_en": ANALYTE_EN.get(r["toxin"], ""),
             "food_zh": r["food_canon"], "v2005": r["v2005"], "v2011": r["v2011"], "v2017": r["v2017"],
@@ -727,9 +1049,19 @@ def main(argv=None):
             "note": r.get("note2005", ""),
         })
     rows, nx, nc = dedup_and_id(rows, ["toxin_zh", "food_zh"], "MSP")
+
+    def mycotoxin_printed_rule(row, year):
+        printed = mycotoxin_printed[(row["toxin_zh"], row["food_zh"])][f"raw{year}"]
+        return [(year, row["toxin_zh"], printed)] if printed else []
+
+    link_source_records(
+        rows, mycotoxin_long, MYCOTOXIN_YEARS, mycotoxin_printed_rule,
+        lambda r: (r["version_year"], r["toxin_zh"], r["food_category_zh"]),
+    )
     stats["mycotoxin_panel"] = {"rows": write("mycotoxin_panel.csv", rows,
         ["record_id", "standard", "toxin_zh", "toxin_en", "food_zh",
-         "v2005", "v2011", "v2017", "unit", "trend", "note"]), "exact_dups_removed": nx}
+         "v2005", "v2011", "v2017", "unit", "trend", "note",
+         *(f"source_record_ids_{year}" for year in MYCOTOXIN_YEARS)]), "exact_dups_removed": nx}
 
     # ---------- 6. 兽残 GB31650 ----------
     vetdrug_long_input = read("vetdrug_limits_by_version.csv", base=VETDRUG_INTERIM)
@@ -776,20 +1108,55 @@ def main(argv=None):
     if leftover_locators:
         raise ValueError(f"unused 2002 veterinary-drug locators: {leftover_locators}")
     rows, nx, nc = dedup_and_id(rows, ["version_year", "drug_en", "animal", "tissue_zh"], "VET")
+    vet_manual_fields = (("drug_zh", "drug"), ("drug_en", "english"), ("animal_raw", "animal"),
+                         ("limit_value", "limit_value"), ("unit", "unit"))
+    for batch, year, seed in (("VET2019", "2019", "vetdrug_2019_manual.csv"),
+                              ("VET2022", "2022", "vetdrug_2022_manual.csv")):
+        manual_locators.update(manual_row_locators(
+            blind_tasks[batch],
+            [row for row in rows if row["version_year"] == year and row["source"] == "manual"],
+            read(seed, base=VETDRUG_INTERIM),
+            vet_manual_fields,
+        ))
+
+    def vetdrug_method(row, mode):
+        method = VETDRUG_ROW_METHODS[row["source"]]
+        if mode not in (method, "pdf_text_with_manual_page_break_rows"):
+            raise ValueError(f"veterinary-drug row source differs from source mode: {row['record_id']}")
+        return method
+
+    def vetdrug_locate(row):
+        if row["source_table_index"]:
+            return f"Word table {row['source_table_index']}, row {row['source_table_row']}"
+        return manual_locators.get(row["record_id"], "")
+
+    add_source_columns(rows, locate=vetdrug_locate, row_method=vetdrug_method)
+    reentered = {record_id: [("independent_blind_reentry", "agree")] for record_id in manual_locators}
+    add_verification_columns(rows, reentered)
+    vetdrug_long = rows
     stats["vetdrug_limits"] = {"rows": write("vetdrug_limits_long.csv", rows,
         ["record_id", "standard", "version_year", "drug_zh", "drug_en", "animal", "animal_raw",
          "tissue_zh", "limit_value", "unit", "source", "source_table_index",
          "source_table_row", "animal_block_index", "tissue_index", "edition_source_id",
-         "extraction_source_id", "conflict"]),
+         "extraction_source_id", "conflict", "source_reference", "extraction_method", "verification_status",
+         "verification_basis"]),
         "exact_dups_removed": nx, "rows_with_conflicting_key": nc}
 
     rows = build_vetdrug_summary_panel(
         read("vetdrug_limits_long.csv", base=REL)
     )
     rows, nx, nc = dedup_and_id(rows, ["drug_en", "tissue_zh"], "VSP")
+    link_source_records(
+        rows, vetdrug_long, VETDRUG_SUMMARY_YEARS,
+        lambda row, year: [(year, row["drug_en"], row["tissue_zh"])] if row[f"v{year}"] else [],
+        lambda r: (r["version_year"], _normalise_vetdrug_english(r["drug_en"]), r["tissue_zh"]),
+        unique=False,
+    )
     stats["vetdrug_panel"] = {"rows": write("vetdrug_panel.csv", rows,
         ["record_id", "standard", "drug_zh", "drug_en", "tissue_zh",
-         "v2002", "v2019", "unit", "trend"]), "exact_dups_removed": nx}
+         "v2002", "v2019", "unit", "trend",
+         *(f"source_record_ids_{year}" for year in VETDRUG_SUMMARY_YEARS)]),
+        "exact_dups_removed": nx}
 
     # ---------- 7. 添加剂 GB2760 ----------
     rows = []
@@ -803,11 +1170,24 @@ def main(argv=None):
             **relation,
         })
     rows, nx, nc = dedup_and_id(rows, ["version_year", "cns_code", "food_code"], "ADD")
+    add_source_columns(rows)
+    add_verification_columns(rows)
+    additive_long = rows
     stats["additive_limits"] = {"rows": write("additive_limits_long.csv", rows,
         ["record_id", "standard", "version_year", "additive_zh", "cns_code", "ins_code", "food_code",
          "food_zh", "max_use", "unit", "note", "edition_source_id",
-         "extraction_source_id", "conflict"]),
+         "extraction_source_id", "conflict", "source_reference", "extraction_method", "verification_status",
+         "verification_basis"]),
         "exact_dups_removed": nx, "rows_with_conflicting_key": nc}
+
+    method_rows = extraction_method_summary((
+        ("contaminant", pollutant_long), ("pesticide", pesticide_long),
+        ("mycotoxin", mycotoxin_long), ("veterinary_drug", vetdrug_long),
+        ("additive", additive_long),
+    ))
+    stats["extraction_method_summary"] = {"rows": write("extraction_method_summary.csv", method_rows,
+        ["family", "standard", "version_year", "extraction_method", "records",
+         "share_of_family_pct", "share_of_release_pct"])}
 
     rows = build_additive_panel(rows)
     rows, nx, nc = dedup_and_id(rows, ["cns_code", "food_code"], "ASP")
@@ -848,7 +1228,9 @@ def main(argv=None):
 
     # ---------- 9. 成员级面板:兽残 / 真菌毒素 ----------
     rows = []
+    vetdrug_hosts = {}
     for r in dependency_rows["member_crosswalk_vetdrug.csv"]:
+        vetdrug_hosts[(r["drug"], r["animal"], r["tissue"])] = r
         rows.append({
             "standard": "GB 31650", "drug_zh": r["drug"], "drug_en": r["english"],
             "animal": r["animal"], "tissue_zh": r["tissue"],
@@ -856,9 +1238,21 @@ def main(argv=None):
             "unit": "mg/kg", "trend": coded(r["trend"], TREND_CODES, "trend"),
         })
     rows, nx, nc = dedup_and_id(rows, ["drug_en", "animal", "tissue_zh"], "VMP")
+    link_source_records(
+        rows, vetdrug_long, VETDRUG_MEMBER_YEARS,
+        lambda row, year: [
+            (year, row["drug_zh"], row["tissue_zh"], label)
+            for label in vetdrug_hosts[(row["drug_zh"], row["animal"], row["tissue_zh"])][
+                f"归属{year}"
+            ].split("；")
+        ] if row[f"v{year}"] else [],
+        lambda r: (r["version_year"], r["drug_zh"], r["tissue_zh"], r["animal"]),
+    )
     stats["vetdrug_member_panel"] = {"rows": write("vetdrug_member_panel.csv", rows,
         ["record_id", "standard", "drug_zh", "drug_en", "animal", "tissue_zh",
-         "v2002", "v2019", "v2022", "unit", "trend"]), "exact_dups_removed": nx}
+         "v2002", "v2019", "v2022", "unit", "trend",
+         *(f"source_record_ids_{year}" for year in VETDRUG_MEMBER_YEARS)]),
+        "exact_dups_removed": nx}
 
     rows = []
     for r in dependency_rows["member_crosswalk_mycotoxin.csv"]:
@@ -871,10 +1265,17 @@ def main(argv=None):
             "host_category_2017": r["归属2017"],
         })
     rows, nx, nc = dedup_and_id(rows, ["toxin_zh", "food_member_zh"], "MMP")
+    link_source_records(
+        rows, mycotoxin_long, MYCOTOXIN_YEARS,
+        lambda row, year: [(year, row["toxin_zh"], row[f"host_category_{year}"])]
+        if row[f"v{year}"] else [],
+        lambda r: (r["version_year"], r["toxin_zh"], r["food_category_zh"]),
+    )
     stats["mycotoxin_member_panel"] = {"rows": write("mycotoxin_member_panel.csv", rows,
         ["record_id", "standard", "toxin_zh", "food_member_zh", "v2005", "v2011", "v2017",
          "unit", "trend", "category_restructured",
-         "host_category_2005", "host_category_2011", "host_category_2017"]),
+         "host_category_2005", "host_category_2011", "host_category_2017",
+         *(f"source_record_ids_{year}" for year in MYCOTOXIN_YEARS)]),
         "exact_dups_removed": nx}
 
     # ---------- 10. 隔离表(★随数据发布,不静默丢弃) ----------

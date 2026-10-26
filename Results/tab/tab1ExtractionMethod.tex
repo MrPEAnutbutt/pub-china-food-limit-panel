@@ -1,31 +1,42 @@
-\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.20\textwidth}>{\raggedright\arraybackslash}p{0.11\textwidth}>{\raggedright\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.07\textwidth}>{\raggedright\arraybackslash}p{0.34\textwidth}@{}}
-\caption{Extraction method and reliability by family. For each of the five families and each version, the primary read path and the resulting released row count. The 2019 and 2021 pesticide editions use government-hosted text-layer extraction copies; frozen OCR of the corresponding scans is retained only as a cross-check.}\label{tab1ExtractionMethod}\tabularnewline
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.16\textwidth}>{\raggedright\arraybackslash}p{0.08\textwidth}>{\raggedleft\arraybackslash}p{0.09\textwidth}>{\raggedleft\arraybackslash}p{0.08\textwidth}>{\raggedright\arraybackslash}p{0.44\textwidth}@{}}
+\caption{Released records by extraction method. Each row is an edition and the method recorded in the \texttt{extraction\_method} field of its long-table rows; the last rows total each method across the release. Shares are percentages of all released records. The same counts, with shares within each family, are released in \texttt{extraction\_method\_summary.csv}. The coordinate parser assigns rows and columns from word positions in the PDF text layer. The 2019 and 2021 pesticide editions were read from government-hosted text-layer copies, and OCR of the edition scans served only as a cross-check.}\label{tab1ExtractionMethod}\tabularnewline
 \toprule
-Family & Standard & Version & Rows & Read path \\
+Standard & Version & Records & Share & Extraction method \\
 \midrule
 \endfirsthead
 \toprule
-Family & Standard & Version & Rows & Read path \\
+Standard & Version & Records & Share & Extraction method \\
 \midrule
 \endhead
-Contaminants & GB 2762 & 2012 & 162 & text layer (coordinate-based) \\
-Contaminants & GB 2762 & 2017 & 178 & text layer (coordinate-based) \\
-Contaminants & GB 2762 & 2022 & 200 & text layer (coordinate-based) \\
-Contaminants & GB 2762 & 2025 & 199 & text layer (coordinate-based) \\
-Pesticide residues & GB 2763 & 2012 & 2,293 & edition PDF coordinate text layer \\
-Pesticide residues & GB 2763 & 2014 & 3,650 & edition PDF coordinate text layer \\
-Pesticide residues & GB 2763 & 2016 & 4,132 & edition PDF coordinate text layer \\
-Pesticide residues & GB 2763 & 2019 & 7,108 & government-hosted PDF text layer; frozen OCR cross-check against the scanned edition \\
-Pesticide residues & GB 2763 & 2021 & 10,092 & government-hosted PDF text layer; frozen OCR cross-check against the scanned edition \\
-Pesticide residues & GB 2763 & 2026 & 10,749 & edition PDF coordinate text layer \\
-Mycotoxins & GB 2761 & 2005 & 9 & manual (corrupt text layer) \\
-Mycotoxins & GB 2761 & 2011 & 22 & text layer \\
-Mycotoxins & GB 2761 & 2017 & 30 & text layer \\
-Veterinary drug residues & Ministry of Agriculture Announcement 235 & 2002 & 551 & Word table stream (Ministry of Agriculture Announcement 235) \\
-Veterinary drug residues & GB 31650 & 2019 & 692 & text layer; 13 manual (page images) \\
-Veterinary drug residues & GB 31650.1 & 2022 & 122 & manual (page images) \\
-Food additives & GB 2760 & 2011 & 1,742 & text layer \\
-Food additives & GB 2760 & 2014 & 2,095 & text layer \\
-Food additives & GB 2760 & 2024 & 2,311 & text layer \\
+\addlinespace \multicolumn{5}{@{}l}{\emph{Contaminants}} \\
+GB 2762 & 2012 & 162 & 0.35 & \path{pdf_text_and_coordinate_parser} \\
+GB 2762 & 2017 & 178 & 0.38 & \path{pdf_text_and_coordinate_parser} \\
+GB 2762 & 2022 & 200 & 0.43 & \path{pdf_text_and_coordinate_parser} \\
+GB 2762 & 2025 & 199 & 0.43 & \path{pdf_text_and_coordinate_parser} \\
+\addlinespace \multicolumn{5}{@{}l}{\emph{Pesticide residues}} \\
+GB 2763 & 2012 & 2,293 & 4.95 & \path{pdf_text_and_coordinate_parser} \\
+GB 2763 & 2014 & 3,650 & 7.88 & \path{pdf_text_and_coordinate_parser} \\
+GB 2763 & 2016 & 4,132 & 8.92 & \path{pdf_text_and_coordinate_parser} \\
+GB 2763 & 2019 & 7,108 & 15.34 & \path{pdf_text_and_coordinate_parser}; read from a government-hosted text-layer copy, with OCR of the scan as a cross-check \\
+GB 2763 & 2021 & 10,092 & 21.78 & \path{pdf_text_and_coordinate_parser}; read from a government-hosted text-layer copy, with OCR of the scan as a cross-check \\
+GB 2763 & 2026 & 10,749 & 23.20 & \path{pdf_text_and_coordinate_parser} \\
+\addlinespace \multicolumn{5}{@{}l}{\emph{Mycotoxins}} \\
+GB 2761 & 2005 & 9 & 0.02 & \path{manual_page_image_transcription}; the text layer is corrupt \\
+GB 2761 & 2011 & 22 & 0.05 & \path{pdf_text_layer} \\
+GB 2761 & 2017 & 30 & 0.06 & \path{pdf_text_layer} \\
+\addlinespace \multicolumn{5}{@{}l}{\emph{Veterinary drug residues}} \\
+Announcement No.~235 & 2002 & 551 & 1.19 & \path{word_table_stream} \\
+GB 31650 & 2019 & 13 & 0.03 & \path{manual_page_image_transcription}; rows at page breaks \\
+GB 31650 & 2019 & 679 & 1.47 & \path{pdf_text_layer} \\
+GB 31650.1 & 2022 & 122 & 0.26 & \path{manual_page_image_transcription} \\
+\addlinespace \multicolumn{5}{@{}l}{\emph{Food additives}} \\
+GB 2760 & 2011 & 1,742 & 3.76 & \path{pdf_text_layer} \\
+GB 2760 & 2014 & 2,095 & 4.52 & \path{pdf_text_layer} \\
+GB 2760 & 2024 & 2,311 & 4.99 & \path{pdf_text_layer} \\
+\midrule All editions & & 38,763 & 83.65 & \path{pdf_text_and_coordinate_parser} \\
+All editions & & 6,879 & 14.85 & \path{pdf_text_layer} \\
+All editions & & 551 & 1.19 & \path{word_table_stream} \\
+All editions & & 144 & 0.31 & \path{manual_page_image_transcription} \\
+Total & & 46,337 & 100.00 & \\
 \bottomrule
 \end{longtable}

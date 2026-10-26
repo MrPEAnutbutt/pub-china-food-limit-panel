@@ -7,7 +7,7 @@ drug,english,animal,tissue,limit_value,unit
 安普霉素,apramycin,鸡,蛋,10,μg/kg
 阿司匹林,aspirin,鸡,蛋,10,μg/kg
 阿维拉霉素,avilamycin,鸡/火鸡,蛋,10,μg/kg
-青霉素、普鲁卡因青霉素,benzylpenicillin,家禽,蛋,4,μg/kg
+青霉素、普鲁卡因青霉素,"benzylpenicillin,procaine benzylpenicillin",家禽,蛋,4,μg/kg
 氯唑西林,cloxacillin,家禽,蛋,4,μg/kg
 达氟沙星,danofloxacin,家禽,蛋,10,μg/kg
 得曲恩特,derquantel,绵羊,肌肉,0.3,μg/kg

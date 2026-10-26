@@ -22,6 +22,7 @@ import hashlib
 import json
 import re
 import subprocess
+import unicodedata
 import xml.etree.ElementTree as ET
 from collections import Counter, defaultdict
 from dataclasses import dataclass
@@ -73,6 +74,8 @@ UNIT_ALIASES = (
 MASS_FACTORS = {"mg/kg": 1.0, "μg/kg": 0.001, "g/kg": 1000.0}
 ALIAS_FIELDS = ("异名", "规范名", "status", "说明")
 ALIAS_STATUSES = {"已确认", "待核"}
+CONTAINMENT_FIELDS = ("成员", "上级", "status", "说明")
+CONTAINMENT_STATUSES = {"已确认", "待核", "否决"}
 
 Word = tuple[float, float, float, float, str]
 
@@ -827,6 +830,42 @@ def load_aliases(path: Path) -> dict[str, str]:
     }
 
 
+def load_containment(path: Path | None, aliases: dict[str, str]) -> dict[str, str]:
+    """Load confirmed "member lies within" links from the human seed."""
+
+    if path is None:
+        return {}
+    if not path.is_file():
+        raise ValueError(f"required containment adjudication file is missing: {path}")
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle)
+        if tuple(reader.fieldnames or ()) != CONTAINMENT_FIELDS:
+            raise ValueError(f"unexpected containment schema: {reader.fieldnames}")
+        rows = list(reader)
+    links: dict[str, str] = {}
+    seen: set[str] = set()
+    for row in rows:
+        child = match_key(row["成员"], aliases)
+        parent = match_key(row["上级"], aliases)
+        status = row["status"].strip()
+        if not child or not parent or child == parent:
+            raise ValueError(f"blank or circular containment row: {row}")
+        if status not in CONTAINMENT_STATUSES:
+            raise ValueError(f"unsupported containment status: {status}")
+        if child in seen:
+            raise ValueError(f"duplicate member in containment seed: {child}")
+        seen.add(child)
+        if status == "已确认":
+            links[child] = parent
+    return links
+
+
+def match_key(text: str, aliases: dict[str, str]) -> str:
+    """Width-folded member name used only for matching, never for output."""
+
+    return clean_member(unicodedata.normalize("NFKC", text), aliases)
+
+
 def load_taxonomy(path: Path, aliases: dict[str, str]) -> dict[str, dict[str, str]]:
     taxonomy: dict[str, dict[str, str]] = defaultdict(dict)
     if not path.exists():
@@ -858,6 +897,29 @@ def summarize_basis(bases: set[str]) -> str:
     if len(bases) > 1:
         return "varies_by_version"
     return next(iter(bases))
+
+
+def edition_gap(present: list[str]) -> bool:
+    """True when the compared editions skip an edition in between."""
+
+    positions = [YEARS.index(year) for year in present]
+    return positions != list(range(positions[0], positions[-1] + 1))
+
+
+def category_scope(
+    raw: str, aliases: dict[str, str], canonical_aliases: dict[str, str]
+) -> tuple[str, ...]:
+    """Printed head and exclusions, equal across a confirmed rename."""
+
+    base, exclusions = split_category(raw, aliases)
+    if not base:
+        return (compact(unicodedata.normalize("NFKC", raw)),)
+    key = weak_category_key(base)
+    if key in canonical_aliases or key in canonical_aliases.values():
+        head = canonical_aliases.get(key, key)
+    else:
+        head = re.sub(r"[、,，\s]", "", unicodedata.normalize("NFKC", base))
+    return (head, *sorted({unicodedata.normalize("NFKC", item) for item in exclusions}))
 
 
 def build_category_panel(
@@ -921,6 +983,13 @@ def build_category_panel(
             trend = "不可比(单位维度或值缺失)"
         elif len(values) == 1:
             trend = "单版本"
+        elif edition_gap(present):
+            trend = "不可比(跨过缺失版本)"
+        elif len({
+            category_scope(scalar[year]["food_category"], aliases, canonical_aliases)
+            for year in present
+        }) > 1:
+            trend = "不可比(范围文字不同)"
         elif len(set(values)) == 1:
             trend = "稳定"
         elif values[-1] < values[0]:
@@ -962,15 +1031,34 @@ def build_category_panel(
 
 
 def build_member_panel(
-    rows: list[dict[str, str]], taxonomy_path: Path, alias_path: Path
+    rows: list[dict[str, str]],
+    taxonomy_path: Path,
+    alias_path: Path,
+    containment_path: Path | None = None,
 ) -> list[dict[str, str]]:
     aliases = load_aliases(alias_path)
-    taxonomy = load_taxonomy(taxonomy_path, aliases)
+    match_aliases = {
+        unicodedata.normalize("NFKC", source): unicodedata.normalize("NFKC", target)
+        for source, target in aliases.items()
+    }
+
+    def key(text: str) -> str:
+        return match_key(text, match_aliases)
+
+    taxonomy = {
+        year: {key(child): key(parent) for child, parent in edges.items()}
+        for year, edges in load_taxonomy(taxonomy_path, aliases).items()
+    }
+    contained_in = load_containment(containment_path, match_aliases)
     table: dict[str, dict[str, dict[str, list[tuple[str, ...]]]]] = defaultdict(
         lambda: defaultdict(lambda: defaultdict(list))
     )
     parents: dict[str, dict[str, str]] = defaultdict(dict)
     members: dict[str, set[str]] = defaultdict(set)
+    # Printed exclusion lists by analyte and edition, as sets of matching keys.
+    printed_lists: dict[str, dict[str, list[set[str]]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
 
     for row in rows:
         if row["confidence"] != "high":
@@ -985,23 +1073,35 @@ def build_member_panel(
             json.dumps(exclusions, ensure_ascii=False),
             row["food_category"],
         )
-        table[row["analyte"]][row["year"]][base].append(cell)
+        table[row["analyte"]][row["year"]][key(base)].append(cell)
         members[row["analyte"]].add(base)
         top_parts = split_top_level(base)
         if len(top_parts) > 1 and len(base) > 4:
             for part in top_parts:
                 part = clean_member(part, aliases)
+                if len(part) > 1:
+                    # Long names are looked up but do not start a member row.
+                    table[row["analyte"]][row["year"]][key(part)].append(cell)
                 if part and 1 < len(part) <= 8:
-                    table[row["analyte"]][row["year"]][part].append(cell)
                     members[row["analyte"]].add(part)
         for excluded in exclusions:
             members[row["analyte"]].add(excluded)
-            parents[row["analyte"]][excluded] = base
+            parents[row["analyte"]][key(excluded)] = key(base)
+        if exclusions:
+            printed_lists[row["analyte"]][row["year"]].append(
+                {key(item) for item in exclusions}
+            )
 
-    def variants(member: str) -> tuple[str, ...]:
+    def variants(member: str, printed: dict[str, list] | None = None) -> tuple[str, ...]:
+        # A printed "X及其Y", such as 果蔬汁类及其饮料, is a rule for the member X.
+        wider = [name for name in sorted(printed or {}) if name.startswith(member + "及其")]
         if member.endswith("及其制品"):
             return member, member[:-4]
-        return member, member + "及其制品"
+        if member.endswith("制品"):
+            # A printed "X及其制品" covers the member "X制品".
+            return tuple(dict.fromkeys(
+                [member, member + "及其制品", member[:-2] + "及其制品", *wider]))
+        return tuple(dict.fromkeys([member, member + "及其制品", *wider]))
 
     def taxonomy_parent(year: str, node: str) -> str | None:
         if node in taxonomy.get(year, {}):
@@ -1011,6 +1111,40 @@ def build_member_panel(
                 return taxonomy[other_year][node]
         return None
 
+    def parent_of(analyte: str, year: str, node: str) -> str | None:
+        return (
+            contained_in.get(node)
+            or parents[analyte].get(node)
+            or taxonomy_parent(year, node)
+        )
+
+    def within(node: str) -> set[str]:
+        """The node and every confirmed category that contains it."""
+
+        chain = {node}
+        while node in contained_in and contained_in[node] not in chain:
+            node = contained_in[node]
+            chain.add(node)
+        return chain
+
+    def covered(items: list[str]) -> set[str]:
+        """Names an exclusion list removes: "A和B" removes A and B,
+        "X及其制品" removes X and X制品, and any "X及其Y" removes X."""
+
+        names: set[str] = set()
+        for item in items:
+            item = key(item)
+            for part in {item, *split_top_level(item, "和")}:
+                part = part.strip()
+                if not part:
+                    continue
+                names.add(part)
+                if part.endswith("及其制品"):
+                    names.update({part[:-4], part[:-4] + "制品"})
+                elif "及其" in part:
+                    names.add(part[: part.index("及其")])
+        return names
+
     def one_rule(candidates: list[tuple[str, ...]]) -> tuple[str, ...] | None:
         if not candidates:
             return None
@@ -1019,41 +1153,111 @@ def build_member_panel(
             return None
         return sorted(candidates)[0]
 
-    def applies(analyte: str, year: str, member: str) -> tuple[str, ...] | None:
+    def judge(rule: tuple[str, ...], path: list[str]) -> str:
+        """Whether an inherited rule reaches the member at path[0]."""
+
+        removed = covered(json.loads(rule[3]))
+        if any(within(node) & removed for node in path):
+            return "excluded"
+        member = path[0]
+        if any(member in within(name) and name != member for name in removed):
+            return "spans_two_rules"
+        parts = [part for part in split_top_level(member, "、和") if part]
+        if len(parts) > 1 and any(part in removed for part in parts):
+            return "excluded" if all(part in removed for part in parts) else "spans_two_rules"
+        return "applies"
+
+    def rewritten(analyte: str, year: str, member: str, rule: tuple[str, ...]) -> str:
+        """An edition that names the member among its exclusions vouches that
+        the member is disjoint from its siblings in that list.  When no such
+        list covers this edition's exclusions, the inherited host is not
+        determinable from the printed text."""
+
+        removed = {key(item) for item in json.loads(rule[3])}
+        if not removed:
+            return ""
+        lists = [
+            (other_year, printed)
+            for other_year in YEARS
+            if other_year != year
+            for printed in printed_lists[analyte].get(other_year, [])
+            if member in printed
+        ]
+        if not lists or any(removed <= printed for _, printed in lists):
+            return ""
+        return lists[0][0]
+
+    def applies(analyte: str, year: str, member: str) -> tuple[str, tuple[str, ...] | None, str]:
         year_table = table[analyte].get(year, {})
-        for variant in variants(member):
+        member = key(member)
+        for variant in variants(member, year_table):
             rule = one_rule(year_table.get(variant, []))
             if rule:
-                return rule
+                return "applies", rule, ""
+        path = [member]
         seen: set[str] = set()
-        parent = parents[analyte].get(member) or taxonomy_parent(year, member)
+        parent = parent_of(analyte, year, member)
         while parent and parent not in seen:
             seen.add(parent)
-            for variant in variants(parent):
+            for variant in variants(parent, year_table):
                 rule = one_rule(year_table.get(variant, []))
                 if not rule:
                     continue
-                exclusions = json.loads(rule[3])
-                if member not in exclusions and not any(
-                    variant_member in exclusions for variant_member in variants(member)
-                ):
-                    return rule
-                break
-            parent = parents[analyte].get(parent) or taxonomy_parent(year, parent)
-        return None
+                verdict = judge(rule, path)
+                if verdict != "applies":
+                    return verdict, rule, ""
+                since = rewritten(analyte, year, member, rule)
+                if since:
+                    return "host_not_determinable", rule, since
+                return "applies", rule, ""
+            path.append(parent)
+            parent = parent_of(analyte, year, parent)
+        return "no_rule", None, ""
+
+    def blank_note(reasons: dict[str, tuple[str, tuple[str, ...], str]]) -> str:
+        grouped: dict[str, list[str]] = defaultdict(list)
+        for year in YEARS:
+            if year not in reasons:
+                continue
+            verdict, rule, since = reasons[year]
+            host = rule[4]
+            if verdict == "excluded":
+                text = f"excluded by {host}; no separate limit for this analyte located"
+            elif verdict == "spans_two_rules":
+                text = f"spans two printed rules; {host} excludes part of it"
+            else:
+                text = f"host not determinable; exclusion list of {host} differs from {since}"
+            grouped[text].append(year)
+        return " | ".join(
+            f"{', '.join(years)}: {text}" for text, years in grouped.items()
+        )
 
     output: list[dict[str, str]] = []
     for analyte in sorted(table):
-        analyte_members = set(members[analyte])
+        by_key: dict[str, set[str]] = defaultdict(set)
+        for member in members[analyte]:
+            by_key[key(member)].add(member)
+        # One row per member; a width variant keeps its folded spelling.
+        names = {
+            member_key: member_key if member_key in spellings else sorted(spellings)[0]
+            for member_key, spellings in by_key.items()
+        }
         analyte_members = {
-            member
-            for member in analyte_members
-            if not (
-                member.endswith("及其制品") and member[:-4] in analyte_members
-            )
+            name
+            for member_key, name in names.items()
+            if not (member_key.endswith("及其制品") and member_key[:-4] in names)
         }
         for member in sorted(analyte_members):
-            cells = {year: applies(analyte, year, member) for year in YEARS}
+            verdicts = {year: applies(analyte, year, member) for year in YEARS}
+            cells = {
+                year: verdict[1] if verdict[0] == "applies" else None
+                for year, verdict in verdicts.items()
+            }
+            blanked = {
+                year: verdict
+                for year, verdict in verdicts.items()
+                if verdict[0] in {"excluded", "spans_two_rules", "host_not_determinable"}
+            }
             present = [year for year in YEARS if cells[year]]
             if len(present) < 2:
                 continue
@@ -1066,8 +1270,21 @@ def build_member_panel(
             hosts = {
                 year: cells[year][4] if cells[year] else "" for year in YEARS
             }
+            # Editions in which the member is its host's own head: the member
+            # then stands for that head minus the printed exclusions.
+            residual = {
+                tuple(sorted({unicodedata.normalize("NFKC", item)
+                              for item in json.loads(cells[year][3])}))
+                for year in present
+                if key(split_category(cells[year][4], aliases)[0])
+                in variants(key(member), table[analyte].get(year, {}))
+            }
             if len(comparable) != len(present) or len(bases) > 1 or len(dimensions) > 1:
                 trend = "incomparable_basis_unit_or_value"
+            elif edition_gap(present):
+                trend = "incomparable_edition_gap"
+            elif len(residual) > 1:
+                trend = "incomparable_scope_text"
             elif len(set(values)) == 1:
                 trend = "stable"
             elif values[-1] < values[0]:
@@ -1084,6 +1301,7 @@ def build_member_panel(
                 "category_restructured": "yes"
                 if len({hosts[year] for year in present}) > 1
                 else "no",
+                "note": blank_note(blanked),
             }
             for year in YEARS:
                 cell = cells[year]
@@ -1122,12 +1340,14 @@ def rebuild(
     legacy_path: Path,
     taxonomy_path: Path,
     alias_path: Path,
+    containment_path: Path,
     output_dir: Path,
 ) -> dict[str, object]:
     dependency_paths = {
         "pollutant_old_path.csv": legacy_path,
         "food_taxonomy.csv": taxonomy_path,
         "category_alias.csv": alias_path,
+        "category_containment.csv": containment_path,
     }
     for filename, path in dependency_paths.items():
         read_locked_csv(path, RELEASE_DEPENDENCY_SPECS[filename])
@@ -1160,7 +1380,9 @@ def rebuild(
             row["reason"],
         )
     )
-    members = build_member_panel(long_rows, taxonomy_path, alias_path)
+    members = build_member_panel(
+        long_rows, taxonomy_path, alias_path, containment_path
+    )
     categories = build_category_panel(long_rows, alias_path)
 
     long_path = output_dir / "pollutant_limits_long.csv"
@@ -1204,6 +1426,7 @@ def rebuild(
         ["limit_basis", "trend", "category_restructured"]
     )
     member_columns.extend(f"host_category_{year}" for year in YEARS)
+    member_columns.append("note")
     write_csv(member_path, members, member_columns)
     write_csv(
         compatible_long_path,
@@ -1226,6 +1449,8 @@ def rebuild(
         "relaxed": "放松(变松)",
         "fluctuation": "波动",
         "incomparable_basis_unit_or_value": "不可比(基准、单位或值缺失)",
+        "incomparable_edition_gap": "不可比(跨过缺失版本)",
+        "incomparable_scope_text": "不可比(范围文字不同)",
     }
     for member in members:
         compatible = {
@@ -1234,6 +1459,7 @@ def rebuild(
             "basis": member["limit_basis"],
             "trend": trend_labels[member["trend"]],
             "类别重组": "是" if member["category_restructured"] == "yes" else "否",
+            "note": member["note"],
         }
         for year in YEARS:
             compatible[f"v{year}"] = member[f"v{year}"]
@@ -1247,6 +1473,7 @@ def rebuild(
     compatible_member_columns.extend(f"basis{year}" for year in YEARS)
     compatible_member_columns.extend(["basis", "trend", "类别重组"])
     compatible_member_columns.extend(f"归属类别{year}" for year in YEARS)
+    compatible_member_columns.append("note")
     write_csv(
         compatible_member_path,
         compatible_members,
@@ -1266,7 +1493,13 @@ def rebuild(
     report: dict[str, object] = {
         "inputs": {
             path.name: sha256(path)
-            for path in [*source_paths, legacy_path, taxonomy_path, alias_path]
+            for path in [
+                *source_paths,
+                legacy_path,
+                taxonomy_path,
+                alias_path,
+                containment_path,
+            ]
             if path.exists()
         },
         "counts": {
@@ -1322,6 +1555,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         type=Path,
         default=DEFAULT_DEPENDENCY_DIR / "category_alias.csv",
     )
+    parser.add_argument(
+        "--containment-path",
+        type=Path,
+        default=DEFAULT_DEPENDENCY_DIR / "category_containment.csv",
+    )
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
     return parser.parse_args(argv)
 
@@ -1333,6 +1571,7 @@ def main(argv: list[str] | None = None) -> int:
         legacy_path=args.legacy_path,
         taxonomy_path=args.taxonomy_path,
         alias_path=args.alias_path,
+        containment_path=args.containment_path,
         output_dir=args.output_dir,
     )
     print(json.dumps(report["counts"], ensure_ascii=False, indent=2))

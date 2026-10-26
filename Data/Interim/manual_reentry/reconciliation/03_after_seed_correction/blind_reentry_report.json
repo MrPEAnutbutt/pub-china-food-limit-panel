@@ -1,0 +1,99 @@
+{
+  "protocol_version": "1.2",
+  "packet_id": "BR144-v1.2-9795b815a5f551e1",
+  "packet_contract_sha256": "9795b815a5f551e1b571ac13b3216fbe33fac3efad000e1d939b039f8e6b7e1c",
+  "locator_contract_sha256": "846ffc6da9324810e6a5712e2ad2f90b8ed84d4a0a626cd4651306b7d77d4a35",
+  "status": "attestation_pending",
+  "scope": {
+    "records": 144,
+    "fields": 846,
+    "released_dataset_records": 46337,
+    "interpretation": "Targeted audit of all author-manually-transcribed records; not a dataset-wide field-error estimate."
+  },
+  "provenance_gap": {
+    "status": "open",
+    "records": 144,
+    "correction_required": false
+  },
+  "comparison_counts": {
+    "exact_match": 798,
+    "normalised_match": 34,
+    "disagreement": 14,
+    "missing": 0
+  },
+  "records_with_initial_disagreement_or_missing": 14,
+  "adjudication_counts": {
+    "construction_confirmed": 14,
+    "reentry_confirmed": 0,
+    "corrected_value": 0,
+    "unresolved": 0
+  },
+  "attestation": {
+    "status": "pending",
+    "entry_files": {
+      "mycotoxin_2005_blind_entry.csv": {
+        "filename": "mycotoxin_2005_blind_entry.csv",
+        "file_size_bytes": 1216,
+        "sha256": "b47b9cdc53cf0f266663754680362f24b1c9ce4f566696797b57455c4a88dd44"
+      },
+      "vetdrug_2019_blind_entry.csv": {
+        "filename": "vetdrug_2019_blind_entry.csv",
+        "file_size_bytes": 1898,
+        "sha256": "54389bdb473487a86f0e2386ca60bc299876edcd3a7110a4558cb162ec4edbf7"
+      },
+      "vetdrug_2022_blind_entry.csv": {
+        "filename": "vetdrug_2022_blind_entry.csv",
+        "file_size_bytes": 13447,
+        "sha256": "d37c9c7d6e728bced4157f46ef5b7df09cafe1cecda114f4361a347b63bcc9f5"
+      }
+    },
+    "entry_digest_source": {
+      "filename": "unpack_receipt.json",
+      "file_size_bytes": 701,
+      "sha256": "34c8e1fdb87b6b425c6fa076dcc496c5feaeed430fc85d987dbcc1d619a6f400"
+    }
+  },
+  "inputs": {
+    "source_manifest": {
+      "filename": "source_manifest.csv",
+      "file_size_bytes": 7847,
+      "sha256": "f6bd5dc5f381ce0ec4ba4fbdb08905c7149a86f639b6b524cabfd682cc30507a"
+    },
+    "construction_seeds": {
+      "MYC2005": {
+        "filename": "myco2005_manual.csv",
+        "file_size_bytes": 513,
+        "sha256": "209d99250e4555a2cf68addb22a49549e0edfb158f43f3cc94601f92d1883b9d"
+      },
+      "VET2019": {
+        "filename": "vetdrug_2019_manual.csv",
+        "file_size_bytes": 1263,
+        "sha256": "58d8907398b9c0059b04cbec22c3d184bc3bd578eb47bf3e855eabbe96f69fcb"
+      },
+      "VET2022": {
+        "filename": "vetdrug_2022_manual.csv",
+        "file_size_bytes": 5930,
+        "sha256": "9c12d1a4ee1e198621d4380bb6df09c60705a5985bba2efa345e6aec32d2c628"
+      }
+    },
+    "adjudication": {
+      "filename": "blind_reentry_adjudication_after_seed_correction.csv",
+      "file_size_bytes": 4245,
+      "sha256": "a6218035702954960d1a68d2bbe4a5174ff8148a5b1c4b7b4f958d5661b310e6"
+    }
+  },
+  "outputs": {
+    "field_comparison": {
+      "filename": "blind_reentry_field_comparison.csv",
+      "file_size_bytes": 113700,
+      "sha256": "cb481fe8c482346dd6f8f11376391a2092be06b3af067ae35376d21fbeb80e00",
+      "rows": 846
+    },
+    "adjudication_template": {
+      "filename": "blind_reentry_adjudication_template.csv",
+      "file_size_bytes": 125,
+      "sha256": "6b96b6ebfcb68c8567b9f4036a0f45f64ef003aa3d8b87b288d5bb2c4a6cbb5a",
+      "rows": 0
+    }
+  }
+}

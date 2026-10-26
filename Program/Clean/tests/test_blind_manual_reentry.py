@@ -207,7 +207,7 @@ class BlindManualReentryTests(unittest.TestCase):
         for digest in (
             "209d99250e4555a2cf68addb22a49549e0edfb158f43f3cc94601f92d1883b9d",
             "58d8907398b9c0059b04cbec22c3d184bc3bd578eb47bf3e855eabbe96f69fcb",
-            "6d5e25a2455157ce6a26452b8cb4fb380698173babf52ae9656d4e780b6d82f8",
+            "9c12d1a4ee1e198621d4380bb6df09c60705a5985bba2efa345e6aec32d2c628",
         ):
             self.assertNotIn(digest, packet_text)
 
@@ -290,6 +290,30 @@ class BlindManualReentryTests(unittest.TestCase):
         self.assertEqual(report["provenance_gap"]["status"], "closed")
         self.assertEqual(report["comparison_counts"]["exact_match"], 846)
         self.assertEqual(report["comparison_counts"]["disagreement"], 0)
+
+    def write_receipt(self) -> None:
+        receipt = {"csv": {
+            contract.template_filename: file_hash(self.packet / contract.template_filename)
+            for contract in MODULE.SOURCE_CONTRACTS
+        }}
+        (self.packet / "unpack_receipt.json").write_text(json.dumps(receipt) + "\n")
+
+    def test_pending_declaration_compares_but_cannot_pass(self):
+        self.fill_entries()
+        self.write_receipt()
+        report = self.reconcile(None)
+        self.assertEqual(report["status"], "attestation_pending")
+        self.assertEqual(report["provenance_gap"]["status"], "open")
+        self.assertEqual(report["comparison_counts"]["exact_match"], 846)
+        self.assertEqual(report["attestation"]["status"], "pending")
+
+    def test_pending_declaration_rejects_entries_changed_after_unpack(self):
+        self.fill_entries()
+        self.write_receipt()
+        path = self.packet / MODULE.CONTRACT_BY_BATCH["MYC2005"].template_filename
+        path.write_text(path.read_text(encoding="utf-8-sig") + "\n", encoding="utf-8-sig")
+        with self.assertRaises(MODULE.AuditError):
+            self.reconcile(None)
 
     def test_normalised_match_preserves_raw_values(self):
         attestation = self.fill_entries()
@@ -424,7 +448,7 @@ class BlindManualReentryTests(unittest.TestCase):
         self.assertEqual(report["status"], "pass")
         self.assertEqual(report["provenance_gap"]["status"], "closed")
 
-    def test_initial_transcriber_cannot_adjudicate_disagreement(self):
+    def test_reviewer_cannot_adjudicate_disagreement(self):
         attestation = self.fill_entries()
         path = self.packet / "vetdrug_2022_blind_entry.csv"
         rows = read_csv(path)
@@ -442,7 +466,7 @@ class BlindManualReentryTests(unittest.TestCase):
                 "adjudication_status": "construction_confirmed",
                 "adjudicated_raw": "1",
                 "error_source": "reentry",
-                "adjudicator_id": MODULE.INITIAL_TRANSCRIBER_ID,
+                "adjudicator_id": "independent-reviewer-01",
                 "adjudication_date": "2026-07-16",
                 "adjudication_note": "Checked against the printed source.",
             }
@@ -450,10 +474,13 @@ class BlindManualReentryTests(unittest.TestCase):
         write_csv(adjudication, MODULE.ADJUDICATION_FIELDS, adjudication_rows)
         with self.assertRaisesRegex(MODULE.AuditError, "must be independent"):
             self.reconcile(attestation, adjudication=adjudication)
-        adjudication_rows[0]["adjudicator_id"] = "independent-reviewer-01"
+        adjudication_rows[0]["adjudicator_id"] = MODULE.INITIAL_TRANSCRIBER_ID
         write_csv(adjudication, MODULE.ADJUDICATION_FIELDS, adjudication_rows)
-        with self.assertRaisesRegex(MODULE.AuditError, "must be independent"):
-            self.reconcile(attestation, adjudication=adjudication)
+        self.reconcile(
+            attestation,
+            adjudication=adjudication,
+            output=self.root / "author-adjudication",
+        )
 
     def test_invalid_attestation_is_rejected(self):
         attestation = self.fill_entries()

@@ -1,0 +1,33 @@
+{
+  "inputs": {
+    "pesticide_blind_read_completed.csv": "b6278ba4570209e8cdf386fc5adc36d484e4e7fd1b68fd6699927a3a3c9e3b01",
+    "pesticide_limits_long.csv": "f8d3f4cdb8f237348c0f05f0663adf95a7dc5e916228b676bab758613c41c0eb",
+    "pesticide_audit_sample_key.csv": "1e9a480ceb6f2111ef069a590a2fb028b6013237db2e302af1c8135e479a4f6c",
+    "pesticide_blind_read_template.csv": "cefe572ee8d63fc457fc54bbf993fbb5a86a6a3c63d62bd08ee1e49adde5b24b",
+    "pesticide_audit_strata.csv": "b1e461c5afcb08f5a345248b99ff001f2be0e45628e5917d56996a22dbeb52cc",
+    "pesticide_audit_adjudication.csv": "c7a7e88af1c51aee01f4ce4b4aa606a3ce823b89f9fdeed051c547e6eb4bde5b"
+  },
+  "outputs": {
+    "comparison": {
+      "filename": "pesticide_audit_comparison.csv",
+      "rows": 258,
+      "sha256": "cb2fcfca99791b15b35d16b28d8556584d879a4174069bfb31340f17948b536a"
+    },
+    "rates": {
+      "filename": "pesticide_audit_rates.csv",
+      "rows": 4,
+      "sha256": "6cd63be003c9a753046f064a996edbcafe7f030d3b49b3b04356eb1c7706634f"
+    }
+  },
+  "summary": {
+    "outcomes": {
+      "agree": 258
+    },
+    "weighted_random_error_rate": 0.0,
+    "verdicts": {
+      "text_layer_error": 0,
+      "extraction_error": 0,
+      "reviewer_misreading": 0
+    }
+  }
+}

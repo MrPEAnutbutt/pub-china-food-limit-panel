@@ -1,7 +1,7 @@
 {
-  "packet_id": "BR144-v1.1-c768195498bd8086",
-  "protocol_version": "1.1",
-  "packet_contract_sha256": "c768195498bd8086f6b0aaa58ae122d254d640911ffd43078dcc8c85f490659b",
+  "packet_id": "BR144-v1.2-9795b815a5f551e1",
+  "protocol_version": "1.2",
+  "packet_contract_sha256": "9795b815a5f551e1b571ac13b3216fbe33fac3efad000e1d939b039f8e6b7e1c",
   "initial_transcriber_id": "Zilong Xu",
   "reviewer_id": "",
   "reviewer_role": "",

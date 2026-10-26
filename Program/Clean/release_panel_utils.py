@@ -8,6 +8,8 @@ from collections import defaultdict
 from decimal import Decimal
 from decimal import InvalidOperation
 
+from release_dependency_utils import animal_members
+
 
 PESTICIDE_YEARS = ("2012", "2014", "2016", "2019", "2021", "2026")
 ADDITIVE_YEARS = ("2011", "2014", "2024")
@@ -81,6 +83,21 @@ def _normalise_codes(value):
     return ",".join(sorted(part.strip() for part in value.split(",") if part.strip()))
 
 
+def _edition_gap(present_years, years):
+    """True when the compared editions skip an edition in between."""
+    positions = [years.index(year) for year in present_years]
+    return positions != list(range(positions[0], positions[-1] + 1))
+
+
+def _covered_animals(labels):
+    animals = set()
+    for label in labels:
+        animals |= animal_members(label)
+        if "其他动物" in label.split("/"):
+            animals.add("其他动物")
+    return animals
+
+
 def _normalise_vetdrug_english(value):
     """Return the punctuation-insensitive identity used by the vet summary."""
     identity = re.sub(r"[^0-9a-z]+", "", str(value or "").casefold())
@@ -105,6 +122,7 @@ def build_vetdrug_summary_panel(long_rows):
     becoming an empty, falsely labelled summary row.
     """
     grouped = defaultdict(lambda: defaultdict(set))
+    animals = defaultdict(lambda: defaultdict(set))
     display_rows = defaultdict(list)
     year_rank = {year: index for index, year in enumerate(VETDRUG_SUMMARY_YEARS)}
 
@@ -134,6 +152,7 @@ def build_vetdrug_summary_panel(long_rows):
             )
         key = (identity, tissue)
         grouped[key][year].add(value)
+        animals[key][year].add(str(row.get("animal", "") or ""))
         display_rows[key].append(row)
 
     output = []
@@ -149,6 +168,11 @@ def build_vetdrug_summary_panel(long_rows):
             trend = "single_2019_unmatched"
         elif len(values_2002) != 1 or len(values_2019) != 1:
             trend = "unresolved_multiple_animals"
+        elif _covered_animals(animals[(identity, tissue)]["2002"]) != _covered_animals(
+            animals[(identity, tissue)]["2019"]
+        ):
+            # The same value then applies to a different set of animals.
+            trend = "incomparable_scope_text"
         elif values_2002[0] == values_2019[0]:
             trend = "stable"
         elif values_2019[0] < values_2002[0]:
@@ -256,6 +280,10 @@ def _trend(cells, years, scope_columns=()):
         }
         if len(scope_signatures) > 1:
             return "incomparable_scope_text"
+
+    present_years = [year for year in years if cells[year]["status"] != "missing"]
+    if _edition_gap(present_years, years):
+        return "incomparable_edition_gap"
 
     values = [cell["value"] for cell in present]
     if all(value == "GMP" for value in values):
@@ -579,6 +607,12 @@ def _pesticide_v2_trend(cells):
     if len(scopes) > 1:
         return "incomparable_scope_text"
 
+    present_years = [
+        year for year in PESTICIDE_YEARS if cells[year]["status"] != "missing"
+    ]
+    if _edition_gap(present_years, PESTICIDE_YEARS):
+        return "incomparable_edition_gap"
+
     numbers = [_pesticide_v2_decimal(cell["value"]) for cell in present]
     if any(number is None for number in numbers):
         return "incomparable_non_numeric"
@@ -696,6 +730,30 @@ def build_pesticide_panel_v2(long_rows):
     if len(referenced_ids) != len(normalised_rows) or set(referenced_ids) != record_ids:
         raise RuntimeError("pesticide panel v2 did not conserve input record IDs")
     return out
+
+
+def link_source_records(panel_rows, long_rows, years, cell_keys, long_key, unique=True):
+    """Add `source_record_ids_<year>` once the panel record IDs are fixed.
+
+    `cell_keys(row, year)` lists the long-table keys of the rules a cell
+    reports, empty for an empty cell. With `unique` each key must name exactly
+    one long row; otherwise at least one.
+    """
+    index = defaultdict(list)
+    for row in long_rows:
+        index[long_key(row)].append(row["record_id"])
+    for row in panel_rows:
+        for year in years:
+            ids = []
+            for key in cell_keys(row, year):
+                matched = index.get(key, [])
+                if not matched or (unique and len(matched) != 1):
+                    raise ValueError(
+                        f"{row['record_id']} {year}: {len(matched)} long rows for {key}"
+                    )
+                ids.extend(matched)
+            row[f"source_record_ids_{year}"] = _json(sorted(ids))
+    return panel_rows
 
 
 def build_pesticide_panel(long_rows, metadata_rows):

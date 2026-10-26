@@ -1,0 +1,28 @@
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.10\textwidth}>{\raggedright\arraybackslash}p{0.10\textwidth}>{\raggedright\arraybackslash}p{0.10\textwidth}>{\raggedright\arraybackslash}p{0.10\textwidth}>{\raggedright\arraybackslash}p{0.22\textwidth}@{}}
+\caption{Category restructuring in the contaminant member panel. Each cell gives the value and, by letter, the printed category that hosts the member in that edition. A member takes its own printed rule or the rule of the first ancestor category that has a value and does not exclude it. A cell is blank when that rule excludes the member, when the member spans two printed rules, or when the host cannot be determined, and note records the reason. Renames and containment links that the printed text does not establish were confirmed against the source pages before use.}\label{tab1Restructuring}\tabularnewline
+\toprule
+Member & 2012 & 2017 & 2022 & 2025 & Member trend \\
+\midrule
+\endfirsthead
+\toprule
+Member & 2012 & 2017 & 2022 & 2025 & Member trend \\
+\midrule
+\endhead
+\addlinespace \multicolumn{6}{@{}p{0.92\textwidth}}{\emph{Split: inorganic arsenic, mg/kg.} A: paddy, brown rice, milled rice; B: paddy; C: brown rice; D: milled rice (flour).} \\
+Paddy\newline {\footnotesize\texttt{PMP684DE2F7269A16C3}} & 0.2 (A) & 0.2 (A) & 0.35 (B) & 0.35 (B) & \path{relaxed} \\
+Brown rice\newline {\footnotesize\texttt{PMP11F3B1D1A21264FA}} & 0.2 (A) & 0.2 (A) & 0.35 (C) & 0.35 (C) & \path{relaxed} \\
+Milled rice\newline {\footnotesize\texttt{PMP182B719EEC11154D}} & 0.2 (A) & 0.2 (A) & 0.2 (D) & 0.2 (D) & \path{stable} \\
+\multicolumn{6}{@{}p{0.92\textwidth}}{Category panel: A is not printed after 2017 (\path{incomparable_category_disappeared}); B, C and D start in 2022 (\path{stable}). Milled rice reaches D through a confirmed containment link.} \\
+\addlinespace \multicolumn{6}{@{}p{0.92\textwidth}}{\emph{Absorbed: lead, mg/kg.} E: milk powder, non-demineralised whey powder; F: milk and dairy products, excluding raw, pasteurised, sterilised, modified and fermented milk.} \\
+Milk powder\newline {\footnotesize\texttt{PMP076F16DAC6DB4584}} & 0.5 (E) & 0.5 (E) & 0.2 (F) & 0.2 (F) & \path{tightened} \\
+\multicolumn{6}{@{}p{0.92\textwidth}}{Category panel: E is not printed after 2017. The milk and dairy products class is printed from 2017; in 2017 its exclusions still name milk powder and its value is 0.3, so its category row is \path{incomparable_scope_text}.} \\
+\addlinespace \multicolumn{6}{@{}p{0.92\textwidth}}{\emph{Narrowed: lead, mg/kg.} G: distilled spirits, yellow wine; H: baijiu, yellow wine; I: alcoholic beverages, excluding distilled spirits and yellow wine; J: alcoholic beverages, excluding baijiu and yellow wine.} \\
+Baijiu\newline {\footnotesize\texttt{PMP8B4C526EBD463AA8}} & 0.5 (G) & 0.5 (G) & 0.5 (H) & 0.5 (H) & \path{stable} \\
+Distilled spirits\newline {\footnotesize\texttt{PMP62DAC94F65952164}} & 0.5 (G) & 0.5 (G) & blank & blank & \path{stable} \\
+Alcoholic beverages (residual class)\newline {\footnotesize\texttt{PMP45019858190B9DBC}} & 0.2 (I) & 0.2 (I) & 0.2 (J) & 0.2 (J) & \path{incomparable_scope_text} \\
+\multicolumn{6}{@{}p{0.92\textwidth}}{Baijiu reaches G through a confirmed containment link. From 2022 distilled spirits spans H and J, so its cells are blank and note gives the reason; the residual class keeps 0.2 while its exclusions change.} \\
+\addlinespace \multicolumn{6}{@{}p{0.92\textwidth}}{\emph{Renamed: cadmium, mg/L.} K: mineral water; L: natural mineral drinking water.} \\
+Natural mineral drinking water\newline {\footnotesize\texttt{PMP79901CCABA6E08C6}} & 0.003 (K) & 0.003 (K) & 0.003 (L) & 0.003 (L) & \path{stable} \\
+\multicolumn{6}{@{}p{0.92\textwidth}}{The confirmed rename merges K and L into one category row, \texttt{PCPF29B1B2B137A5408} (\path{stable}).} \\
+\bottomrule
+\end{longtable}

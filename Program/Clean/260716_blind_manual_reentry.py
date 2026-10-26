@@ -47,7 +47,7 @@ DEFAULT_VET2022_SEED = (
     PROJECT_ROOT / "Data" / "Interim" / "vetdrug_rebuild" / "vetdrug_2022_manual.csv"
 )
 
-PROTOCOL_VERSION = "1.1"
+PROTOCOL_VERSION = "1.2"
 INITIAL_TRANSCRIBER_ID = "Zilong Xu"
 CONFIRMATION = "confirmed"
 CONFIRMATION_STATEMENT = (
@@ -294,6 +294,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     reconcile.add_argument("--source-manifest", type=Path, default=DEFAULT_MANIFEST)
     reconcile.add_argument("--entry-dir", type=Path, required=True)
     reconcile.add_argument("--attestation", type=Path)
+    reconcile.add_argument(
+        "--pending-attestation",
+        action="store_true",
+        help="compare before the declaration arrives; entry digests come from "
+        "the entry directory's unpack_receipt.json and the audit cannot pass",
+    )
     reconcile.add_argument("--manual-2005", type=Path, default=DEFAULT_MYCO_SEED)
     reconcile.add_argument("--manual-2019", type=Path, default=DEFAULT_VET2019_SEED)
     reconcile.add_argument("--manual-2022", type=Path, default=DEFAULT_VET2022_SEED)
@@ -595,9 +601,11 @@ not support a dataset-wide field-error estimate.
 ## Blindness boundary
 
 Give the reviewer only this directory and privately supplied copies of the three
-source PDFs after their SHA-256 digests have been checked against
+source PDFs after the custodian has checked their SHA-256 digests against
 `batch_manifest.csv`. Do not provide the construction seeds, release CSVs,
 current release record IDs, earlier comparison output or author-entered values.
+The same templates may instead be supplied as the value-free workbook written by
+`Program/Clean/261024_reviewer_handoff.py build`, whose locator cells are locked.
 The directory must contain exactly `packet_manifest.json` and the files listed
 under its `files` object; the generator refuses a non-empty output directory.
 The source pages necessarily display the printed values and are the permitted
@@ -628,6 +636,15 @@ The 17 relevant PDF pages are:
    set `confirmation` to `{CONFIRMATION}`.
 5. Return the three CSVs and the attestation together. Keep the source PDFs and
    page images outside the returned directory.
+
+When the workbook route is used, the reviewer instead returns the completed
+workbook with a declaration form that gives the reviewer's role and completion
+date and confirms each independence item; the custodian keeps the returning
+message as the record. On receipt, and before any comparison, the custodian
+records the workbook's SHA-256 digest, converts it with
+`261024_reviewer_handoff.py unpack` (which rejects any changed locator cell) and
+transcribes the declaration and the resulting CSV digests into the attestation,
+where `reviewer_id` is a stable pseudonymous code.
 
 ## Reconciliation
 
@@ -663,8 +680,9 @@ read-only. The allowed adjudication outcomes are:
 - `unresolved` with `error_source=unresolved`: leave `adjudicated_raw` blank.
 
 Every adjudication row also requires an adjudicator, ISO date and source-based
-note. The adjudicator must be a third person who is distinct from both the
-initial transcriber and the independent re-entry reviewer. A run can pass after
+note. From protocol 1.2 the author adjudicates against the printed source page;
+the adjudicator must not be the independent re-entry reviewer, and each note
+names the PDF page and the reason for the outcome. A run can pass after
 adjudication only when no field is missing and every disagreement is resolved as
 `construction_confirmed`. If adjudication identifies a construction error,
 correct the relevant seed in a separate reviewed commit, rebuild downstream
@@ -968,6 +986,31 @@ def validate_attestation(
     return payload, metadata
 
 
+def receipt_digests(
+    path: Path, entry_paths: dict[str, Path]
+) -> tuple[dict[str, str], dict[str, object]]:
+    """Entry digests frozen when the returned workbook was unpacked."""
+    if not path.is_file():
+        raise AuditError(f"unpack receipt is missing: {path}")
+    raw = path.read_bytes()
+    try:
+        digests = json.loads(raw.decode("utf-8-sig"))["csv"]
+    except (json.JSONDecodeError, UnicodeDecodeError, KeyError, TypeError) as error:
+        raise AuditError("unpack receipt is invalid") from error
+    if not set(entry_paths) <= set(digests):
+        raise AuditError("unpack receipt lacks an entry file")
+    selected = {filename: digests[filename] for filename in entry_paths}
+    for filename, digest in selected.items():
+        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+            raise AuditError(f"unpack receipt has invalid entry digest for {filename}")
+    metadata = {
+        "filename": path.name,
+        "file_size_bytes": len(raw),
+        "sha256": hashlib.sha256(raw).hexdigest(),
+    }
+    return selected, metadata
+
+
 def _normalise_text(value: str, *, casefold: bool = False) -> str:
     value = unicodedata.normalize("NFKC", value)
     value = re.sub(r"\s+", " ", value).strip()
@@ -1188,7 +1231,7 @@ def reconcile_packet(
     *,
     source_manifest: Path,
     entry_dir: Path,
-    attestation_path: Path,
+    attestation_path: Path | None,
     manual_2005: Path,
     manual_2019: Path,
     manual_2022: Path,
@@ -1203,10 +1246,17 @@ def reconcile_packet(
         contract.template_filename: entry_dir / contract.template_filename
         for contract in SOURCE_CONTRACTS
     }
-    attestation, attestation_metadata = validate_attestation(
-        attestation_path, identifier, entry_paths
-    )
-    completed_digests = attestation["completed_entry_sha256"]
+    if attestation_path is None:
+        # Declaration pending: compare now, but the audit cannot pass.
+        attestation, attestation_metadata = None, None
+        completed_digests, receipt_metadata = receipt_digests(
+            entry_dir / "unpack_receipt.json", entry_paths
+        )
+    else:
+        attestation, attestation_metadata = validate_attestation(
+            attestation_path, identifier, entry_paths
+        )
+        completed_digests = attestation["completed_entry_sha256"]
     if not isinstance(completed_digests, dict):
         raise AuditError("attestation entry digest inventory differs")
     entries: dict[str, list[dict[str, str]]] = {}
@@ -1239,10 +1289,9 @@ def reconcile_packet(
     adjudication, adjudication_input_metadata = _read_adjudication(
         adjudication_path,
         unresolved,
-        excluded_adjudicator_ids={
-            INITIAL_TRANSCRIBER_ID.casefold(),
-            str(attestation["reviewer_id"]).strip().casefold(),
-        },
+        excluded_adjudicator_ids=(
+            {str(attestation["reviewer_id"]).strip().casefold()} if attestation else set()
+        ),
     )
     _apply_adjudication(comparisons, adjudication)
 
@@ -1271,17 +1320,20 @@ def reconcile_packet(
         or row["adjudication_status"] == "construction_confirmed"
         for row in comparisons
     )
-    gap_closed = (
+    entries_resolved = (
         not missing_exists
         and (not unresolved or all_disagreements_resolved_as_reentry)
         and not construction_error
     )
+    gap_closed = entries_resolved and attestation is not None
     if gap_closed:
         audit_status = "pass"
     elif construction_error:
         audit_status = "correction_required"
-    else:
+    elif not entries_resolved:
         audit_status = "review_required"
+    else:
+        audit_status = "attestation_pending"
 
     comparison_metadata = _write_csv_atomic(
         output_dir / "blind_reentry_field_comparison.csv",
@@ -1339,6 +1391,10 @@ def reconcile_packet(
             "independent_person": True,
             "entry_files": entry_metadata,
             "attestation_file": attestation_metadata,
+        } if attestation else {
+            "status": "pending",
+            "entry_files": entry_metadata,
+            "entry_digest_source": receipt_metadata,
         },
         "inputs": {
             "source_manifest": file_metadata(source_manifest),
@@ -1364,7 +1420,11 @@ def main(argv: list[str] | None = None) -> int:
                 f"{args.output_dir}"
             )
             return 0
-        attestation = args.attestation or args.entry_dir / "reviewer_attestation.json"
+        attestation = (
+            None
+            if args.pending_attestation
+            else args.attestation or args.entry_dir / "reviewer_attestation.json"
+        )
         report = reconcile_packet(
             source_manifest=args.source_manifest,
             entry_dir=args.entry_dir,

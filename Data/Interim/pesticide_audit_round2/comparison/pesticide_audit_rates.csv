@@ -1,0 +1,5 @@
+﻿edition,stratum,population_rows,sample_rows,compared,illegible,discrepancies,errors,error_rate,ci95_low,ci95_high
+2019,consistent,1929,32,32,0,0,0,0.0,0.0,0.108881
+2019,text_only,5175,87,87,0,0,0,0.0,0.0,0.041515
+2021,text_only,8315,139,139,0,0,0,0.0,0.0,0.02619
+2019+2021,random,15419,258,258,0,0,0,0.0,0.0,0.014196

@@ -1,7 +1,7 @@
 # Blind re-entry protocol for 144 manually transcribed records
 
-- Packet ID: `BR144-v1.1-c768195498bd8086`
-- Protocol version: `1.1`
+- Packet ID: `BR144-v1.2-9795b815a5f551e1`
+- Protocol version: `1.2`
 - Status: awaiting a real independent reviewer
 
 This packet targets every record created through author-only manual transcription:
@@ -12,9 +12,11 @@ not support a dataset-wide field-error estimate.
 ## Blindness boundary
 
 Give the reviewer only this directory and privately supplied copies of the three
-source PDFs after their SHA-256 digests have been checked against
+source PDFs after the custodian has checked their SHA-256 digests against
 `batch_manifest.csv`. Do not provide the construction seeds, release CSVs,
 current release record IDs, earlier comparison output or author-entered values.
+The same templates may instead be supplied as the value-free workbook written by
+`Program/Clean/261024_reviewer_handoff.py build`, whose locator cells are locked.
 The directory must contain exactly `packet_manifest.json` and the files listed
 under its `files` object; the generator refuses a non-empty output directory.
 The source pages necessarily display the printed values and are the permitted
@@ -45,6 +47,15 @@ The 17 relevant PDF pages are:
    set `confirmation` to `confirmed`.
 5. Return the three CSVs and the attestation together. Keep the source PDFs and
    page images outside the returned directory.
+
+When the workbook route is used, the reviewer instead returns the completed
+workbook with a declaration form that gives the reviewer's role and completion
+date and confirms each independence item; the custodian keeps the returning
+message as the record. On receipt, and before any comparison, the custodian
+records the workbook's SHA-256 digest, converts it with
+`261024_reviewer_handoff.py unpack` (which rejects any changed locator cell) and
+transcribes the declaration and the resulting CSV digests into the attestation,
+where `reviewer_id` is a stable pseudonymous code.
 
 ## Reconciliation
 
@@ -80,8 +91,9 @@ read-only. The allowed adjudication outcomes are:
 - `unresolved` with `error_source=unresolved`: leave `adjudicated_raw` blank.
 
 Every adjudication row also requires an adjudicator, ISO date and source-based
-note. The adjudicator must be a third person who is distinct from both the
-initial transcriber and the independent re-entry reviewer. A run can pass after
+note. From protocol 1.2 the author adjudicates against the printed source page;
+the adjudicator must not be the independent re-entry reviewer, and each note
+names the PDF page and the reason for the outcome. A run can pass after
 adjudication only when no field is missing and every disagreement is resolved as
 `construction_confirmed`. If adjudication identifies a construction error,
 correct the relevant seed in a separate reviewed commit, rebuild downstream

@@ -1,6 +1,6 @@
 {
   "title": "Code and build evidence for: A cross-edition panel of chemical limits in China's food safety standards",
-  "description": "Curated code-and-evidence archive for the Data Descriptor and its dataset (figshare, doi:10.6084/m9.figshare.33005717): extraction, cross-edition alignment, release assembly, English-label linkage, tests and the validation suite behind 46,337 limit records from five mandatory Chinese food-safety standard families (2002-2026). Source standards are not redistributed; per-word OCR dumps are withheld from the archive and pinned by sha256 in the completion manifest.",
+  "description": "Curated code-and-evidence archive for the Data Descriptor and its dataset (figshare, doi:10.6084/m9.figshare.33005717): extraction, cross-edition alignment, release assembly, English-label linkage, tests, the validation suite and the independent-verification evidence behind 46,337 limit records from five mandatory Chinese food-safety standard families (2002-2026). Source standards are not redistributed; per-word OCR dumps are withheld from the archive and pinned by sha256 in the completion manifest.",
   "creators": [
     {
       "name": "Xu, Zilong",

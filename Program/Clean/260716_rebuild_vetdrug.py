@@ -39,7 +39,7 @@ MANUAL_2022_SPEC = CSVSpec(
     fields=("drug", "english", "animal", "tissue", "limit_value", "unit"),
     rows=122,
     unique_key=("english", "animal", "tissue"),
-    sha256="6d5e25a2455157ce6a26452b8cb4fb380698173babf52ae9656d4e780b6d82f8",
+    sha256="9c12d1a4ee1e198621d4380bb6df09c60705a5985bba2efa345e6aec32d2c628",
 )
 VETDRUG_2002_SPEC = CSVSpec(
     fields=(
@@ -79,11 +79,11 @@ SOURCE_ACQUISITION_SPEC = CSVSpec(
 OUTPUT_IDENTITIES = {
     "vetdrug_limits_by_version.csv": (
         1365,
-        "90c9211355751f1fc90d35562b6a00f89ee95bcb91b133e96938860c73de96d0",
+        "c682b212c6ec2f7d1677d582ac8250067953d71edc71aa4403bbaab72d686c60",
     ),
     "vetdrug_strictness_change.csv": (
         657,
-        "95575a2ddf9e9a4402823633267f39e8cfcbb3a4248a2ef13ae252ddbfd2b62f",
+        "0d78a6af21539497f35b50dbea0ffe35f452db22d7e3aa89193d949841d61e76",
     ),
 }
 TISSUE_ALIAS = {
@@ -324,7 +324,16 @@ def extract_2019(
         animal = re.sub(r"\s+", "", parts[0]) if len(parts) >= 2 else ""
         if not re.search(r"[一-鿿]", tissue):
             continue
-        if animal.startswith(("（", "(")):
+        previous = next(
+            (buffer[index][0] for index in range(len(buffer) - 1, -1, -1) if buffer[index][0]),
+            "",
+        )
+        # A label wrapped inside its cell, or across a page break, leaves the
+        # previous label with an unclosed bracket; the next row carries the rest.
+        unclosed = previous.count("（") + previous.count("(") > (
+            previous.count("）") + previous.count(")")
+        )
+        if animal.startswith(("（", "(")) or (animal and unclosed):
             for index in range(len(buffer) - 1, -1, -1):
                 if buffer[index][0]:
                     buffer[index] = (

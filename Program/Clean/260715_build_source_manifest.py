@@ -27,6 +27,7 @@ from source_manifest_utils import (
     OUTPUT_COLUMNS,
     SOURCE_DOCUMENTS,
     resolve_source_path,
+    source_class,
 )
 
 
@@ -138,6 +139,7 @@ def build_manifest(
                 "page_count": (
                     "" if document.page_count is None else str(document.page_count)
                 ),
+                "source_class": source_class(document),
             }
         )
 
@@ -271,11 +273,23 @@ def write_source_acquisition_guide(
         "- `related_standard_only`: the locator identifies the related standard; "
         "it does not identify the separate audit-copy byte stream.",
         "",
+        "Source classes (`source_class` in `source_manifest.csv`):",
+        "",
+        "- `issuing_authority_file`: an edition text issued by the standard-setting "
+        "authority. The locator status states whether the frozen bytes match a "
+        "current issuer download.",
+        "- `government_hosted_copy`: a copy downloaded from a government website "
+        "other than the issuing authority; it supplied released values.",
+        "- `third_party_translation`: an unofficial English translation used only "
+        "for English labels.",
+        "- `audit_only_copy`: a file used for edition identity, OCR cross-checking "
+        "or identity audit; no released value is read from it.",
+        "",
         "## Chinese source documents",
         "",
-        "| ID | Standard | Year | Frozen filename | Bytes | Frozen SHA-256 | "
-        "Public locator | Locator status | Original retrieval | Notes |",
-        "|---|---|---:|---|---:|---|---|---|---|---|",
+        "| ID | Standard | Year | Source class | Frozen filename | Bytes | "
+        "Frozen SHA-256 | Public locator | Locator status | Original retrieval | Notes |",
+        "|---|---|---:|---|---|---:|---|---|---|---|---|",
     ]
 
     for row in rows:
@@ -284,6 +298,7 @@ def write_source_acquisition_guide(
             row["source_id"],
             row["standard"],
             row["version_year"],
+            f"`{row['source_class']}`",
             f"`{row['source_filename']}`",
             row["file_size_bytes"],
             f"`{row['sha256']}`",
@@ -304,14 +319,15 @@ def write_source_acquisition_guide(
             "normative standards. The extraction script checks each filename and "
             "SHA-256 digest before parsing.",
             "",
-            "| Frozen filename | Bytes | Publication | Frozen SHA-256 | "
+            "| Frozen filename | Source class | Bytes | Publication | Frozen SHA-256 | "
             "Public locator | Locator status | Retrieved | Notes |",
-            "|---|---:|---|---|---|---|---|---|",
+            "|---|---|---:|---|---|---|---|---|---|",
         ]
     )
     for translation in TRANSLATION_SOURCES:
         cells = (
             f"`{translation.filename}`",
+            "`third_party_translation`",
             str(translation.file_size_bytes),
             translation.publication,
             f"`{translation.sha256}`",

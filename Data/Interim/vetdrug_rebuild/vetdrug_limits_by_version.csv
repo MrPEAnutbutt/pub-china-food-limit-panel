@@ -391,11 +391,11 @@
 2019,伊维菌素,ivermectin,猪/羊,猪/羊,脂肪,100,μg/kg,text
 2019,伊维菌素,ivermectin,猪/羊,猪/羊,肝,100,μg/kg,text
 2019,伊维菌素,ivermectin,猪/羊,猪/羊,肾,30,μg/kg,text
-2019,卡那霉素,kanamycin,所有食品动物（产蛋期禁用，不,所有食品动物（产蛋期禁用，不,肌肉,100,μg/kg,text
-2019,卡那霉素,kanamycin,包括鱼）,包括鱼）,皮+脂,100,μg/kg,text
-2019,卡那霉素,kanamycin,包括鱼）,包括鱼）,肝,600,μg/kg,text
-2019,卡那霉素,kanamycin,包括鱼）,包括鱼）,肾,2500,μg/kg,text
-2019,卡那霉素,kanamycin,包括鱼）,包括鱼）,奶,150,μg/kg,text
+2019,卡那霉素,kanamycin,所有食品动物（产蛋期禁用，不包括鱼）,所有食品动物,肌肉,100,μg/kg,text
+2019,卡那霉素,kanamycin,所有食品动物（产蛋期禁用，不包括鱼）,所有食品动物,皮+脂,100,μg/kg,text
+2019,卡那霉素,kanamycin,所有食品动物（产蛋期禁用，不包括鱼）,所有食品动物,肝,600,μg/kg,text
+2019,卡那霉素,kanamycin,所有食品动物（产蛋期禁用，不包括鱼）,所有食品动物,肾,2500,μg/kg,text
+2019,卡那霉素,kanamycin,所有食品动物（产蛋期禁用，不包括鱼）,所有食品动物,奶,150,μg/kg,text
 2019,吉他霉素,kitasamycin,猪/家禽,猪/家禽,肌肉,200,μg/kg,text
 2019,吉他霉素,kitasamycin,猪/家禽,猪/家禽,肝,200,μg/kg,text
 2019,吉他霉素,kitasamycin,猪/家禽,猪/家禽,肾,200,μg/kg,text
@@ -407,10 +407,10 @@
 2019,拉沙洛西,lasalocid,火鸡,火鸡,肝,400,μg/kg,text
 2019,拉沙洛西,lasalocid,羊,羊,肝,1000,μg/kg,text
 2019,拉沙洛西,lasalocid,兔,兔,肝,700,μg/kg,text
-2019,左旋咪唑,levamisole,牛/羊/猪/家禽（泌乳期禁用、产,牛/羊/猪/家禽（泌乳期禁用、产,肌肉,10,μg/kg,text
-2019,左旋咪唑,levamisole,蛋期禁用）,蛋期禁用）,脂肪,10,μg/kg,text
-2019,左旋咪唑,levamisole,蛋期禁用）,蛋期禁用）,肝,100,μg/kg,text
-2019,左旋咪唑,levamisole,蛋期禁用）,蛋期禁用）,肾,10,μg/kg,text
+2019,左旋咪唑,levamisole,牛/羊/猪/家禽（泌乳期禁用、产蛋期禁用）,牛/羊/猪/家禽,肌肉,10,μg/kg,text
+2019,左旋咪唑,levamisole,牛/羊/猪/家禽（泌乳期禁用、产蛋期禁用）,牛/羊/猪/家禽,脂肪,10,μg/kg,text
+2019,左旋咪唑,levamisole,牛/羊/猪/家禽（泌乳期禁用、产蛋期禁用）,牛/羊/猪/家禽,肝,100,μg/kg,text
+2019,左旋咪唑,levamisole,牛/羊/猪/家禽（泌乳期禁用、产蛋期禁用）,牛/羊/猪/家禽,肾,10,μg/kg,text
 2019,林可霉素,lincomycin,牛/羊,牛/羊,肌肉,100,μg/kg,text
 2019,林可霉素,lincomycin,牛/羊,牛/羊,脂肪,50,μg/kg,text
 2019,林可霉素,lincomycin,牛/羊,牛/羊,肝,500,μg/kg,text
@@ -1250,7 +1250,7 @@
 2022,安普霉素,apramycin,鸡,鸡,蛋,10,μg/kg,manual
 2022,阿司匹林,aspirin,鸡,鸡,蛋,10,μg/kg,manual
 2022,阿维拉霉素,avilamycin,鸡/火鸡,鸡/火鸡,蛋,10,μg/kg,manual
-2022,青霉素、普鲁卡因青霉素,benzylpenicillin,家禽,家禽,蛋,4,μg/kg,manual
+2022,青霉素、普鲁卡因青霉素,"benzylpenicillin,procaine benzylpenicillin",家禽,家禽,蛋,4,μg/kg,manual
 2022,氯唑西林,cloxacillin,家禽,家禽,蛋,4,μg/kg,manual
 2022,达氟沙星,danofloxacin,家禽,家禽,蛋,10,μg/kg,manual
 2022,得曲恩特,derquantel,绵羊,绵羊,肌肉,0.3,μg/kg,manual

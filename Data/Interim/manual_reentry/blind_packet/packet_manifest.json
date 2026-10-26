@@ -1,7 +1,7 @@
 {
-  "packet_id": "BR144-v1.1-c768195498bd8086",
-  "protocol_version": "1.1",
-  "packet_contract_sha256": "c768195498bd8086f6b0aaa58ae122d254d640911ffd43078dcc8c85f490659b",
+  "packet_id": "BR144-v1.2-9795b815a5f551e1",
+  "protocol_version": "1.2",
+  "packet_contract_sha256": "9795b815a5f551e1b571ac13b3216fbe33fac3efad000e1d939b039f8e6b7e1c",
   "locator_contract_sha256": "846ffc6da9324810e6a5712e2ad2f90b8ed84d4a0a626cd4651306b7d77d4a35",
   "status": "awaiting_independent_reentry",
   "provenance_gap": {
@@ -49,7 +49,7 @@
     "batch_manifest.csv": {
       "filename": "batch_manifest.csv",
       "file_size_bytes": 876,
-      "sha256": "57843f951ba3ed44c4ed008c9cd643181965af92339a1ab7d4d9d710d5b51727",
+      "sha256": "3e8b08c1a4159c5b6f84e1f989c13f2b84fb6eb3212cfcd5aeb48fe9e4fcfef4",
       "rows": 3
     },
     "mycotoxin_2005_blind_entry.csv": {
@@ -73,12 +73,12 @@
     "reviewer_attestation.json": {
       "filename": "reviewer_attestation.json",
       "file_size_bytes": 809,
-      "sha256": "ad2cd75abe5bff0f8fada9827bfc64654a3d97febd67d6f6a7e181764c4ca7c1"
+      "sha256": "32ff677fa0e3db930f773543cf426716432deb70fb9ded678ff5c030bef3e2a8"
     },
     "README.md": {
       "filename": "README.md",
-      "file_size_bytes": 4635,
-      "sha256": "09c5e0854d955ea3c2a19015b923f6bad81e516cec3419cf3966e8f54df36fb1"
+      "file_size_bytes": 5456,
+      "sha256": "687763d7c53c4820090b2f454188ee0a2de5625605c8f44c26499fd5c86cc699"
     }
   },
   "manuscript_claim_eligible": false

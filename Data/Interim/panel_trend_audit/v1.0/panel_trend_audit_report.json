@@ -1,0 +1,82 @@
+{
+  "release_dir": "Data/Final/china_food_limit_panel_v1",
+  "inputs_sha256": {
+    "additive_limits_long.csv": "f0a2407fe914ebc97773a6817cc3b0288ddc1449ff727be449fcfd07de7d36d6",
+    "additive_panel.csv": "8cfa5b52639c161527ba47ef77efd68d8446332ef33d6e709b81dafd4f1b089c",
+    "mycotoxin_limits_long.csv": "671472834fb45f9683639ef70bf02a4157a8f4c70f83ef1bc1cecdbd71f1e344",
+    "mycotoxin_member_panel.csv": "e52a67ec5b5bba443bd5c0b0240122edd5c1f50fd5074697a8bade8f5294e9c1",
+    "mycotoxin_panel.csv": "6bf04957ae009b7e33aa8f8cfb14e688c34fe5eb5fc60c6156118afd03c93933",
+    "pesticide_limits_long.csv": "dd67d2998220e787a041e13827544493966bff1fe4cf848280e7e64f9b900de4",
+    "pesticide_panel.csv": "f47f5e8ade71d94cefd319ab4ec254c4fd3e7ba9f7b7a56ec21767239c4e8922",
+    "pollutant_category_panel.csv": "9bce9eb33453ad191590d4f198aeabaffa85198648ef95c6542fd5faa939cc7b",
+    "pollutant_limits_long.csv": "d6d28f131bea152ff3c58bc9be012ac379f1a9b468e5fbf732c51f74ddfe2bf9",
+    "pollutant_member_panel.csv": "70d8b667d01d081ea181b57edaf6e8af6b2b147be320d477a80b60da13095bdd",
+    "vetdrug_limits_long.csv": "c9dd7c88fe9ce3630cf978157e3b5637f508cb25b95c41e4b48353251dc5eecd",
+    "vetdrug_member_panel.csv": "8b9fc53cfd1c4726eac5d088c8c069248012d16ec766c25fb6af432f46c80144",
+    "vetdrug_panel.csv": "f98403757539d20041927053f63bc12e42e922b495008a7bed1d0adeed69efd5",
+    "quarantined_rows.csv": "1b57cb8e106b1d68fb6717b05d2d3d1344b5640f32e0f6b1997b36ec1a1d64b2",
+    "food_taxonomy.csv": "f5730ffcc4bfe4f54a427445a2a392fbdb473de609a6aa3b23584f6ced415f7d",
+    "category_alias.csv": "59d4838dcf19b433308d2d850698bbc2a56599a0185a2e9f3279eeda347ffb66"
+  },
+  "judged_trends": [
+    "stable",
+    "stable_gmp",
+    "tightened",
+    "relaxed",
+    "fluctuation"
+  ],
+  "flag_kinds": {
+    "link_failure": "rule_violation",
+    "masked_multiple_rules": "rule_violation",
+    "label_not_reproduced_by_monotonic_rule": "rule_violation",
+    "scope_text_differs": "rule_violation",
+    "qualifier_differs": "rule_violation",
+    "residual_member_scope_changes": "rule_violation",
+    "manual_entry_mycotoxin_2005": "needs_decision",
+    "manual_entry_vetdrug_2019_cross_page": "needs_decision",
+    "manual_entry_vetdrug_2022": "needs_decision",
+    "quarantined_rule_same_key": "needs_decision",
+    "pesticide_edition_2016": "needs_decision",
+    "pesticide_edition_2019": "needs_decision",
+    "edition_gap": "needs_decision",
+    "qualifier_present": "informational",
+    "host_category_changes": "informational",
+    "animal_label_changes": "informational",
+    "value_shown_but_not_compared": "informational",
+    "conflict_row": "informational",
+    "pesticide_review_exception": "informational"
+  },
+  "panel_rows": {
+    "pesticide_panel": 11718,
+    "additive_panel": 2762,
+    "pollutant_category_panel": 260,
+    "pollutant_member_panel": 390,
+    "mycotoxin_panel": 40,
+    "mycotoxin_member_panel": 55,
+    "vetdrug_panel": 559,
+    "vetdrug_member_panel": 1132
+  },
+  "link_failures": 0,
+  "long_row_coverage": {
+    "additive_limits_long.csv": {
+      "rows": 6148,
+      "referenced_by_a_panel": 6148
+    },
+    "mycotoxin_limits_long.csv": {
+      "rows": 61,
+      "referenced_by_a_panel": 61
+    },
+    "pesticide_limits_long.csv": {
+      "rows": 38024,
+      "referenced_by_a_panel": 38024
+    },
+    "pollutant_limits_long.csv": {
+      "rows": 739,
+      "referenced_by_a_panel": 739
+    },
+    "vetdrug_limits_long.csv": {
+      "rows": 1365,
+      "referenced_by_a_panel": 1244
+    }
+  }
+}

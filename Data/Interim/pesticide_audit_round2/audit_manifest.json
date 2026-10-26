@@ -1,0 +1,48 @@
+{
+  "protocol_version": "1.0",
+  "seed": "GB2763-audit-20261024",
+  "random_sample_size": 258,
+  "template_rows": 258,
+  "inputs": {
+    "pesticide_ocr_crosscheck.csv": {
+      "filename": "pesticide_ocr_crosscheck.csv",
+      "sha256": "d3bc7cc6f7906c10d81cf994fdfabb69ad88da71ff765a9dfafc9102a184999c"
+    },
+    "pesticide_limits_long.csv": {
+      "filename": "pesticide_limits_long.csv",
+      "sha256": "f8d3f4cdb8f237348c0f05f0663adf95a7dc5e916228b676bab758613c41c0eb"
+    }
+  },
+  "outputs": {
+    "status": {
+      "filename": "pesticide_row_crosscheck_status.csv",
+      "rows": 17200,
+      "sha256": "35de76498adfb437d581ec361097e1bceb625100d760b5de58d7dc2c3e1e3ee0"
+    },
+    "strata": {
+      "filename": "pesticide_audit_strata.csv",
+      "rows": 3,
+      "sha256": "b1e461c5afcb08f5a345248b99ff001f2be0e45628e5917d56996a22dbeb52cc"
+    },
+    "key": {
+      "filename": "pesticide_audit_sample_key.csv",
+      "rows": 258,
+      "sha256": "1e9a480ceb6f2111ef069a590a2fb028b6013237db2e302af1c8135e479a4f6c"
+    },
+    "template": {
+      "filename": "pesticide_blind_read_template.csv",
+      "rows": 258,
+      "sha256": "cefe572ee8d63fc457fc54bbf993fbb5a86a6a3c63d62bd08ee1e49adde5b24b"
+    }
+  },
+  "readme_sha256": "e148e1ddef3c75c891a8e4172dcf5c669adcb3e8f102d96827d36811f5dfe188",
+  "redraw_of": {
+    "audit_manifest_sha256": "e5b3ca1abe00cb66f0595b2d9eb80e9002ba101a45f7130d49a94367969d5339",
+    "first_release_pesticide_limits_sha256": "dd67d2998220e787a041e13827544493966bff1fe4cf848280e7e64f9b900de4",
+    "strata": [
+      "2019/consistent",
+      "2019/text_only",
+      "2021/text_only"
+    ]
+  }
+}

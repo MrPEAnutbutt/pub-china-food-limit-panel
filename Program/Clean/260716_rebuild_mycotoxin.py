@@ -7,6 +7,7 @@ import argparse
 from collections import Counter, defaultdict
 from pathlib import Path
 import re
+import unicodedata
 
 from legacy_family_replay import (
     ACQUISITION_FIELDS,
@@ -57,7 +58,7 @@ OUTPUT_IDENTITIES = {
     ),
     "mycotoxin_strictness_change.csv": (
         40,
-        "7637611005672a71123c0b0b4897e86a889ea8c78f59352326f103e6269d61d3",
+        "52de1ec46c2819afbbbeebd189cef8fcec1ea910a723a28924d1505dd8c85e61",
     ),
 }
 
@@ -98,6 +99,12 @@ def canonical_food(value: str) -> str:
     value = re.sub(r"[a-zA-Z]+$", "", value).replace("P", "")
     value = value.strip("、,.")
     return value.strip()
+
+
+def scope_text(category: str) -> str:
+    """Printed category with typography and list separators removed."""
+
+    return re.sub(r"[\s、,，]", "", unicodedata.normalize("NFKC", category))
 
 
 def numeric(value: str) -> float | None:
@@ -144,8 +151,11 @@ def build_panel_rows(long_rows: list[tuple[str, ...]]) -> list[list[str]]:
     panel: defaultdict[tuple[str, str], dict[str, tuple[str, str, str]]] = defaultdict(
         dict
     )
+    rules: Counter[tuple[str, str, str]] = Counter()
     for year, toxin, category, value, _unit, confidence in long_rows:
         food_key = canonical_food(category)
+        if food_key:
+            rules[(toxin, food_key, year)] += 1
         if food_key and year not in panel[(toxin, food_key)]:
             panel[(toxin, food_key)][year] = (value, category, confidence)
 
@@ -159,8 +169,17 @@ def build_panel_rows(long_rows: list[tuple[str, ...]]) -> list[list[str]]:
             for year in present
             if year != "2005" and numeric(cells[year]) is not None
         ]
+        compared = [year for year, _ in text_values]
         if len(present) == 1:
             trend = "单版本"
+        elif len(text_values) >= 2 and any(
+            rules[(toxin, food_key, year)] > 1 for year in compared
+        ):
+            trend = "不可比(同版多规则)"
+        elif len(text_values) >= 2 and len(
+            {scope_text(year_values[year][1]) for year in compared}
+        ) > 1:
+            trend = "不可比(范围文字不同)"
         elif len(text_values) >= 2:
             first = text_values[0][1]
             last = text_values[-1][1]
@@ -182,6 +201,7 @@ def build_panel_rows(long_rows: list[tuple[str, ...]]) -> list[list[str]]:
                 cells.get("2017", ""),
                 trend,
                 note_2005,
+                *(year_values[year][1] if year in year_values else "" for year in YEARS),
             ]
         )
 
@@ -243,6 +263,9 @@ def main(argv: list[str] | None = None) -> None:
             "v2017",
             "trend",
             "note2005",
+            "raw2005",
+            "raw2011",
+            "raw2017",
         ),
         panel_rows,
         expected_rows=panel_count,

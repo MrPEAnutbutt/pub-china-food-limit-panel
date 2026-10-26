@@ -6,8 +6,9 @@ GB 2762 and the locked inputs in `Data/Interim/release_dependencies/`.
 Downstream analysis must continue to read only `Data/Final/`.
 
 The frozen run contains 739 accepted long-table rows, 6 quarantined rows,
-390 member-level rows, and 260 category-level rows. The formal rebuild applies
-the 3 confirmed category aliases and excludes all 5 aliases marked `待核`.
+384 member-level rows, and 255 category-level rows. The formal rebuild applies
+the 5 confirmed category aliases and the 7 confirmed containment links, and
+excludes all 5 aliases marked `待核`.
 Those counts and the relevant input and output SHA-256 digests are recorded in
 `pollutant_rebuild_report.json`.
 
@@ -16,7 +17,11 @@ Main interfaces:
 - `pollutant_limits_by_version.csv`: accepted long-table rows consumed by the
   release builder.
 - `category_crosswalk.csv`: conservative category-level alignment.
-- `member_crosswalk.csv`: taxonomy-expanded member-level alignment.
+- `member_crosswalk.csv`: taxonomy-expanded member-level alignment. A member
+  takes, in each edition, its own rule or else the first ancestor rule that
+  does not exclude it. Cells left blank because that rule excludes the member,
+  because the member spans two printed rules, or because a rewritten
+  exclusion list leaves the host undetermined are explained in `note`.
 - `pollutant_quarantine.csv`: rejected rows and reasons.
 - `pollutant_rebuild_report.json`: source, dependency, output, alias, and count
   audit used by the release builder's stale-output gate.
@@ -33,7 +38,7 @@ python3 Program/Clean/260715_rebuild_pollutant.py \
 ```
 
 The source directory must contain exactly one locked full standard for 2012,
-2017, 2022, and 2025. The parser requires Poppler's `pdftotext`; all three
+2017, 2022, and 2025. The parser requires Poppler's `pdftotext`; all four
 portable dependencies and every source PDF are checked before outputs are
 written. A later release build verifies this report against current file bytes
 and rejects stale or replaced outputs.

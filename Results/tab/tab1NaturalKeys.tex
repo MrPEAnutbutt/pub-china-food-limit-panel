@@ -1,0 +1,17 @@
+\begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.15\textwidth}>{\raggedright\arraybackslash}p{0.30\textwidth}>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedright\arraybackslash}p{0.21\textwidth}@{}}
+\caption{Natural keys for joining records across releases. Within a release, \texttt{record\_id} links panels to long tables; across releases it stays the same only while the fields it digests are unchanged, and these keys identify the same printed entry or aligned group instead. \texttt{record\_id\_changes.csv} pairs the identifiers of releases v1.0 and v1.1 on the same keys. In the pesticide long table, \texttt{pesticide\_key} and \texttt{food\_key} group rules across editions. Each key is unique within the release, except that 72 additive long-table rows share 32 code pairs, each carrying several printed rules in one edition, and 3 contaminant category-panel pairs appear once for each basis of expression.}\label{tab1NaturalKeys}\tabularnewline
+\toprule
+Family & Long table & Panel & Member panel \\
+\midrule
+\endfirsthead
+\toprule
+Family & Long table & Panel & Member panel \\
+\midrule
+\endhead
+Contaminants & \path{version_year}, \path{analyte_zh}, \path{food_category_zh}, \path{limit_basis} & \path{analyte_zh}, \path{food_category_zh} & \path{analyte_zh}, \path{food_member_zh} \\
+Pesticide residues & \path{version_year}, \path{section_number}, \path{source_page}, \path{source_y} & \path{pesticide_key}, \path{food_key} & -- \\
+Mycotoxins & \path{version_year}, \path{toxin_zh}, \path{food_category_zh} & \path{toxin_zh}, \path{food_zh} & \path{toxin_zh}, \path{food_member_zh} \\
+Veterinary drug residues & \path{version_year}, \path{drug_zh}, \path{animal_raw}, \path{tissue_zh} & \path{drug_en}, \path{tissue_zh} & \path{drug_zh}, \path{animal}, \path{tissue_zh} \\
+Food additives & \path{version_year}, \path{cns_code}, \path{food_code} & \path{cns_code}, \path{food_code} & -- \\
+\bottomrule
+\end{longtable}

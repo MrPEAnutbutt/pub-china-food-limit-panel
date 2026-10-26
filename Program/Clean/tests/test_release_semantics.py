@@ -335,11 +335,12 @@ class MultiValuePanelTests(unittest.TestCase):
                     "stable": 1097,
                     "single_version": 732,
                     "incomparable_scope_text": 605,
-                    "stable_gmp": 257,
+                    "stable_gmp": 256,
                     "incomparable_units": 47,
                     "incomparable_multiple_rules": 18,
                     "relaxed": 5,
                     "fluctuation": 1,
+                    "incomparable_edition_gap": 1,
                 }
             ),
         )

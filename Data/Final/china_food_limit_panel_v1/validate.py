@@ -48,6 +48,7 @@ CSV_FILES = (
     "additive_panel.csv",
     "data_dictionary.csv",
     "entity_names_en.csv",
+    "extraction_method_summary.csv",
     "food_category_names_en.csv",
     "mycotoxin_limits_long.csv",
     "mycotoxin_member_panel.csv",
@@ -60,6 +61,7 @@ CSV_FILES = (
     "pollutant_limits_long.csv",
     "pollutant_member_panel.csv",
     "quarantined_rows.csv",
+    "record_id_changes.csv",
     "source_manifest.csv",
     "standard_timeline_conflicts.csv",
     "standard_version_timeline.csv",
@@ -99,35 +101,37 @@ def _pesticide_panel_header() -> tuple[str, ...]:
                 f"distinct_value_count_{year}",
             ]
         )
-    columns.extend(["n_versions", "trend"])
+    columns.extend(["n_versions", "trend", "count_mismatch_editions"])
     return tuple(columns)
 
 
 EXPECTED_HEADERS = {
-    "additive_limits_long.csv": tuple("record_id,standard,version_year,additive_zh,cns_code,ins_code,food_code,food_zh,max_use,unit,note,edition_source_id,extraction_source_id,conflict".split(",")),
+    "additive_limits_long.csv": tuple("record_id,standard,version_year,additive_zh,cns_code,ins_code,food_code,food_zh,max_use,unit,note,edition_source_id,extraction_source_id,conflict,source_reference,extraction_method,verification_status,verification_basis".split(",")),
     "additive_names_en.csv": tuple("entity_type,name_zh,name_en,cns_code,source_standard,source_doc".split(",")),
     "additive_panel.csv": tuple("record_id,standard,additive_zh,additive_names_zh,cns_code,ins_codes,food_code,food_zh,food_names_zh,v2011,v2014,v2024,status_2011,status_2014,status_2024,values_2011,values_2014,values_2024,units_2011,units_2014,units_2024,source_record_ids_2011,source_record_ids_2014,source_record_ids_2024,rules_2011,rules_2014,rules_2024,candidate_count_2011,candidate_count_2014,candidate_count_2024,distinct_value_count_2011,distinct_value_count_2014,distinct_value_count_2024,trend".split(",")),
     "data_dictionary.csv": tuple("table,column,type,nullable,missing_value,allowed_values,key_role,description_en,description_zh,notes".split(",")),
     "entity_names_en.csv": tuple("record_id,entity_key,entity_type,name_zh,name_en,source_standard".split(",")),
+    "extraction_method_summary.csv": tuple("family,standard,version_year,extraction_method,records,share_of_family_pct,share_of_release_pct".split(",")),
+    "record_id_changes.csv": tuple("table,change,record_id_previous,record_id_current,natural_key".split(",")),
     "food_category_names_en.csv": tuple("family,food_key,food_zh,food_en,match_method,evidence,source_doc".split(",")),
-    "mycotoxin_limits_long.csv": tuple("record_id,standard,version_year,toxin_zh,toxin_en,food_category_zh,limit_value,unit,confidence,edition_source_id,extraction_source_id,conflict".split(",")),
-    "mycotoxin_member_panel.csv": tuple("record_id,standard,toxin_zh,food_member_zh,v2005,v2011,v2017,unit,trend,category_restructured,host_category_2005,host_category_2011,host_category_2017".split(",")),
-    "mycotoxin_panel.csv": tuple("record_id,standard,toxin_zh,toxin_en,food_zh,v2005,v2011,v2017,unit,trend,note".split(",")),
+    "mycotoxin_limits_long.csv": tuple("record_id,standard,version_year,toxin_zh,toxin_en,food_category_zh,limit_value,unit,confidence,edition_source_id,extraction_source_id,conflict,source_reference,extraction_method,verification_status,verification_basis".split(",")),
+    "mycotoxin_member_panel.csv": tuple("record_id,standard,toxin_zh,food_member_zh,v2005,v2011,v2017,unit,trend,category_restructured,host_category_2005,host_category_2011,host_category_2017,source_record_ids_2005,source_record_ids_2011,source_record_ids_2017".split(",")),
+    "mycotoxin_panel.csv": tuple("record_id,standard,toxin_zh,toxin_en,food_zh,v2005,v2011,v2017,unit,trend,note,source_record_ids_2005,source_record_ids_2011,source_record_ids_2017".split(",")),
     "pesticide_edition_reconciliation.csv": tuple("standard,version_year,declared_mrl_items,coordinate_extracted_visible_rules,visible_rules_minus_declared,declared_section_roster,extracted_section_headers,section_roster_complete,qualifier_counts,status,interpretation_boundary".split(",")),
-    "pesticide_limits_long.csv": tuple("record_id,standard,version_year,section_number,pesticide_key,pesticide_zh,pesticide_en,pesticide_zh_raw,pesticide_en_raw,parent_category_zh,parent_category_raw,food_key,food_zh,food_raw,limit_value,unit,limit_qualifier,is_temporary,value_raw,source_page,source_y,food_x,parent_assignment_method,table_open_method,review_status,edition_source_id,extraction_source_id,source_copy_role,conflict".split(",")),
+    "pesticide_limits_long.csv": tuple("record_id,standard,version_year,section_number,pesticide_key,pesticide_zh,pesticide_en,pesticide_zh_raw,pesticide_en_raw,parent_category_zh,parent_category_raw,food_key,food_zh,food_raw,limit_value,unit,limit_qualifier,is_temporary,value_raw,source_page,source_y,food_x,parent_assignment_method,table_open_method,review_status,edition_source_id,extraction_source_id,source_copy_role,conflict,source_reference,extraction_method,verification_status,verification_basis".split(",")),
     "pesticide_ocr_crosscheck.csv": tuple("year,section_number,parent_category,food,text_values,ocr_values,status,key_level,text_row_count,ocr_row_count,text_source_pages,ocr_source_pages".split(",")),
     "pesticide_panel.csv": _pesticide_panel_header(),
-    "pollutant_category_panel.csv": tuple("record_id,standard,analyte_zh,analyte_en,food_category_zh,v2012,v2017,v2022,v2025,unit_2012,unit_2017,unit_2022,unit_2025,basis_2012,basis_2017,basis_2022,basis_2025,cell_status_2012,cell_status_2017,cell_status_2022,cell_status_2025,source_category_2012,source_category_2017,source_category_2022,source_category_2025,unit_summary,n_versions,coverage_status,trend".split(",")),
-    "pollutant_limits_long.csv": tuple("record_id,standard,version_year,analyte_zh,analyte_en,food_category_zh,limit_value,unit,limit_mgkg,normalization_status,limit_basis,note,confidence,extraction_path,edition_source_id,extraction_source_id,conflict".split(",")),
-    "pollutant_member_panel.csv": tuple("record_id,standard,analyte_zh,analyte_en,food_member_zh,v2012,v2017,v2022,v2025,unit_2012,unit_2017,unit_2022,unit_2025,basis_2012,basis_2017,basis_2022,basis_2025,limit_basis,trend,category_restructured,host_category_2012,host_category_2017,host_category_2022,host_category_2025,note".split(",")),
+    "pollutant_category_panel.csv": tuple("record_id,standard,analyte_zh,analyte_en,food_category_zh,v2012,v2017,v2022,v2025,unit_2012,unit_2017,unit_2022,unit_2025,basis_2012,basis_2017,basis_2022,basis_2025,cell_status_2012,cell_status_2017,cell_status_2022,cell_status_2025,source_category_2012,source_category_2017,source_category_2022,source_category_2025,unit_summary,n_versions,coverage_status,trend,source_record_ids_2012,source_record_ids_2017,source_record_ids_2022,source_record_ids_2025".split(",")),
+    "pollutant_limits_long.csv": tuple("record_id,standard,version_year,analyte_zh,analyte_en,food_category_zh,limit_value,unit,limit_mgkg,normalization_status,limit_basis,note,confidence,extraction_path,edition_source_id,extraction_source_id,conflict,source_reference,extraction_method,verification_status,verification_basis".split(",")),
+    "pollutant_member_panel.csv": tuple("record_id,standard,analyte_zh,analyte_en,food_member_zh,v2012,v2017,v2022,v2025,unit_2012,unit_2017,unit_2022,unit_2025,basis_2012,basis_2017,basis_2022,basis_2025,limit_basis,trend,category_restructured,host_category_2012,host_category_2017,host_category_2022,host_category_2025,note,source_record_ids_2012,source_record_ids_2017,source_record_ids_2022,source_record_ids_2025".split(",")),
     "quarantined_rows.csv": tuple("record_id,standard,version_year,analyte_zh,additive_zh,food_code,food_zh,parsed_value,unit,reject_reason,raw_text,source_path".split(",")),
-    "source_manifest.csv": tuple("source_id,family,standard,version_year,source_role,release_status,released_limit_rows,source_filename,source_format,file_size_bytes,sha256,extraction_mode,document_identity,notes,related_source_id,acquisition_landing_url,acquisition_file_url,retrieved_date,page_count".split(",")),
+    "source_manifest.csv": tuple("source_id,family,standard,version_year,source_role,release_status,released_limit_rows,source_filename,source_format,file_size_bytes,sha256,extraction_mode,document_identity,notes,related_source_id,acquisition_landing_url,acquisition_file_url,retrieved_date,page_count,source_class".split(",")),
     "standard_timeline_conflicts.csv": tuple("conflict_id,std_id,number,version_year,conflict_type,candidate_rank,selected,equivalent_row_count,timeline_title_match,anchor_category_match,issue_date,effective_date,official_category,title_zh,normalized_title,timeline_title,anchor_category,raw_titles,selection_reason".split(",")),
     "standard_version_timeline.csv": tuple("record_id,std_id,number,event_type,version_year,amendment_no,issue_date,effective_date,title_zh".split(",")),
     "version_dates.csv": tuple("record_id,source_id,family,standard,version_year,issue_date,effective_date,date_source,official_register_issue_date,official_register_effective_date,cross_check_official_register,date_status,date_resolution,source_filename".split(",")),
-    "vetdrug_limits_long.csv": tuple("record_id,standard,version_year,drug_zh,drug_en,animal,animal_raw,tissue_zh,limit_value,unit,source,source_table_index,source_table_row,animal_block_index,tissue_index,edition_source_id,extraction_source_id,conflict".split(",")),
-    "vetdrug_member_panel.csv": tuple("record_id,standard,drug_zh,drug_en,animal,tissue_zh,v2002,v2019,v2022,unit,trend".split(",")),
-    "vetdrug_panel.csv": tuple("record_id,standard,drug_zh,drug_en,tissue_zh,v2002,v2019,unit,trend".split(",")),
+    "vetdrug_limits_long.csv": tuple("record_id,standard,version_year,drug_zh,drug_en,animal,animal_raw,tissue_zh,limit_value,unit,source,source_table_index,source_table_row,animal_block_index,tissue_index,edition_source_id,extraction_source_id,conflict,source_reference,extraction_method,verification_status,verification_basis".split(",")),
+    "vetdrug_member_panel.csv": tuple("record_id,standard,drug_zh,drug_en,animal,tissue_zh,v2002,v2019,v2022,unit,trend,source_record_ids_2002,source_record_ids_2019,source_record_ids_2022".split(",")),
+    "vetdrug_panel.csv": tuple("record_id,standard,drug_zh,drug_en,tissue_zh,v2002,v2019,unit,trend,source_record_ids_2002,source_record_ids_2019".split(",")),
 }
 
 REQUIRED_FILES = CSV_FILES + (
@@ -159,6 +163,7 @@ BUILD_STATS_FILES = {
     "quarantined_rows": "quarantined_rows.csv",
     "entity_names_en": "entity_names_en.csv",
     "version_dates": "version_dates.csv",
+    "extraction_method_summary": "extraction_method_summary.csv",
 }
 
 FAMILY_VERSIONS = {
@@ -177,6 +182,7 @@ PESTICIDE_REVIEW_STATUS_COMPONENTS = {
     "food_value_multiline_joined",
     "margin_header_overlap_removed",
     "source_qualifier_unresolved_c",
+    "scan_temporary_mark_correction",
 }
 
 PRIMARY_KEYS = {
@@ -193,10 +199,14 @@ PRIMARY_KEYS = {
     ),
     "source_manifest.csv": ("source_id",),
     "standard_timeline_conflicts.csv": ("conflict_id", "candidate_rank"),
+    "extraction_method_summary.csv": ("family", "standard", "version_year", "extraction_method"),
+    "record_id_changes.csv": ("table", "record_id_previous", "record_id_current"),
 }
 
 NULLABLE_PRIMARY_KEY_COLUMNS = {
     ("pesticide_ocr_crosscheck.csv", "parent_category"),
+    ("record_id_changes.csv", "record_id_previous"),
+    ("record_id_changes.csv", "record_id_current"),
 }
 
 CONFLICT_KEYS = {
@@ -1700,6 +1710,12 @@ def _expected_pesticide_cell(
     }
 
 
+def _skips_an_edition(cells: list[dict[str, Any]]) -> bool:
+    """True when the editions holding a rule skip a missing edition between them."""
+    positions = [index for index, cell in enumerate(cells) if cell["status"] != "missing"]
+    return positions[-1] - positions[0] + 1 != len(positions)
+
+
 def _expected_pesticide_trend(cells: list[dict[str, Any]]) -> str:
     present = [cell for cell in cells if cell["status"] != "missing"]
     if any(cell["candidate_count"] > 1 for cell in present):
@@ -1716,6 +1732,8 @@ def _expected_pesticide_trend(cells: list[dict[str, Any]]) -> str:
         return "incomparable_unresolved_review_or_source_qualifier"
     if len({_pesticide_scope_signature(cell["rules"][0]) for cell in present}) > 1:
         return "incomparable_scope_text"
+    if _skips_an_edition(cells):
+        return "incomparable_edition_gap"
     numbers = []
     for cell in present:
         try:
@@ -1760,6 +1778,8 @@ def _expected_panel_trend(
         }
         if len(scope_signatures) > 1:
             return "incomparable_scope_text"
+    if _skips_an_edition(cells):
+        return "incomparable_edition_gap"
     values = [cell["scalar"] for cell in present]
     if values and all(value == "GMP" for value in values):
         return "stable_gmp"
@@ -2181,6 +2201,234 @@ def _ordered_numeric_trend(
     return "fluctuation"
 
 
+def _pattern_skips(present: list[bool]) -> bool:
+    """True when the populated editions skip an empty edition between them."""
+    positions = [index for index, here in enumerate(present) if here]
+    return bool(positions) and positions[-1] - positions[0] + 1 != len(positions)
+
+
+# Category renames adjudicated as the same category (frozen copy of the
+# confirmed rows of the build's category_alias.csv).
+POLLUTANT_CONFIRMED_ALIASES = (
+    ("双壳贝类", "双壳类"),
+    ("固体饮料类", "固体饮料"),
+    ("稻谷糙米大米小麦小麦粉玉米玉米面", "稻谷糙米大米小麦小麦粉玉米玉米粉玉米糁"),
+    ("矿泉水", "饮用天然矿泉水"),
+    ("咖啡豆", "生咖啡豆及烘焙咖啡豆"),
+)
+# Member-within-category links adjudicated against the source pages (frozen
+# copy of the confirmed rows of the build's category_containment.csv).
+POLLUTANT_CONFIRMED_CONTAINMENT = (
+    ("白酒", "蒸馏酒"),
+    ("大米", "大米(粉)"),
+    ("八宝粥罐头", "粥类罐头"),
+    ("蔓越莓", "浆果和其他小粒水果"),
+    ("醋栗", "浆果和其他小粒水果"),
+    ("肝脏制品", "畜禽肝脏及其制品"),
+    ("肾脏制品", "畜禽肾脏及其制品"),
+)
+POLLUTANT_MEMBER_NOTE = re.compile(
+    r"(?P<years>\d{4}(?:, \d{4})*): (?:"
+    r"excluded by .+; no separate limit for this analyte located"
+    r"|spans two printed rules; .+ excludes part of it"
+    r"|host not determinable; exclusion list of .+ differs from \d{4})"
+)
+
+
+def _split_top_level(text: str, separators: str = "、,，") -> list[str]:
+    pieces, current, depth = [], [], 0
+    for char in text:
+        if char in "([":
+            depth += 1
+        elif char in ")]":
+            depth -= 1
+        if char in separators and depth == 0:
+            pieces.append("".join(current))
+            current = []
+        else:
+            current.append(char)
+    pieces.append("".join(current))
+    return pieces
+
+
+def _category_parts(raw: str) -> tuple[str, tuple[str, ...]]:
+    """Split a printed category into its head and its printed exclusions."""
+    text = re.sub(r"\s+", "", unicodedata.normalize("NFKC", raw))
+    closers = {"(": ")", "[": "]"}
+    stack: list[tuple[str, int]] = []
+    spans: list[tuple[int, int]] = []
+    for index, char in enumerate(text):
+        if char in closers:
+            stack.append((closers[char], index))
+        elif char in closers.values():
+            if not stack or stack[-1][0] != char:
+                return text, ()
+            _, start = stack.pop()
+            if not stack:
+                spans.append((start, index))
+    if stack:
+        return text, ()
+    exclusions: list[str] = []
+    head_parts: list[str] = []
+    cursor = 0
+    for start, end in spans:
+        inner = text[start + 1 : end]
+        if "除外" not in inner:
+            continue
+        for part in _split_top_level(inner.split("除外", 1)[0]):
+            part = re.sub(r"及以上.*?制品$", "", part).strip("、,，. ")
+            if part:
+                exclusions.append(part)
+        head_parts.append(text[cursor:start])
+        cursor = end + 1
+    head_parts.append(text[cursor:])
+    head = re.sub(r"及以上.*?制品$", "", "".join(head_parts)).strip("、,，. ")
+    return head, tuple(sorted(set(exclusions)))
+
+
+def _weak_category_key(text: str) -> str:
+    previous = None
+    while previous != text:
+        previous = text
+        text = re.sub(r"[(\[][^()\[\]]*[)\]]", "", text)
+    text = re.sub(r"[(\[][^)\]]*$", "", text)
+    return re.sub(r"[、,，]", "", text).strip()
+
+
+def _canonical_exclusions(exclusions: tuple[str, ...]) -> tuple[str, ...]:
+    renames = dict(POLLUTANT_CONFIRMED_ALIASES)
+    return tuple(sorted({renames.get(item, item) for item in exclusions}))
+
+
+def _pollutant_scope(raw: str) -> tuple[str, ...]:
+    """Head and exclusions of a category, equal across a confirmed rename."""
+    head, exclusions = _category_parts(raw)
+    exclusions = _canonical_exclusions(exclusions)
+    canonical = {
+        _weak_category_key(source): _weak_category_key(target)
+        for source, target in POLLUTANT_CONFIRMED_ALIASES
+    }
+    key = _weak_category_key(head)
+    if key in canonical or key in canonical.values():
+        head = canonical.get(key, key)
+    else:
+        head = re.sub(r"[、,，]", "", head)
+    return (head, *exclusions)
+
+
+def _residual_exclusions(member: str, hosts: list[str]) -> set[tuple[str, ...]]:
+    """Exclusion lists of the editions in which the member is its host's head."""
+    member = unicodedata.normalize("NFKC", member)
+    variants = {member, member[:-4]} if member.endswith("及其制品") else {member, member + "及其制品"}
+    residual = set()
+    for host in hosts:
+        head, exclusions = _category_parts(host)
+        if head in variants or head.startswith(member + "及其"):
+            residual.add(_canonical_exclusions(exclusions))
+    return residual
+
+
+def _renamed(text: str) -> str:
+    text = unicodedata.normalize("NFKC", text)
+    return dict(POLLUTANT_CONFIRMED_ALIASES).get(text, text)
+
+
+def _within(name: str) -> set[str]:
+    """The name and every confirmed category that contains it."""
+    containment = dict(POLLUTANT_CONFIRMED_CONTAINMENT)
+    names = {name}
+    while name in containment and containment[name] not in names:
+        name = containment[name]
+        names.add(name)
+    return names
+
+
+def _removed_names(exclusions: tuple[str, ...]) -> set[str]:
+    """Names a printed exclusion list removes: "A和B" removes A and B,
+    "X及其制品" removes X and X制品, and any "X及其Y" removes X."""
+    names = set()
+    for item in exclusions:
+        for part in {item, *_split_top_level(item, "和")}:
+            part = _renamed(part)
+            if part:
+                names.add(part)
+                if part.endswith("及其制品"):
+                    names.update({part[:-4], part[:-4] + "制品"})
+                elif "及其" in part:
+                    names.add(part[: part.index("及其")])
+    return names
+
+
+def _member_host_problem(
+    member: str,
+    host: str,
+    year: str,
+    printed_lists: dict[str, list[set[str]]],
+) -> str:
+    """Why a populated member cell may not take this host rule, or ""."""
+    member = _renamed(member)
+    head, exclusions = _category_parts(host)
+    removed = _removed_names(exclusions)
+    if _within(member) & removed:
+        return "member is hosted by a rule whose printed exclusions cover it"
+    head = _renamed(head)
+    own = {head, *(_renamed(part) for part in _split_top_level(head))}
+    variants = {member, member[:-4]} if member.endswith("及其制品") else {member, member + "及其制品"}
+    if member.endswith("制品") and not member.endswith("及其制品"):
+        variants.add(member[:-2] + "及其制品")
+    if own & variants or any(name.startswith(member + "及其") for name in own):
+        return ""
+    if any(member in _within(name) and name != member for name in removed):
+        return "member spans two printed rules but carries one of them"
+    printed = {_renamed(item) for item in exclusions}
+    lists = [
+        other
+        for other_year, year_lists in printed_lists.items()
+        if other_year != year
+        for other in year_lists
+        if member in other
+    ]
+    if printed and lists and not any(printed <= other for other in lists):
+        return "member host is not determinable from the rewritten exclusion lists"
+    return ""
+
+
+MYCOTOXIN_MEMBER_RENAMES = {"植物油": "植物油脂"}
+
+
+def _mycotoxin_residual_exclusions(member: str, hosts: list[str]) -> set[tuple[str, ...]]:
+    """Exclusions of the editions in which the member is a listed item of its host.
+
+    A bracket qualifies only the listed item it follows, and the 2005 edition
+    prints exclusions as "(除…)" rather than "(…除外)".
+    """
+    residual = set()
+    for host in hosts:
+        text = re.sub(r"\s+", "", unicodedata.normalize("NFKC", host))
+        items, current, depth = [], [], 0
+        for char in text:
+            depth += char in "([" 
+            depth -= char in ")]"
+            if char == "、" and depth == 0:
+                items.append("".join(current))
+                current = []
+            else:
+                current.append(char)
+        items.append("".join(current))
+        for item in items:
+            exclusions = [
+                part
+                for inner in re.findall(r"[(\[]([^()\[\]]*)[)\]]", item)
+                if "除" in inner
+                for part in re.split(r"[、,，]", re.sub(r"除外?|除", "", inner))
+                if part
+            ]
+            name = re.sub(r"[(\[][^()\[\]]*[)\]]", "", item).strip("、,，. ")
+            if MYCOTOXIN_MEMBER_RENAMES.get(name, name) == member:
+                residual.add(tuple(sorted(exclusions)))
+    return residual
+
+
 def _expected_pollutant_coverage(present: tuple[bool, bool, bool, bool]) -> str:
     coverage_by_pattern = {
         (True, True, True, True): "all_editions",
@@ -2202,6 +2450,19 @@ def check_pollutant_panel_contract(package: Package) -> list[dict[str, Any]]:
     }
     for row in long_rows:
         long_index[(row["version_year"], row["analyte_zh"], row["food_category_zh"])].append(row)
+
+    # Printed exclusion lists by analyte and edition, for the member host check.
+    printed_lists: dict[str, dict[str, list[set[str]]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
+    for row in long_rows:
+        if row["confidence"] != "high":
+            continue
+        _, exclusions = _category_parts(row["food_category_zh"])
+        if exclusions:
+            printed_lists[row["analyte_zh"]][row["version_year"]].append(
+                {_renamed(item) for item in exclusions}
+            )
 
     problems: list[dict[str, Any]] = []
     category_rows = package.rows("pollutant_category_panel.csv")
@@ -2331,6 +2592,14 @@ def check_pollutant_panel_contract(package: Package) -> list[dict[str, Any]]:
             or len(dimensions) > 1
         ):
             expected_trend = "incomparable_unit_dimension_or_value"
+        elif len(numeric_values) > 1 and _pattern_skips(presence_pattern):
+            expected_trend = "incomparable_edition_gap"
+        elif len(numeric_values) > 1 and len({
+            _pollutant_scope(row[f"source_category_{year}"])
+            for year, here in zip(years, presence_pattern)
+            if here
+        }) > 1:
+            expected_trend = "incomparable_scope_text"
         else:
             expected_trend = _ordered_numeric_trend(
                 numeric_values,
@@ -2406,6 +2675,22 @@ def check_pollutant_panel_contract(package: Package) -> list[dict[str, Any]]:
                             "matching_long_rows": len(exact),
                         }
                     )
+                host_problem = _member_host_problem(
+                    row["food_member_zh"],
+                    host,
+                    year,
+                    printed_lists[row["analyte_zh"]],
+                )
+                if host_problem:
+                    problems.append(
+                        {
+                            "file": "pollutant_member_panel.csv",
+                            "record_id": row["record_id"],
+                            "year": year,
+                            "problem": host_problem,
+                            "host_category": host,
+                        }
+                    )
             elif any((unit, basis, host)):
                 problems.append(
                     {
@@ -2415,6 +2700,29 @@ def check_pollutant_panel_contract(package: Package) -> list[dict[str, Any]]:
                         "problem": "empty member value carries unit, basis, or host category",
                     }
                 )
+        noted_years = []
+        for group in row["note"].split(" | ") if row["note"] else []:
+            match = POLLUTANT_MEMBER_NOTE.fullmatch(group)
+            if not match:
+                problems.append(
+                    {
+                        "file": "pollutant_member_panel.csv",
+                        "record_id": row["record_id"],
+                        "problem": "member note does not follow the blank-cell grammar",
+                        "note": group,
+                    }
+                )
+                continue
+            noted_years.extend(match["years"].split(", "))
+        if any(year not in years or row[f"v{year}"] for year in noted_years):
+            problems.append(
+                {
+                    "file": "pollutant_member_panel.csv",
+                    "record_id": row["record_id"],
+                    "problem": "member note explains an edition whose cell is populated",
+                    "note": row["note"],
+                }
+            )
         unique_bases = set(represented_bases)
         if not unique_bases or unique_bases == {""}:
             expected_basis = ""
@@ -2464,6 +2772,10 @@ def check_pollutant_panel_contract(package: Package) -> list[dict[str, Any]]:
             or len(dimensions) > 1
         ):
             expected_trend = "incomparable_basis_unit_or_value"
+        elif _pattern_skips([bool(row[f"v{year}"]) for year in years]):
+            expected_trend = "incomparable_edition_gap"
+        elif len(_residual_exclusions(row["food_member_zh"], represented_hosts)) > 1:
+            expected_trend = "incomparable_scope_text"
         else:
             expected_trend = _ordered_numeric_trend(
                 numeric_values,
@@ -2513,9 +2825,11 @@ def check_pollutant_panel_contract(package: Package) -> list[dict[str, Any]]:
             problems=problems[:50],
             problem_count=len(problems),
             interpretation_boundary=(
-                "Edition host/value cells are linked to released long-table rules; "
-                "canonical category labels and member-to-host expansion are supplied "
-                "by frozen crosswalks that are not revalidated from this package alone."
+                "Edition host/value cells are linked to released long-table rules, and "
+                "no populated member cell takes a host rule that excludes the member, "
+                "covers only part of it, or follows a rewritten exclusion list; canonical "
+                "category labels and the taxonomy behind member-to-host expansion are "
+                "supplied by frozen crosswalks that are not revalidated from this package alone."
             ),
         )
     ]
@@ -2544,6 +2858,7 @@ def check_mycotoxin_panel_lineage(package: Package) -> list[dict[str, Any]]:
     long_rows = package.rows("mycotoxin_limits_long.csv")
     long_index: dict[tuple[str, str, str], list[dict[str, str]]] = defaultdict(list)
     long_value_counter: Counter[tuple[str, str, Decimal]] = Counter()
+    long_by_id = {row["record_id"]: row for row in long_rows}
     toxin_pairs = {(row["toxin_zh"], row["toxin_en"]) for row in long_rows}
     for row in long_rows:
         long_index[
@@ -2592,6 +2907,15 @@ def check_mycotoxin_panel_lineage(package: Package) -> list[dict[str, Any]]:
         expected_trend = _ordered_numeric_trend(
             values, single_status="single_version"
         )
+        # The 2005 manual edition is reported but not compared; the 2011 and
+        # 2017 printed categories must match for a trend to be judged.
+        printed = {
+            re.sub(r"[\s、,，]", "", unicodedata.normalize("NFKC", long_by_id[record_id]["food_category_zh"]))
+            for year in ("2011", "2017")
+            for record_id in json.loads(row[f"source_record_ids_{year}"] or "[]")
+        }
+        if expected_trend != "single_version" and len(printed) > 1:
+            expected_trend = "incomparable_scope_text"
         if row["trend"] != expected_trend:
             problems.append(
                 {
@@ -2677,9 +3001,14 @@ def check_mycotoxin_panel_lineage(package: Package) -> list[dict[str, Any]]:
                         "matching_long_rows": len(matches),
                     }
                 )
-        expected_trend = _ordered_numeric_trend(
-            values, single_status="single_version_unmatched"
-        )
+        if _pattern_skips([bool(row[f"v{year}"]) for year in years]):
+            expected_trend = "incomparable_edition_gap"
+        elif len(_mycotoxin_residual_exclusions(row["food_member_zh"], hosts)) > 1:
+            expected_trend = "incomparable_scope_text"
+        else:
+            expected_trend = _ordered_numeric_trend(
+                values, single_status="single_version_unmatched"
+            )
         if row["trend"] != expected_trend:
             problems.append(
                 {
@@ -2730,8 +3059,31 @@ def check_mycotoxin_panel_lineage(package: Package) -> list[dict[str, Any]]:
     ]
 
 
+VET_POULTRY = ("鸡", "火鸡", "鸭", "鹅")
+VET_ANIMAL_LEAVES = ("牛", "羊", "猪", "马", "兔", "鹿", *VET_POULTRY, "鱼", "虾", "蜜蜂")
+
+
+def _covered_animals(labels: set[str]) -> set[str]:
+    """Leaf animals covered by grouped target-animal labels."""
+    animals: set[str] = set()
+    for label in labels:
+        for token in (token for token in label.split("/") if token):
+            if token == "所有食品动物":
+                animals.update(VET_ANIMAL_LEAVES)
+            elif token in {"家禽", "禽"}:
+                animals.update(VET_POULTRY)
+            elif token in {"绵羊", "山羊"}:
+                animals.add("羊")
+            else:
+                animals.add(token)
+    return animals
+
+
 def _expected_vet_panel_trend(
-    values_2002: set[Decimal], values_2019: set[Decimal]
+    values_2002: set[Decimal],
+    values_2019: set[Decimal],
+    animals_2002: set[str] = frozenset(),
+    animals_2019: set[str] = frozenset(),
 ) -> str:
     if values_2002 and not values_2019:
         return "single_2002_unmatched"
@@ -2741,6 +3093,8 @@ def _expected_vet_panel_trend(
         return "no_records"
     if len(values_2002) != 1 or len(values_2019) != 1:
         return "unresolved_multiple_animals"
+    if _covered_animals(animals_2002) != _covered_animals(animals_2019):
+        return "incomparable_scope_text"
     old_value = next(iter(values_2002))
     new_value = next(iter(values_2019))
     if old_value == new_value:
@@ -2753,6 +3107,8 @@ def check_vetdrug_panel_lineage(package: Package) -> list[dict[str, Any]]:
     long_rows = package.rows("vetdrug_limits_long.csv")
     panel_long_values: dict[tuple[str, str, str], set[Decimal]] = defaultdict(set)
     member_long_values: dict[tuple[str, str, str], set[Decimal]] = defaultdict(set)
+    panel_long_animals: dict[tuple[str, str, str], set[str]] = defaultdict(set)
+    long_by_id = {row["record_id"]: row for row in long_rows}
     long_identity_pairs: set[tuple[str, str]] = set()
     for row in long_rows:
         parsed = _decimal_value(row["limit_value"])
@@ -2770,6 +3126,9 @@ def check_vetdrug_panel_lineage(package: Package) -> list[dict[str, Any]]:
                     row["tissue_zh"],
                 )
             ].add(parsed)
+            panel_long_animals[
+                (row["version_year"], english_identity, row["tissue_zh"])
+            ].add(row["animal"])
         member_long_values[
             (
                 row["version_year"],
@@ -2832,7 +3191,10 @@ def check_vetdrug_panel_lineage(package: Package) -> list[dict[str, Any]]:
                 }
             )
         expected_trend = _expected_vet_panel_trend(
-            expected_2002, expected_2019
+            expected_2002,
+            expected_2019,
+            panel_long_animals.get(("2002", *key), set()),
+            panel_long_animals.get(("2019", *key), set()),
         )
         if row["trend"] != expected_trend:
             problems.append(
@@ -2910,9 +3272,21 @@ def check_vetdrug_panel_lineage(package: Package) -> list[dict[str, Any]]:
                         "problem": "member value does not trace to a long-table drug/tissue rule",
                     }
                 )
-        expected_trend = _ordered_numeric_trend(
-            values, single_status="single_version"
+        # Rules linked to one edition cell are the equally specific rules for
+        # the member; differing values among them block a trend.
+        masked = any(
+            len({long_by_id[record_id]["limit_value"]
+                 for record_id in json.loads(row[f"source_record_ids_{year}"] or "[]")}) > 1
+            for year in ("2002", "2019", "2022")
         )
+        if masked:
+            expected_trend = "incomparable_multiple_rules"
+        elif _pattern_skips([bool(row[f"v{year}"]) for year in ("2002", "2019", "2022")]):
+            expected_trend = "incomparable_edition_gap"
+        else:
+            expected_trend = _ordered_numeric_trend(
+                values, single_status="single_version"
+            )
         if row["trend"] != expected_trend:
             problems.append(
                 {
@@ -4146,6 +4520,194 @@ def check_version_dates(package: Package) -> list[dict[str, Any]]:
     ]
 
 
+LONG_TABLE_FAMILIES = {
+    "pollutant_limits_long.csv": "contaminant",
+    "pesticide_limits_long.csv": "pesticide",
+    "mycotoxin_limits_long.csv": "mycotoxin",
+    "vetdrug_limits_long.csv": "veterinary_drug",
+    "additive_limits_long.csv": "additive",
+}
+ROW_EXTRACTION_METHODS = {
+    "pdf_text_and_coordinate_parser",
+    "pdf_text_layer",
+    "word_table_stream",
+    "manual_page_image_transcription",
+}
+VERIFICATION_BASES = (
+    "ocr_crosscheck",
+    "independent_audit_reading",
+    "independent_blind_reentry",
+    "author_scan_check",
+)
+
+
+def _expected_source_class(row: dict[str, str]) -> str:
+    if row["source_role"] == "extraction_copy":
+        return "government_hosted_copy"
+    if row["source_role"] == "identity_audit_copy" or row["release_status"] == "identity_anchor_crosscheck":
+        return "audit_only_copy"
+    return "issuing_authority_file"
+
+
+def check_source_and_verification(package: Package) -> list[dict[str, Any]]:
+    """Check row-level sources, extraction methods, verification and their summaries."""
+    problems: list[dict[str, Any]] = []
+    manifest = {row["source_id"]: row for row in package.rows("source_manifest.csv")}
+    for row in manifest.values():
+        if row["source_class"] != _expected_source_class(row):
+            problems.append({"file": "source_manifest.csv", "source_id": row["source_id"],
+                             "problem": "source_class does not follow source_role and release_status"})
+    guide = package.path("SOURCE_ACQUISITION.md").read_text(encoding="utf-8")
+    counts: Counter[tuple[str, str, str, str]] = Counter()
+    ocr_rows = 0
+    for name, family in LONG_TABLE_FAMILIES.items():
+        for row in package.rows(name):
+            record_id = row["record_id"]
+            standard, year = row["standard"], row["version_year"]
+            citation = f"{standard}-{year}" if standard.startswith("GB") else f"{standard} ({year})"
+            reference = row["source_reference"]
+            url = reference.rsplit("; ", 1)[-1]
+            if not reference.startswith(citation + "; ") or not url.startswith("https://") or url not in guide:
+                problems.append({"file": name, "record_id": record_id,
+                                 "problem": "source_reference lacks the edition citation or a documented locator"})
+            method = row["extraction_method"]
+            mode = manifest.get(row["extraction_source_id"], {}).get("extraction_mode", "")
+            if method not in ROW_EXTRACTION_METHODS or not (
+                method == mode
+                or (mode == "pdf_text_with_manual_page_break_rows"
+                    and method in {"pdf_text_layer", "manual_page_image_transcription"})
+            ):
+                problems.append({"file": name, "record_id": record_id,
+                                 "problem": "extraction_method differs from the source manifest"})
+            counts[(family, standard, year, method)] += 1
+            basis = row["verification_basis"]
+            components = [] if basis == "none" else basis.split(";")
+            ordered = [item for item in VERIFICATION_BASES if item in components]
+            status = row["verification_status"]
+            pesticide_scan_year = name == "pesticide_limits_long.csv" and year in {"2019", "2021"}
+            corrected = "scan_temporary_mark_correction" in row.get("review_status", "").split(";")
+            errors = []
+            if not basis or components != ordered:
+                errors.append("verification_basis is not an ordered list of known components")
+            if (status == "no_cross_source_comparison") != (basis == "none"):
+                errors.append("verification_status disagrees with the presence of evidence")
+            if ({"ocr_crosscheck", "independent_audit_reading"} & set(components)) and not pesticide_scan_year:
+                errors.append("OCR or audit evidence outside GB 2763-2019/2021")
+            if ("independent_blind_reentry" in components) != (method == "manual_page_image_transcription"):
+                errors.append("blind re-entry evidence does not match the manually transcribed rows")
+            if ("author_scan_check" in components) != corrected:
+                errors.append("author scan check does not match the recorded scan corrections")
+            ocr_rows += "ocr_crosscheck" in components
+            problems.extend({"file": name, "record_id": record_id, "problem": error} for error in errors)
+    groups = Counter(row["status"] for row in package.rows("pesticide_ocr_crosscheck.csv"))
+    if ocr_rows != groups["consistent"] + groups["conflict"]:
+        problems.append({"file": "pesticide_limits_long.csv",
+                         "problem": "rows with OCR evidence differ from consistent and conflicting OCR groups",
+                         "rows": ocr_rows, "groups": groups["consistent"] + groups["conflict"]})
+    total = sum(counts.values())
+    family_totals: Counter[str] = Counter()
+    for (family, *_), count in counts.items():
+        family_totals[family] += count
+    expected = {
+        key: (str(count), f"{100 * count / family_totals[key[0]]:.2f}", f"{100 * count / total:.2f}")
+        for key, count in counts.items()
+    }
+    actual = {
+        (row["family"], row["standard"], row["version_year"], row["extraction_method"]):
+        (row["records"], row["share_of_family_pct"], row["share_of_release_pct"])
+        for row in package.rows("extraction_method_summary.csv")
+    }
+    if actual != expected:
+        problems.append({"file": "extraction_method_summary.csv",
+                         "problem": "method counts or shares do not reproduce the long tables",
+                         "differing_keys": sorted(map(list, set(actual) ^ set(expected)))[:10]
+                         or [list(key) for key in expected if actual.get(key) != expected[key]][:10]})
+    return [
+        result(
+            "package.source_and_verification",
+            "pass" if not problems else "fail",
+            "Row sources, extraction methods, verification evidence and the method summary are consistent."
+            if not problems
+            else "Row-level source, method or verification fields are inconsistent.",
+            long_rows=total,
+            problems=problems[:50],
+            problem_count=len(problems),
+        )
+    ]
+
+
+RECORD_ID_NATURAL_KEYS = {
+    "pollutant_limits_long.csv": ("version_year", "analyte_zh", "food_category_zh", "limit_basis"),
+    "pesticide_limits_long.csv": ("version_year", "section_number", "source_page", "source_y"),
+    "mycotoxin_limits_long.csv": ("version_year", "toxin_zh", "food_category_zh"),
+    "vetdrug_limits_long.csv": ("version_year", "drug_zh", "animal_raw", "tissue_zh"),
+    "additive_limits_long.csv": ("version_year", "cns_code", "food_code"),
+    "pollutant_category_panel.csv": ("analyte_zh", "food_category_zh"),
+    "pollutant_member_panel.csv": ("analyte_zh", "food_member_zh"),
+    "pesticide_panel.csv": ("pesticide_key", "food_key"),
+    "mycotoxin_panel.csv": ("toxin_zh", "food_zh"),
+    "mycotoxin_member_panel.csv": ("toxin_zh", "food_member_zh"),
+    "vetdrug_panel.csv": ("drug_en", "tissue_zh"),
+    "vetdrug_member_panel.csv": ("drug_zh", "animal", "tissue_zh"),
+    "additive_panel.csv": ("cns_code", "food_code"),
+    "entity_names_en.csv": ("entity_type", "name_zh", "source_standard"),
+    "standard_version_timeline.csv": ("std_id", "version_year", "event_type", "amendment_no"),
+    "version_dates.csv": ("family", "standard", "version_year"),
+    "quarantined_rows.csv": ("standard", "version_year", "raw_text"),
+}
+
+
+def check_record_id_changes(package: Package) -> list[dict[str, Any]]:
+    """Check that listed identifier changes agree with the current tables."""
+    problems: list[dict[str, Any]] = []
+    current = {
+        name: {row["record_id"]: row for row in package.rows(name)}
+        for name in RECORD_ID_NATURAL_KEYS
+    }
+    seen: set[tuple[str, str]] = set()
+    for index, change in enumerate(package.rows("record_id_changes.csv"), 2):
+        name, kind = change["table"], change["change"]
+        previous, now = change["record_id_previous"], change["record_id_current"]
+        errors = []
+        if name not in RECORD_ID_NATURAL_KEYS:
+            errors.append("unknown table")
+        elif kind not in {"replaced", "removed", "added"} or bool(previous) != (kind != "added") or bool(now) != (kind != "removed"):
+            errors.append("change type does not match the identifiers given")
+        else:
+            if previous and previous in current[name]:
+                errors.append("a previous identifier still exists in the current table")
+            if now and now not in current[name]:
+                errors.append("a current identifier is missing from its table")
+            elif now:
+                expected = {column: current[name][now][column] for column in RECORD_ID_NATURAL_KEYS[name]}
+                try:
+                    if json.loads(change["natural_key"]) != expected:
+                        errors.append("natural_key differs from the current row")
+                except json.JSONDecodeError:
+                    errors.append("natural_key is not JSON")
+            for identifier in (previous, now):
+                if identifier and (name, identifier) in seen:
+                    errors.append("identifier listed twice")
+                seen.add((name, identifier))
+        problems.extend({"row": index, "problem": error} for error in errors)
+    return [
+        result(
+            "package.record_id_changes",
+            "pass" if not problems else "fail",
+            "Listed record-identifier changes agree with the current tables."
+            if not problems
+            else "Listed record-identifier changes contradict the current tables.",
+            changes=len(package.rows("record_id_changes.csv")),
+            problems=problems[:50],
+            problem_count=len(problems),
+            interpretation_boundary=(
+                "The previous release is not shipped, so completeness of the list is "
+                "established by the build, not by this package alone."
+            ),
+        )
+    ]
+
+
 def check_readme_contract(package: Package) -> list[dict[str, Any]]:
     text = package.path("README.md").read_text(encoding="utf-8")
     required_phrases = (
@@ -4163,6 +4725,11 @@ def check_readme_contract(package: Package) -> list[dict[str, Any]]:
         "not_run",
         "--source-root",
         "SOURCE_ACQUISITION.md",
+        "incomparable_edition_gap",
+        "source_class",
+        "verification_status",
+        "extraction_method_summary.csv",
+        "record_id_changes.csv",
     )
     missing = [phrase for phrase in required_phrases if phrase not in text]
     stale_row_cells = re.findall(r"\|\s*`[^`]+\.csv`[^|]*\|\s*[\d,]+(?:\s*/\s*[\d,]+)*\s*\|", text)
@@ -4201,6 +4768,8 @@ def self_contained_check_specs() -> tuple[tuple[str, Any], ...]:
         ("package.pesticide_release_contract", check_pesticide_release_contract),
         ("package.timeline_conflicts", check_timeline_conflicts),
         ("package.version_dates", check_version_dates),
+        ("package.source_and_verification", check_source_and_verification),
+        ("package.record_id_changes", check_record_id_changes),
         ("package.readme_contract", check_readme_contract),
     )
 
@@ -4765,19 +5334,21 @@ def check_english_sources(package: Package, index: SourceIndex) -> list[dict[str
 
 
 def _parse_extraction_table(path: Path) -> dict[tuple[str, str], int]:
-    parsed = {}
+    """Sum the record counts of each standard and version; an edition read by two
+    methods has one row per method."""
+    parsed: Counter[tuple[str, str]] = Counter()
     for line in path.read_text(encoding="utf-8").splitlines():
         if "&" not in line or not line.rstrip().endswith("\\"):
             continue
-        cells = [cell.strip() for cell in line.removesuffix("\\").split("&")]
-        if len(cells) < 5 or not re.fullmatch(r"\d{4}", cells[2]):
+        cells = [cell.strip() for cell in line.rstrip().removesuffix("\\").split("&")]
+        if len(cells) < 5 or not re.fullmatch(r"\d{4}", cells[1]):
             continue
         try:
-            count = int(cells[3].replace(",", ""))
+            count = int(cells[2].replace(",", ""))
         except ValueError:
             continue
-        parsed[(cells[1], cells[2])] = count
-    return parsed
+        parsed[(cells[0], cells[1])] += count
+    return dict(parsed)
 
 
 def check_results_tables(package: Package, results_tab: Path | None) -> list[dict[str, Any]]:
@@ -4831,7 +5402,7 @@ def check_results_tables(package: Package, results_tab: Path | None) -> list[dic
             for year, expected in sorted(counts.items()):
                 year_standard = (
                     {
-                        "2002": "Ministry of Agriculture Announcement 235",
+                        "2002": "Announcement No.~235",
                         "2019": "GB 31650",
                         "2022": "GB 31650.1",
                     }[year]

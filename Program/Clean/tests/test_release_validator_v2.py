@@ -668,6 +668,17 @@ class ReleaseValidatorV2Tests(unittest.TestCase):
         package._rows["quarantined_rows.csv"][0]["source_path"] = "/Volumes/private/source.pdf"
         self.assertEqual(MODULE.check_quarantine_contract(package)[0]["status"], "fail")
 
+    def test_x_and_its_beverages_covers_the_member_x(self):
+        host = "饮料类(包装饮用水、果蔬汁类及其饮料、含乳饮料、固体饮料除外)"
+        self.assertEqual(
+            MODULE._member_host_problem("果蔬汁类", host, "2017", {}),
+            "member is hosted by a rule whose printed exclusions cover it",
+        )
+        self.assertEqual(
+            MODULE._member_host_problem("果蔬汁类", "果蔬汁类及其饮料[浓缩果蔬汁(浆)除外]", "2017", {}),
+            "",
+        )
+
     def test_vetdrug_fixture_requires_edition_identity_and_2002_locator(self):
         row = {
             "record_id": "VET00001",
@@ -936,6 +947,7 @@ class ReleaseValidatorV2Tests(unittest.TestCase):
 
         mycotoxin_long = [
             {
+                "record_id": f"MYC{year}",
                 "version_year": year,
                 "toxin_zh": "测试毒素",
                 "toxin_en": "test toxin",
@@ -956,6 +968,7 @@ class ReleaseValidatorV2Tests(unittest.TestCase):
             "v2017": "2",
             "unit": "μg/kg",
             "trend": "fluctuation",
+            **{f"source_record_ids_{year}": f'["MYC{year}"]' for year in ("2005", "2011", "2017")},
         }
         package = FixturePackage(
             {
@@ -981,12 +994,26 @@ class ReleaseValidatorV2Tests(unittest.TestCase):
         outcome = MODULE.check_mycotoxin_panel_lineage(package)[0]
         self.assertEqual(outcome["status"], "fail", outcome)
 
+        # A changed 2017 printed category makes the judged trend wrong.
+        changed_long = [dict(row) for row in mycotoxin_long]
+        changed_long[2]["food_category_zh"] = "测试食品（某物除外）"
+        package = FixturePackage(
+            {
+                "mycotoxin_limits_long.csv": changed_long,
+                "mycotoxin_panel.csv": [dict(mycotoxin_summary)],
+                "mycotoxin_member_panel.csv": [],
+            }
+        )
+        outcome = MODULE.check_mycotoxin_panel_lineage(package)[0]
+        self.assertEqual(outcome["status"], "fail", outcome)
+
         long_rows = [
             {
                 "record_id": "VET00001",
                 "version_year": "2002",
                 "drug_zh": "测试兽药",
                 "drug_en": "test drug",
+                "animal": "牛",
                 "tissue_zh": "肌肉",
                 "limit_value": "100",
             },
@@ -995,6 +1022,7 @@ class ReleaseValidatorV2Tests(unittest.TestCase):
                 "version_year": "2019",
                 "drug_zh": "测试兽药",
                 "drug_en": "test drug",
+                "animal": "牛",
                 "tissue_zh": "肌肉",
                 "limit_value": "50",
             },
@@ -1022,6 +1050,9 @@ class ReleaseValidatorV2Tests(unittest.TestCase):
             "v2022": "",
             "unit": "mg/kg",
             "trend": "tightened",
+            "source_record_ids_2002": '["VET00001"]',
+            "source_record_ids_2019": '["VET00002"]',
+            "source_record_ids_2022": "[]",
         }
 
         def vet_fixture():
@@ -1052,6 +1083,12 @@ class ReleaseValidatorV2Tests(unittest.TestCase):
 
         package = vet_fixture()
         package.rows("vetdrug_member_panel.csv")[0]["drug_en"] = "wrong drug"
+        outcome = MODULE.check_vetdrug_panel_lineage(package)[0]
+        self.assertEqual(outcome["status"], "fail", outcome)
+
+        # The 2019 rule covering other animals makes the summary trend wrong.
+        package = vet_fixture()
+        package.rows("vetdrug_limits_long.csv")[1] = dict(long_rows[1], animal="牛/羊")
         outcome = MODULE.check_vetdrug_panel_lineage(package)[0]
         self.assertEqual(outcome["status"], "fail", outcome)
 
@@ -1283,7 +1320,7 @@ class ReleaseValidatorV2Tests(unittest.TestCase):
                 if standard == "GB 2760" and not changed:
                     count += 1
                     changed = True
-                lines.append(f"Family & {standard} & {year} & {count} & path \\")
+                lines.append(f"{standard} & {year} & {count} & 0.00 & method \\")
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "tab1ExtractionMethod.tex").write_text("\n".join(lines), encoding="utf-8")
@@ -1312,6 +1349,71 @@ class ReleaseValidatorV2Tests(unittest.TestCase):
         self.assertIn("source_manifest.csv", report["file_hashes"])
         self.assertNotIn(MODULE.REPORT_NAME, report["file_hashes"])
         self.assertEqual(len(report["external_input_hashes"]), 2)
+
+    def test_comparability_states_added_in_revision_are_recomputed(self):
+        cases = (
+            ("pollutant_category_panel.csv", "incomparable_scope_text", "stable",
+             MODULE.check_pollutant_panel_contract),
+            ("pollutant_member_panel.csv", "incomparable_scope_text", "stable",
+             MODULE.check_pollutant_panel_contract),
+            ("additive_panel.csv", "incomparable_edition_gap", "stable_gmp",
+             MODULE.check_panel_lineage),
+            ("vetdrug_member_panel.csv", "incomparable_multiple_rules", "stable",
+             MODULE.check_vetdrug_panel_lineage),
+        )
+        for name, state, wrong, check in cases:
+            package = mutable_package(name)
+            row = next(row for row in package.rows(name) if row["trend"] == state)
+            row["trend"] = wrong
+            self.assertEqual(check(package)[0]["status"], "fail", (name, state))
+
+    def test_record_id_change_mutations_fail(self):
+        tables = ("record_id_changes.csv", *MODULE.RECORD_ID_NATURAL_KEYS)
+        self.assertEqual(MODULE.check_record_id_changes(mutable_package(*tables))[0]["status"], "pass")
+        current_id = mutable_package("pollutant_limits_long.csv").rows("pollutant_limits_long.csv")[0]["record_id"]
+        for update in (
+            {"record_id_current": "POL0000000000000000"},
+            {"record_id_previous": current_id, "table": "pollutant_limits_long.csv"},
+            {"change": "added"},
+            {"natural_key": "{}"},
+        ):
+            package = mutable_package(*tables)
+            row = next(row for row in package.rows("record_id_changes.csv") if row["change"] == "replaced")
+            row.update(update)
+            self.assertEqual(MODULE.check_record_id_changes(package)[0]["status"], "fail", update)
+
+    def test_source_and_verification_mutations_fail(self):
+        tables = ("source_manifest.csv", "extraction_method_summary.csv", *MODULE.LONG_TABLE_FAMILIES)
+        self.assertEqual(
+            MODULE.check_source_and_verification(mutable_package(*tables))[0]["status"], "pass")
+
+        def first(package, name, predicate):
+            return next(row for row in package.rows(name) if predicate(row))
+
+        mutations = (
+            lambda package: first(package, "additive_limits_long.csv", lambda row: True).update(
+                source_reference="GB 2760-2014; https://example.org/unlisted"),
+            lambda package: first(package, "vetdrug_limits_long.csv",
+                                  lambda row: row["version_year"] == "2002").update(
+                extraction_method="pdf_text_layer"),
+            lambda package: first(package, "additive_limits_long.csv", lambda row: True).update(
+                verification_status="confirmed_agreement", verification_basis="ocr_crosscheck"),
+            lambda package: first(package, "vetdrug_limits_long.csv",
+                                  lambda row: row["extraction_method"] == "manual_page_image_transcription").update(
+                verification_status="no_cross_source_comparison", verification_basis="none"),
+            lambda package: first(package, "pesticide_limits_long.csv",
+                                  lambda row: "ocr_crosscheck" in row["verification_basis"]).update(
+                verification_basis="independent_audit_reading;ocr_crosscheck"),
+            lambda package: first(package, "extraction_method_summary.csv", lambda row: True).update(
+                records=str(int(first(package, "extraction_method_summary.csv", lambda row: True)["records"]) + 1)),
+            lambda package: first(package, "source_manifest.csv",
+                                  lambda row: row["source_role"] == "extraction_copy").update(
+                source_class="issuing_authority_file"),
+        )
+        for mutate in mutations:
+            package = mutable_package(*tables)
+            mutate(package)
+            self.assertEqual(MODULE.check_source_and_verification(package)[0]["status"], "fail")
 
 
 if __name__ == "__main__":

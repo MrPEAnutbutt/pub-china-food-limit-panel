@@ -5,13 +5,13 @@
   "environment": {
     "python": "3.14.3",
     "implementation": "CPython",
-    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
     "pdftotext": "pdftotext version 26.02.0"
   },
   "source_manifest": {
     "filename": "source_manifest.csv",
-    "file_size_bytes": 6244,
-    "sha256": "575d83a2309fcb2cf8a38634a1a2b3afd403da1ba459391e9b6e02c66eee7e64"
+    "file_size_bytes": 7847,
+    "sha256": "f6bd5dc5f381ce0ec4ba4fbdb08905c7149a86f639b6b524cabfd682cc30507a"
   },
   "sources": [
     {
@@ -92,8 +92,8 @@
     },
     {
       "filename": "mycotoxin_strictness_change.csv",
-      "file_size_bytes": 3300,
-      "sha256": "7637611005672a71123c0b0b4897e86a889ea8c78f59352326f103e6269d61d3",
+      "file_size_bytes": 4909,
+      "sha256": "52de1ec46c2819afbbbeebd189cef8fcec1ea910a723a28924d1505dd8c85e61",
       "rows": 40
     }
   ],

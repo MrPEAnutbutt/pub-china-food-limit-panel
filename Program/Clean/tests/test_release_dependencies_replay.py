@@ -40,15 +40,18 @@ class FrozenDependencyTests(unittest.TestCase):
     def test_bundle_identity_and_manual_boundaries_are_locked(self):
         report = REPLAY.verify_bundle(DEPENDENCIES)
 
-        self.assertEqual(len(report["files"]), 6)
+        self.assertEqual(len(report["files"]), 7)
         self.assertEqual(
-            report["manual_boundaries"]["category_alias_confirmed"], 3
+            report["manual_boundaries"]["category_alias_confirmed"], 5
+        )
+        self.assertEqual(
+            report["manual_boundaries"]["category_containment_confirmed"], 7
         )
         self.assertEqual(
             report["manual_boundaries"]["category_alias_pending_review"], 5
         )
         self.assertEqual(
-            report["files"]["member_crosswalk_vetdrug.csv"]["rows"], 1132
+            report["files"]["member_crosswalk_vetdrug.csv"]["rows"], 1157
         )
 
     def test_member_crosswalks_replay_byte_identically(self):

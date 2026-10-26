@@ -25,6 +25,42 @@ class CSVSpec:
     derivation: str
 
 
+POULTRY = ("鸡", "火鸡", "鸭", "鹅")
+ANIMAL_LEAVES = (
+    "牛",
+    "羊",
+    "猪",
+    "马",
+    "兔",
+    "鹿",
+    "鸡",
+    "火鸡",
+    "鸭",
+    "鹅",
+    "鱼",
+    "虾",
+    "蜜蜂",
+)
+
+
+def animal_members(label: str) -> set[str]:
+    """Expand a target-animal label to covered leaf animals."""
+
+    output: set[str] = set()
+    for token in (token for token in label.split("/") if token):
+        if token == "所有食品动物":
+            output.update(ANIMAL_LEAVES)
+        elif token in {"家禽", "禽"}:
+            output.update(POULTRY)
+        elif token == "其他动物":
+            continue
+        elif token in {"绵羊", "山羊"}:
+            output.add("羊")
+        else:
+            output.add(token)
+    return output
+
+
 POLLUTANT_FIELDS = (
     "year",
     "analyte",
@@ -45,9 +81,16 @@ RELEASE_DEPENDENCY_SPECS: dict[str, CSVSpec] = {
     ),
     "category_alias.csv": CSVSpec(
         fields=("异名", "规范名", "status", "说明"),
-        rows=8,
+        rows=10,
         unique_key=("异名",),
-        sha256="59d4838dcf19b433308d2d850698bbc2a56599a0185a2e9f3279eeda347ffb66",
+        sha256="3137a085f1c25e73c4d2962fd6c8d787b80159d56d4d3474c109d741af6f531f",
+        derivation="human_adjudication_seed",
+    ),
+    "category_containment.csv": CSVSpec(
+        fields=("成员", "上级", "status", "说明"),
+        rows=7,
+        unique_key=("成员",),
+        sha256="9f94d87716553d3bc119e3605e5d757153ba54b1c1d401853e4fe302c32d1346",
         derivation="human_adjudication_seed",
     ),
     "pollutant_old_path.csv": CSVSpec(
@@ -94,10 +137,13 @@ RELEASE_DEPENDENCY_SPECS: dict[str, CSVSpec] = {
             "v2022",
             "unit",
             "trend",
+            "归属2002",
+            "归属2019",
+            "归属2022",
         ),
-        rows=1132,
+        rows=1157,
         unique_key=("drug", "animal", "tissue"),
-        sha256="1ad4054e0fd2c51fcb05b27a30fd289cc37df00967350e369984195bdd8f3b35",
+        sha256="02e8ee1e47c5d786cc51b544ae730096e32c0a67646bc76bffc3b4052420402e",
         derivation="deterministic_member_expansion",
     ),
 }
@@ -176,9 +222,15 @@ def verify_release_dependencies(
     }
     if "category_alias.csv" in loaded:
         statuses = [row["status"] for row in loaded["category_alias.csv"]]
-        if statuses.count("已确认") != 3 or statuses.count("待核") != 5:
+        if statuses.count("已确认") != 5 or statuses.count("待核") != 5:
             raise DependencyContractError(
-                "category alias adjudication counts differ from 3 confirmed and 5 pending"
+                "category alias adjudication counts differ from 5 confirmed and 5 pending"
+            )
+    if "category_containment.csv" in loaded:
+        statuses = [row["status"] for row in loaded["category_containment.csv"]]
+        if statuses.count("已确认") != 7 or len(statuses) != 7:
+            raise DependencyContractError(
+                "category containment adjudications differ from 7 confirmed"
             )
     return loaded
 
@@ -187,6 +239,7 @@ POLLUTANT_REBUILD_DEPENDENCIES = (
     "pollutant_old_path.csv",
     "food_taxonomy.csv",
     "category_alias.csv",
+    "category_containment.csv",
 )
 POLLUTANT_RELEASE_OUTPUTS = (
     "pollutant_limits_by_version.csv",
@@ -195,7 +248,7 @@ POLLUTANT_RELEASE_OUTPUTS = (
     "pollutant_quarantine.csv",
 )
 REVIEWED_ALIAS_AUDIT = {
-    "confirmed_applied": 3,
+    "confirmed_applied": 5,
     "pending_review_excluded": 5,
     "pending_review_sources": [
         "麦片、面筋、粥类罐头、带馅面米制品",

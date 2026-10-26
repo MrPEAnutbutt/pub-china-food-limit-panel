@@ -1,4 +1,4 @@
-# China Food Safety Maximum-Limit Panel, 2002–2026 (v1)
+# China Food Safety Maximum-Limit Panel, 2002–2026 (release v1.1)
 
 This package aligns maximum-limit rules from five mandatory Chinese food-safety
 standard families across editions. The release contains 46,337 long-table rules
@@ -6,12 +6,39 @@ from 19 extracted editions, while the documented source corpus covers 21 edition
 sources. The two additional edition sources, GB 2762-2005 and GB 2760-1996, are
 archived and have no released limit rows.
 
-All 24 CSV files use UTF-8 with a byte-order mark. Read codes, years, and
+All 26 CSV files use UTF-8 with a byte-order mark. Read codes, years, and
 identifiers as text when software might infer numeric types.
 Run `validate.py` to obtain the current row inventory and package hashes;
 `validation_report.json` records the latest validation run.
 `SOURCE_ACQUISITION.md` gives a public locator and byte-identity status for
 each of the 25 Chinese source files and four unofficial English translations.
+
+## Release v1.1 and versioning policy
+
+Release v1.1 replaces v1.0, the version circulated for peer review. The record
+count is unchanged. The release corrects 1,019 pesticide category assignments,
+six temporary-limit marks, nine veterinary-drug animal labels and one
+veterinary-drug English name; it withholds panel trends in more situations
+where the compared scope or edition sequence is not comparable; and it adds
+row-level source, extraction-method and verification fields together with
+`extraction_method_summary.csv` and `record_id_changes.csv`.
+
+Future releases follow these rules:
+
+- **Version numbers.** Corrections, new editions, added columns and added
+  tables increment the minor version. A change to the meaning or format of an
+  existing column or code increments the major version.
+- **Corrections.** An error in a released record is corrected at its
+  construction source (an extraction rule or a manual-transcription seed) and
+  the package is rebuilt; released files are never edited by hand.
+  `record_id_changes.csv` lists every identifier the correction changes.
+- **Newly issued standards.** A new edition of a covered family is added as a
+  new edition source, extracted with the family's documented method and
+  validated before release; records of earlier editions are kept.
+- **Superseded or replaced source files.** A frozen source file is never
+  replaced silently. A replacement or newly matched official file receives its
+  own `source_id` in `source_manifest.csv`, and rows re-extracted from it are
+  listed in `record_id_changes.csv`.
 
 ## Edition coverage
 
@@ -59,20 +86,20 @@ The five rule-level files contain 46,337 released rules:
 
 The five category or rule-group panels are:
 
-- `pollutant_category_panel.csv`: 260 rows.
+- `pollutant_category_panel.csv`: 255 rows.
 - `pesticide_panel.csv`: 11,718 rows.
 - `mycotoxin_panel.csv`: 40 rows.
 - `vetdrug_panel.csv`: 559 rows.
 - `additive_panel.csv`: 2,762 rows.
 
 The three supported member-level panels are
-`pollutant_member_panel.csv` (390 rows), `mycotoxin_member_panel.csv`
-(55 rows), and `vetdrug_member_panel.csv` (1,132 rows). No additive member
+`pollutant_member_panel.csv` (384 rows), `mycotoxin_member_panel.csv`
+(55 rows), and `vetdrug_member_panel.csv` (1,157 rows). No additive member
 panel is released because dotted GB 2760 codes were reused or redefined across
 editions and a dotted prefix does not establish inheritance.
 
-The remaining eleven CSV files provide audits, provenance, dates, lookups, and
-schema metadata:
+The remaining thirteen CSV files provide audits, provenance, dates, lookups,
+identifier changes, and schema metadata:
 
 - `pesticide_edition_reconciliation.csv`: six edition-level count audits.
 - `pesticide_ocr_crosscheck.csv`: 17,203 text-layer/OCR comparison keys for
@@ -84,17 +111,21 @@ schema metadata:
 - `version_dates.csv`: 21 edition-source date records.
 - `quarantined_rows.csv`: 12 rejected extraction fragments.
 - `source_manifest.csv`: 25 source-file fingerprints and relationships.
+- `extraction_method_summary.csv`: released records by family, edition and
+  row-level extraction method (20 rows).
+- `record_id_changes.csv`: 1,215 record identifiers replaced, removed or added
+  since v1.0.
 - `entity_names_en.csv`: 753 stable-key entity labels.
 - `additive_names_en.csv`: 221 Chinese Number System (CNS)-keyed additive
   labels.
 - `food_category_names_en.csv`: 394 family-specific stable-key food labels.
-- `data_dictionary.csv`: the field schema for the other 23 CSV files.
+- `data_dictionary.csv`: the field schema for the other 25 CSV files.
 
 `data_dictionary.csv` has ten metadata columns: `table`, `column`, `type`,
 `nullable`, `missing_value`, `allowed_values`, `key_role`, `description_en`,
 `description_zh`, and `notes`. Its shell-style patterns, including `v20??`,
-expand over actual headers. `validate.py` currently verifies all 413 fields in
-the other 23 CSV files and fails on uncovered, ambiguous, mistyped, non-null,
+expand over actual headers. `validate.py` currently verifies all 466 fields in
+the other 25 CSV files and fails on uncovered, ambiguous, mistyped, non-null,
 or out-of-vocabulary values.
 
 ## Rule identifiers and source lineage
@@ -117,6 +148,74 @@ key. Such rows can contain different values or distinct printed rules with the
 same value. Inspect every rule or the panel lineage fields before resolving
 them. Exact duplicate records cause the release builder to fail; distinct
 rules are retained.
+
+`record_id` is a digest of the row's fields as built; the fields added in v1.1
+(the long tables' source, extraction-method and verification fields, the panels'
+`source_record_ids_YYYY` and `count_mismatch_editions`) are not digested. It
+stays the same across releases only while the digested fields, including values,
+labels and, for panels, trend, are unchanged; a correction to them gives the row
+a new identifier. Two tables digest fewer fields. `pesticide_limits_long.csv`
+digests the printed rule (edition, raw pesticide names, raw parent category, raw
+food, value, unit, qualifier and temporary flag), so a correction to a derived
+label alone, such as `parent_category_zh`, keeps the identifier.
+`pesticide_panel.csv` derives its identifier from `pesticide_key` and `food_key`
+alone. For
+longitudinal use across releases, join on the natural keys below rather than on
+`record_id`. `record_id_changes.csv` pairs the previous and current identifiers
+on the same keys and lists rows that were removed or added.
+
+| Table | Natural key |
+|---|---|
+| `pollutant_limits_long.csv` | `version_year`, `analyte_zh`, `food_category_zh`, `limit_basis` |
+| `pesticide_limits_long.csv` | `version_year`, `section_number`, `source_page`, `source_y`; `pesticide_key` and `food_key` group rules across editions |
+| `mycotoxin_limits_long.csv` | `version_year`, `toxin_zh`, `food_category_zh` |
+| `vetdrug_limits_long.csv` | `version_year`, `drug_zh`, `animal_raw`, `tissue_zh` |
+| `additive_limits_long.csv` | `version_year`, `cns_code`, `food_code` |
+| `pollutant_category_panel.csv` | `analyte_zh`, `food_category_zh` |
+| `pollutant_member_panel.csv` | `analyte_zh`, `food_member_zh` |
+| `pesticide_panel.csv` | `pesticide_key`, `food_key` |
+| `mycotoxin_panel.csv` | `toxin_zh`, `food_zh` |
+| `mycotoxin_member_panel.csv` | `toxin_zh`, `food_member_zh` |
+| `vetdrug_panel.csv` | `drug_en`, `tissue_zh` |
+| `vetdrug_member_panel.csv` | `drug_zh`, `animal`, `tissue_zh` |
+| `additive_panel.csv` | `cns_code`, `food_code` |
+
+Each key is unique within the release except in two tables. In
+`additive_limits_long.csv`, one `cns_code` and `food_code` pair can carry
+several printed rules in the same edition, such as a general limit and a limit
+restricted to one food; `additive_panel.csv` holds them together in
+`rules_YYYY`. In `pollutant_category_panel.csv`, an analyte and category pair
+appears once for each basis of expression and is told apart by the
+`basis_YYYY` fields.
+
+## Row-level sources, extraction methods and verification
+
+Each long table ends with four fields:
+
+- `source_reference` cites the edition (for example `GB 2763-2019`), adds the
+  page or table row where one was recorded, and ends with a public locator URL.
+  Pages are recorded for all pesticide rows (the PDF page of the extraction
+  file), Word table rows for the 2002 veterinary-drug rows, and the PDF page,
+  printed table and row for the 144 manually transcribed rows. The URL links a
+  file directly only when the frozen bytes match it; otherwise it identifies the
+  standard.
+- `extraction_method` is the row-level read path:
+  `pdf_text_and_coordinate_parser`, `pdf_text_layer`, `word_table_stream`, or
+  `manual_page_image_transcription`. `extraction_method_summary.csv` counts the
+  records by family, edition and method.
+- `verification_status` is `confirmed_agreement`, `unresolved_disagreement`, or
+  `no_cross_source_comparison`.
+- `verification_basis` lists the evidence in a fixed order, or `none`:
+  `ocr_crosscheck` (the GB 2763-2019/2021 OCR comparison of the value),
+  `independent_audit_reading` (two rounds of independent, stratified reading of
+  the 2019/2021 scans), `independent_blind_reentry` (independent blind re-entry
+  of all 144 manually transcribed rows), and `author_scan_check` (the author's
+  check of the edition scan behind a recorded correction).
+
+A reading against the source settles a row before the automated OCR comparison
+does, and a release error found by a reading counts as agreement only after it
+was corrected. `no_cross_source_comparison` records the absence of a usable
+second source; it is not evidence of an error.
 
 ## Pesticide stable keys and rule-preserving panel
 
@@ -155,7 +254,12 @@ qualifier, equivalent normalised scope, and numeric values. The remaining
 states include `incomparable_multiple_rules`, `incomparable_units`,
 `incomparable_scope_text`,
 `incomparable_unresolved_review_or_source_qualifier`, and
-`incomparable_non_numeric`. `single_version` carries no cross-edition trend.
+`incomparable_non_numeric`. A trend is also withheld as
+`incomparable_edition_gap` when the editions holding a rule skip an edition in
+between. `single_version` carries no cross-edition trend.
+`count_mismatch_editions` lists the represented editions whose visible rule
+count differs from the declared aggregate (2016 and 2019); trends that depend on
+them are kept and flagged.
 
 `pesticide_names_zh` and `food_names_zh` preserve all normalised display labels
 represented by a stable key. Inspect `rules_YYYY` whenever these arrays contain
@@ -173,6 +277,7 @@ vocabulary:
 | `food_value_multiline_joined` | A wrapped food/value row was joined | None by itself; inspect the locator |
 | `margin_header_overlap_removed` | A repeated margin/header overlap was removed | None by itself; inspect the locator |
 | `source_qualifier_unresolved_c` | Source marker `c` remains semantically unresolved | Blocks numeric trend assignment |
+| `scan_temporary_mark_correction` | The edition scan prints no temporary-limit asterisk that the extraction copy prints; `is_temporary` and `limit_qualifier` follow the scan | None by itself; `value_raw` keeps the copy's text |
 
 These flags describe extraction and local adjudication. None certifies an
 independent human re-transcription. The trend gate also fails closed for any
@@ -201,6 +306,43 @@ Use `vetdrug_member_panel.csv` for animal-specific scalar comparisons.
 `mycotoxin_member_panel.csv` and `pollutant_member_panel.csv` similarly expose
 host-category restructuring for the mappings supported by their taxonomies.
 
+In `pollutant_member_panel.csv` a member takes, in each edition, its own
+printed rule or else the rule of the first ancestor category that has a value
+and does not exclude it. An exclusion written as "A和B" excludes both A and B,
+"X及其制品" excludes X and X制品, and any other "X及其Y" excludes X; a printed
+"X及其Y" rule, such as `果蔬汁类及其饮料`, is also X's own rule. The walk stops
+at the first ancestor rule found. That edition's cell is left blank in three
+cases: the rule excludes the member and no separate limit for the analyte is
+located; the
+member spans two printed rules (in 2022 `蒸馏酒` splits into `白酒` at 0.5 and
+other spirits at 0.2 mg/kg); or the member is named in another edition's
+exclusion list that differs from this rule's, so the printed text does not
+fix its host. `note` names the edition and the reason for each such blank,
+with groups separated by ` | `. Rows left with fewer than two editions are not
+released. Where Appendix A or the limit table shows that a name was renamed or
+lies within another category, the author confirmed the link against the cited
+page before it was used: five renames (`双壳类` = `双壳贝类`, `固体饮料类` =
+`固体饮料`, the 2022 rewording of the cereal list `稻谷糙米大米小麦小麦粉玉米玉米面`
+= `稻谷糙米大米小麦小麦粉玉米玉米粉玉米糁`, `矿泉水` = `饮用天然矿泉水`, `咖啡豆` =
+`生咖啡豆及烘焙咖啡豆`), which count as the same name in both panels, and seven
+containment links (`白酒` within `蒸馏酒`, `大米` within `大米(粉)`, `八宝粥罐头`
+within `粥类罐头`, `蔓越莓` and `醋栗` within `浆果和其他小粒水果`, `肝脏制品`
+within `畜禽肝脏及其制品`, `肾脏制品` within `畜禽肾脏及其制品`), which are used
+only to find a member's host.
+
+Every panel carries `source_record_ids_YYYY`, a JSON array of the long-table
+records that each edition cell reports. Across panels a trend is withheld when
+the represented editions skip an edition (`incomparable_edition_gap`), when an
+edition holds more than one applicable rule (`incomparable_multiple_rules`), or
+when the compared scope differs (`incomparable_scope_text`). Scope differs for
+a contaminant category when its printed head or exclusion list changes
+(confirmed renames count as equal), and for a contaminant member when the
+exclusions of the host category it heads change. For mycotoxins it differs when
+the 2011 and 2017 printed categories differ, or when the exclusions of a
+member's own listed item change; a bracket qualifies only the listed item it
+follows. For the veterinary-drug summary it differs when the 2002 and 2019 rules
+cover different animals.
+
 ## Pesticide extraction and the three audit tables
 
 GB 2763-2019 and GB 2763-2021 were extracted from government-hosted text-layer
@@ -212,7 +354,9 @@ visible in `source_manifest.csv` and the long-table source identifiers.
 `pesticide_ocr_crosscheck.csv` compares the text-layer extraction with OCR from
 the scanned anchors. It contains 3,701 `consistent`, 9 `conflict`, 13,490
 `text_only`, and 3 `ocr_only` comparison keys. These outcomes are diagnostic;
-they do not overwrite released text-layer rules. Users can filter by `status`,
+they do not overwrite released text-layer rules. Six GB 2763-2019 Table 111
+rows follow the edition scan for the temporary-limit mark (see `review_status`).
+Users can filter by `status`,
 `key_level`, row counts, and source pages when choosing a review sample.
 
 `pesticide_edition_reconciliation.csv` compares the printed aggregate MRL count
@@ -240,6 +384,15 @@ must not replace `version_dates.csv` as the edition-identity date table.
 - Two `identity_audit_copy` rows excluded from extraction. Their filenames
   claim “Amendment No. 1”, while content inspection shows full GB 2762 standard
   text; each points to the corresponding edition source.
+
+`source_class` places each file in one of four classes: 19
+`issuing_authority_file` rows (edition texts issued by the standard-setting
+authority; the locator status in `SOURCE_ACQUISITION.md` states whether the
+frozen bytes match a current issuer download), two `government_hosted_copy`
+rows (the 2019/2021 extraction copies), and four `audit_only_copy` rows (the two
+scanned anchors and the two misnamed full-text copies, from which no released
+value is read). The four English translations are listed as
+`third_party_translation` in `SOURCE_ACQUISITION.md`.
 
 Every row records a portable basename, file size, SHA-256 digest, extraction
 mode, document identity, and page count where applicable. Acquisition URLs are
@@ -341,7 +494,8 @@ Locator coverage differs by extraction family:
 - All 551 MOA Announcement 235 rows carry `source_table_index`,
   `source_table_row`, `animal_block_index`, and `tissue_index`. These Word-stream
   locators are blank for the 814 veterinary-drug rows extracted from the 2019
-  and 2022 PDFs.
+  and 2022 PDFs; `source_reference` gives the PDF page, printed table and row
+  for the 135 of those rows that were transcribed manually.
 - Pollutant, mycotoxin, and additive long tables carry edition/extraction source
   identifiers and rule fields but no released page-coordinate columns.
 
@@ -367,8 +521,8 @@ The default package directory is the directory containing `validate.py`.
 `--output` selects another report path. The internal layer checks file presence,
 headers, CSV integrity, build statistics, keys, edition coverage, conflict
 flags, all dictionary declarations, lineage, missing values, normalisation,
-panel contracts, audit tables, source relationships, dates, and README
-contracts.
+panel contracts, audit tables, source relationships, row-level sources and
+verification fields, identifier changes, dates, and README contracts.
 
 Source standards, extraction copies, and cited translations may live in
 different directories. Repeat `--source-root` to validate their union:

@@ -6,8 +6,13 @@
       "derivation": "parser_derived_from_normative_appendix_a"
     },
     "category_alias.csv": {
-      "rows": 8,
-      "sha256": "59d4838dcf19b433308d2d850698bbc2a56599a0185a2e9f3279eeda347ffb66",
+      "rows": 10,
+      "sha256": "3137a085f1c25e73c4d2962fd6c8d787b80159d56d4d3474c109d741af6f531f",
+      "derivation": "human_adjudication_seed"
+    },
+    "category_containment.csv": {
+      "rows": 7,
+      "sha256": "9f94d87716553d3bc119e3605e5d757153ba54b1c1d401853e4fe302c32d1346",
       "derivation": "human_adjudication_seed"
     },
     "pollutant_old_path.csv": {
@@ -26,15 +31,17 @@
       "derivation": "deterministic_member_expansion"
     },
     "member_crosswalk_vetdrug.csv": {
-      "rows": 1132,
-      "sha256": "1ad4054e0fd2c51fcb05b27a30fd289cc37df00967350e369984195bdd8f3b35",
+      "rows": 1157,
+      "sha256": "02e8ee1e47c5d786cc51b544ae730096e32c0a67646bc76bffc3b4052420402e",
       "derivation": "deterministic_member_expansion"
     }
   },
   "manual_boundaries": {
-    "category_alias_rows": 8,
-    "category_alias_confirmed": 3,
+    "category_alias_rows": 10,
+    "category_alias_confirmed": 5,
     "category_alias_pending_review": 5,
+    "category_containment_rows": 7,
+    "category_containment_confirmed": 7,
     "pollutant_double_column_sidecar_rows": 241,
     "pollutant_double_column_sidecar_status": "frozen coordinate-parser output; the surviving upstream generator contains four later category-text repairs and does not reproduce this archived digest",
     "member_crosswalks": "fully replayed from locked project-local inputs"
@@ -48,7 +55,7 @@
     },
     "member_crosswalk_upstream_sha256": {
       "mycotoxin_limits_by_version.csv": "1191fe47dbb3b036e880e7944ae9d0d72a27f19ccac6b138c596d5e74d16a0c6",
-      "vetdrug_limits_by_version.csv": "90c9211355751f1fc90d35562b6a00f89ee95bcb91b133e96938860c73de96d0"
+      "vetdrug_limits_by_version.csv": "c682b212c6ec2f7d1677d582ac8250067953d71edc71aa4403bbaab72d686c60"
     },
     "archived_generator_sha256": {
       "build_food_taxonomy.py": "dede1bdf049eb02d2fb4d9e902e2ac716e913fed7e0f4f2ace373e0072fb3052",
@@ -60,12 +67,12 @@
   "pending_alias_impact_audit": {
     "audit_basis": "locked source PDFs and dependencies; each pending row was promoted alone over the confirmed-only baseline",
     "confirmed_only_counts": {
-      "category_rows": 260,
-      "member_rows": 390
+      "category_rows": 255,
+      "member_rows": 384
     },
     "all_pending_applied_counts": {
-      "category_rows": 256,
-      "member_rows": 390
+      "category_rows": 251,
+      "member_rows": 383
     },
     "rows": [
       {
@@ -95,7 +102,7 @@
           "铬|肉及肉制品",
           "铬|肉制品",
           "镉|肉及肉制品",
-          "镉|畜禽内脏"
+          "镉|肉制品"
         ],
         "effect": "renames or merges total-arsenic, chromium, and cadmium keys"
       },

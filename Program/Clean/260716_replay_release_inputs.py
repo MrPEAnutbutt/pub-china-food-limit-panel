@@ -12,9 +12,11 @@ The taxonomy and alias snapshots have different evidential status:
 * ``food_taxonomy.csv`` is a parser-derived representation of normative GB 2762
   Appendix A tables; its source replay lives in
   ``260716_rebuild_food_taxonomy.py``.
-* ``category_alias.csv`` contains eight human-authored adjudications, including
+* ``category_alias.csv`` contains ten human-authored adjudications, including
   five entries that remain marked ``待核``.  Verification preserves those labels
   and does not promote them to confirmed mappings.
+* ``category_containment.csv`` contains seven human-authored "member lies
+  within category" adjudications, all confirmed against the source pages.
 """
 
 from __future__ import annotations
@@ -31,9 +33,12 @@ import tempfile
 from typing import Iterable, Sequence
 
 from release_dependency_utils import (
+    ANIMAL_LEAVES,
     DependencyContractError,
     POLLUTANT_FIELDS,
+    POULTRY,
     RELEASE_DEPENDENCY_SPECS,
+    animal_members,
     read_locked_csv,
     sha256_file,
 )
@@ -65,7 +70,7 @@ UPSTREAM_LONG_DIGESTS = {
         "1191fe47dbb3b036e880e7944ae9d0d72a27f19ccac6b138c596d5e74d16a0c6"
     ),
     "vetdrug_limits_by_version.csv": (
-        "90c9211355751f1fc90d35562b6a00f89ee95bcb91b133e96938860c73de96d0"
+        "c682b212c6ec2f7d1677d582ac8250067953d71edc71aa4403bbaab72d686c60"
     ),
 }
 
@@ -81,8 +86,8 @@ PENDING_ALIAS_IMPACT_AUDIT = {
         "locked source PDFs and dependencies; each pending row was promoted "
         "alone over the confirmed-only baseline"
     ),
-    "confirmed_only_counts": {"category_rows": 260, "member_rows": 390},
-    "all_pending_applied_counts": {"category_rows": 256, "member_rows": 390},
+    "confirmed_only_counts": {"category_rows": 255, "member_rows": 384},
+    "all_pending_applied_counts": {"category_rows": 251, "member_rows": 383},
     "rows": [
         {
             "source": "麦片、面筋、粥类罐头、带馅面米制品",
@@ -111,7 +116,7 @@ PENDING_ALIAS_IMPACT_AUDIT = {
                 "铬|肉及肉制品",
                 "铬|肉制品",
                 "镉|肉及肉制品",
-                "镉|畜禽内脏",
+                "镉|肉制品",
             ],
             "effect": "renames or merges total-arsenic, chromium, and cadmium keys",
         },
@@ -214,7 +219,6 @@ def trend_of(values: Sequence[float | None], bases: set[str]) -> str:
     return "收紧(变严)" if values[-1] < values[0] else "放松(变松)"
 
 
-POULTRY = ("鸡", "火鸡", "鸭", "鹅")
 MAMMALS = ("牛", "羊", "绵羊", "山羊", "猪", "马", "兔", "鹿")
 ANIMAL_PARENT = {animal: "家禽" for animal in POULTRY}
 ANIMAL_PARENT.update(
@@ -229,39 +233,13 @@ ANIMAL_PARENT.update(
 ANIMAL_PARENT.update({animal: "所有食品动物" for animal in MAMMALS})
 ANIMAL_PARENT["绵羊"] = "羊"
 ANIMAL_PARENT["山羊"] = "羊"
-ANIMAL_LEAVES = (
-    "牛",
-    "羊",
-    "猪",
-    "马",
-    "兔",
-    "鹿",
-    "鸡",
-    "火鸡",
-    "鸭",
-    "鹅",
-    "鱼",
-    "虾",
-    "蜜蜂",
-)
 
 
-def animal_members(label: str) -> set[str]:
-    """Expand a target-animal label to covered leaf animals."""
+def edition_gap(present: Sequence[str], years: Sequence[str]) -> bool:
+    """True when the compared editions skip an edition in between."""
 
-    output: set[str] = set()
-    for token in (token for token in label.split("/") if token):
-        if token == "所有食品动物":
-            output.update(ANIMAL_LEAVES)
-        elif token in {"家禽", "禽"}:
-            output.update(POULTRY)
-        elif token == "其他动物":
-            continue
-        elif token in {"绵羊", "山羊"}:
-            output.add("羊")
-        else:
-            output.add(token)
-    return output
+    positions = [years.index(year) for year in present]
+    return positions != list(range(positions[0], positions[-1] + 1))
 
 
 def build_vetdrug_member_crosswalk(
@@ -283,6 +261,8 @@ def build_vetdrug_member_crosswalk(
         tuple[str, str, str], dict[str, tuple[float, str, str]]
     ] = defaultdict(dict)
     seen_specificity: dict[tuple[tuple[str, str, str], str], int] = {}
+    # Every rule at the most specific label for a member and edition.
+    candidates: dict[tuple[tuple[str, str, str], str], list[tuple[float, str]]] = {}
     for row in rows:
         value = to_mg(row["limit_value"], row["unit"])
         if value is None:
@@ -294,7 +274,10 @@ def build_vetdrug_member_crosswalk(
         for member in animal_members(row["animal"]):
             key = (row["drug"], member, row["tissue"])
             previous = seen_specificity.get((key, row["year"]), -1)
+            if row_specificity > previous:
+                candidates[(key, row["year"])] = []
             if row_specificity >= previous:
+                candidates[(key, row["year"])].append((value, row["animal"]))
                 table[key][row["year"]] = (
                     value,
                     row["unit"],
@@ -308,6 +291,13 @@ def build_vetdrug_member_crosswalk(
         if len(present) < 2:
             continue
         values = [year_values[year][0] for year in present]
+        key = (drug, animal, tissue)
+        if any(len({v for v, _ in candidates[(key, year)]}) > 1 for year in present):
+            trend = "不可比(同版多规则)"
+        elif edition_gap(present, YEARS_VETDRUG):
+            trend = "不可比(跨过缺失版本)"
+        else:
+            trend = trend_of(values, {"—"})
         output.append(
             {
                 "drug": drug,
@@ -319,7 +309,13 @@ def build_vetdrug_member_crosswalk(
                     for year in YEARS_VETDRUG
                 },
                 "unit": "mg/kg(已折算)",
-                "trend": trend_of(values, {"—"}),
+                "trend": trend,
+                **{
+                    f"归属{year}": "；".join(label for _, label in candidates[(key, year)])
+                    if year in year_values
+                    else ""
+                    for year in YEARS_VETDRUG
+                },
             }
         )
     order = {"收紧(变严)": 0, "放松(变松)": 1, "稳定": 2}
@@ -332,6 +328,26 @@ def build_vetdrug_member_crosswalk(
         )
     )
     return output
+
+
+def split_listed(raw: str) -> list[str]:
+    """Split a printed food list on top-level 、, keeping brackets with their item."""
+
+    items: list[str] = []
+    current: list[str] = []
+    depth = 0
+    for char in raw:
+        if char in "(（[［":
+            depth += 1
+        elif char in ")）]］":
+            depth -= 1
+        if char == "、" and depth == 0:
+            items.append("".join(current))
+            current = []
+        else:
+            current.append(char)
+    items.append("".join(current))
+    return items
 
 
 def build_mycotoxin_member_crosswalk(
@@ -350,19 +366,23 @@ def build_mycotoxin_member_crosswalk(
     members: set[tuple[str, str]] = set()
     for row in rows:
         raw = row["food_category"]
-        excluded: list[str] = []
-        for match in BRACKET.finditer(raw):
-            inner = match.group(1)
-            if "除" in inner:
-                cleaned = re.sub(r"除外?|除", "", inner)
-                excluded.extend(
-                    clean(part)
-                    for part in re.split(r"[、,，]", cleaned)
-                    if clean(part)
-                )
-        base = clean(BRACKET.sub("", raw))
         value = to_mg(row["limit_value"], row["unit"])
-        for part in (clean(part) for part in base.split("、")):
+        # A bracket qualifies only the listed item it follows: in
+        # "大米、植物油(除玉米油、花生油)" the exclusions belong to 植物油.
+        for item in split_listed(raw):
+            excluded: list[str] = []
+            for match in BRACKET.finditer(item):
+                inner = match.group(1)
+                if "除" in inner:
+                    cleaned = re.sub(r"除外?|除", "", inner)
+                    excluded.extend(
+                        clean(part)
+                        for part in re.split(r"[、,，]", cleaned)
+                        if clean(part)
+                    )
+            part = clean(BRACKET.sub("", item))
+            for excluded_member in excluded:
+                members.add((row["toxin"], rename.get(excluded_member, excluded_member)))
             if not part:
                 continue
             part = rename.get(part, part)
@@ -372,8 +392,6 @@ def build_mycotoxin_member_crosswalk(
                 raw,
             )
             members.add((row["toxin"], part))
-        for excluded_member in excluded:
-            members.add((row["toxin"], rename.get(excluded_member, excluded_member)))
 
     def applies(
         toxin: str, year: str, member: str
@@ -401,8 +419,19 @@ def build_mycotoxin_member_crosswalk(
             continue
         hosts = {cells[year][2] for year in present if cells[year]}
         numeric_values = [cells[year][0] for year in present if cells[year]]
+        # Editions in which the member is a printed head of its own rule: the
+        # member then stands for that head minus the printed exclusions.
+        residual = {
+            tuple(sorted(cells[year][1]))
+            for year in present
+            if values.get((toxin, member), {}).get(year) is cells[year]
+        }
         if len(present) < 2:
             trend = f"仅{present[0]}版(无跨版对应:该类别被删除或新增)"
+        elif edition_gap(present, YEARS_MYCOTOXIN):
+            trend = "不可比(跨过缺失版本)"
+        elif len(residual) > 1:
+            trend = "不可比(范围文字不同)"
         else:
             trend = trend_of(numeric_values, {"—"})
         output.append(
@@ -719,14 +748,23 @@ def verify_bundle(input_dir: Path) -> dict[str, object]:
             "derivation": spec.derivation,
         }
     alias_status = Counter(row["status"] for row in loaded["category_alias.csv"])
-    if alias_status != Counter({"待核": 5, "已确认": 3}):
+    if alias_status != Counter({"待核": 5, "已确认": 5}):
         raise ReplayError(f"unexpected alias adjudication states: {dict(alias_status)}")
+    containment_status = Counter(
+        row["status"] for row in loaded["category_containment.csv"]
+    )
+    if containment_status != Counter({"已确认": 7}):
+        raise ReplayError(
+            f"unexpected containment adjudication states: {dict(containment_status)}"
+        )
     return {
         "files": files,
         "manual_boundaries": {
-            "category_alias_rows": 8,
-            "category_alias_confirmed": 3,
+            "category_alias_rows": 10,
+            "category_alias_confirmed": 5,
             "category_alias_pending_review": 5,
+            "category_containment_rows": 7,
+            "category_containment_confirmed": 7,
             "pollutant_double_column_sidecar_rows": 241,
             "pollutant_double_column_sidecar_status": (
                 "frozen coordinate-parser output; the surviving upstream "

@@ -70,7 +70,8 @@ class StableReleaseStateCodeTests(unittest.TestCase):
             Counter(row["review_status"] for row in long_rows),
             Counter(
                 {
-                    "text_layer_auto_extracted": 36122,
+                    "text_layer_auto_extracted": 36116,
+                    "text_layer_auto_extracted;scan_temporary_mark_correction": 6,
                     "text_layer_auto_extracted;source_structure_exception": 1652,
                     "text_layer_auto_extracted;source_glyph_correction": 234,
                     "text_layer_auto_extracted;food_label_continuation_joined": 8,

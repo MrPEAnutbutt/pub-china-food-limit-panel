@@ -107,6 +107,30 @@ class PesticideTextLayerUnitTests(unittest.TestCase):
         )
         self.assertFalse(MODULE.food_label_expects_continuation("油料和油脂"))
 
+    def test_only_category_names_open_a_valued_parent_scope(self):
+        for heading in (
+            "蔬菜",
+            "生乳",
+            "哺乳动物肉类(海洋哺乳动物除外),以脂肪中的残留量计",
+            "肝脏(牛、羊、猪)",
+        ):
+            self.assertEqual(MODULE.parent_heading(heading), heading)
+        self.assertEqual(
+            MODULE.parent_heading("哺乳动物内脏(猪肾、牛肾、羊肾除外)"), "哺乳动物内脏"
+        )
+        self.assertEqual(
+            MODULE.parent_heading("水果(苹果、梨、桃、樱桃、油桃、李子、蓝莓、越橘、西瓜、甜瓜类水果、除外)"),
+            "水果",
+        )
+        for food in (
+            "豆类蔬菜(食荚豌豆、豌豆(鲜)、菜豆和菜用大豆除外)",
+            "浆果和其他小型水果[醋栗(红、黑)、葡萄、草莓除外]",
+            "叶菜类蔬菜(菠菜、普通白菜、叶芥菜、萝卜叶、",
+            "柑",
+            "棉籽",
+        ):
+            self.assertEqual(MODULE.parent_heading(food), "")
+
     def test_semantic_table_boundaries_allow_source_numbering_exceptions(self):
         self.assertEqual(
             MODULE.structural_transition("4.191.3 最大残留限量", 191),
@@ -246,8 +270,8 @@ class PesticideTextLayerSourceIntegrationTests(unittest.TestCase):
             {
                 "as_fat": 10,
                 "as_presented": 3,
-                "none": 5398,
-                "temporary_mrl_asterisk": 1697,
+                "none": 5404,
+                "temporary_mrl_asterisk": 1691,
             },
         )
         self.assertEqual(
@@ -269,6 +293,20 @@ class PesticideTextLayerSourceIntegrationTests(unittest.TestCase):
         self.assertEqual(unresolved[0]["year"], "2021")
         self.assertIn("source_qualifier_unresolved_c", unresolved[0]["review_status"])
 
+    def test_scan_temporary_marks_follow_the_edition_scan(self):
+        fixed = [
+            row for row in self.limits
+            if "scan_temporary_mark_correction" in row["review_status"]
+        ]
+        self.assertEqual(
+            sorted(row["food"] for row in fixed),
+            sorted(("稻谷", "糙米", "麦类", "旱粮类", "棉籽", "大豆")),
+        )
+        for row in fixed:
+            self.assertEqual((row["year"], row["section_number"]), ("2019", "111"))
+            self.assertEqual((row["is_temporary"], row["limit_qualifier"]), ("false", ""))
+            self.assertTrue(row["value_raw"].endswith("∗"))
+
     def test_coordinate_scope_and_wrapped_food_are_preserved(self):
         centered_parent = next(
             row
@@ -286,6 +324,27 @@ class PesticideTextLayerSourceIntegrationTests(unittest.TestCase):
         )
 
         self.assertEqual(centered_parent["parent_category"], "油料和油脂")
+        # Rows the independent reading found under a long food label, and two
+        # text-layer cases that place a food in the category column.
+        expected_parents = {
+            ("2019", "83", "棉籽"): "油料和油脂",
+            ("2019", "136", "豌豆(鲜)"): "蔬菜",
+            ("2019", "272", "醋栗(红、黑)"): "水果",
+            ("2019", "363", "山药"): "蔬菜",
+            ("2021", "21", "梨"): "水果",
+            ("2021", "291", "茎用莴苣"): "蔬菜",
+            ("2021", "298", "瓜类蔬菜(黄瓜、腌制用小黄瓜、西葫芦、笋瓜除外)"): "蔬菜",
+            ("2021", "156", "柑"): "水果",
+            ("2021", "284", "猪肾"): "哺乳动物内脏",
+        }
+        for (year, section, food), parent in expected_parents.items():
+            row = next(
+                row
+                for row in self.limits
+                if (row["year"], row["section_number"], row["food"])
+                == (year, section, food)
+            )
+            self.assertEqual(row["parent_category"], parent, (year, section, food))
         self.assertEqual(
             wrapped_food["food"],
             "叶菜类蔬菜(菠菜、普通白菜、苋菜、茼蒿、叶用莴苣、油麦菜、"
@@ -428,6 +487,9 @@ class PesticideTextLayerSixEditionIntegrationTests(unittest.TestCase):
                 list(range(1, expected_sections[year] + 1)),
             )
             self.assertTrue(all(row["parent_category"] for row in rows))
+            self.assertLessEqual(
+                {row["parent_category"] for row in rows}, MODULE.PARENT_HEADINGS
+            )
 
     def test_declared_visible_deltas_and_qualifiers_are_explicit(self):
         expected_deltas = {
