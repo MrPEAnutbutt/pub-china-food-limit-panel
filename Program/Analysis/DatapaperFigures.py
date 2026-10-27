@@ -524,7 +524,7 @@ if __name__ == "__main__":
         "fig1Coverage",
         "Coverage matrix. Rows are the five standard families and columns are version years "
         "from 1996 to 2026. Each cell gives the number of released limit records and is shaded "
-        "by read path. The 2019 and 2021 pesticide cells use government-hosted copies; the "
+        "by read path. The 2019 and 2021 pesticide cells use government-hosted copies. The "
         "edition scans, kept as audit-only copies, anchor edition identity and supply a frozen "
         "optical-character-recognition (OCR) cross-check. A star marks a mainly machine-read "
         "cell with hand-transcribed rows. "
@@ -532,7 +532,7 @@ if __name__ == "__main__":
         f"The matrix holds {coverage['n_cells']} coverage cells, and the "
         f"{coverage['n_extracted_editions']} extracted cells contain "
         f"{coverage['n_records']:,} records. The 2002 veterinary-drug "
-        "cell is Ministry of Agriculture Announcement 235; its 2022 cell is the "
+        "cell is Ministry of Agriculture Announcement 235, and its 2022 cell is the "
         "supplementary standard "
         "GB 31650.1.",
     )
@@ -541,7 +541,7 @@ if __name__ == "__main__":
         "Column assignment in the two-column tables. The mercury table of GB 2762-2022 is "
         "rendered with word bounding boxes. Its two analyte headers set the value-column "
         f"boundary at {geo['split_x']:.1f} pt, and the inferred category boundary is "
-        f"{geo['cat_bound']:.1f} pt; both are derived per page. Each row has a value in one "
+        f"{geo['cat_bound']:.1f} pt. Both are derived per page. Each row has a value in one "
         "column and an em-dash in the other, so the dash position assigns the value to an "
         "analyte. The same page also shows that an equal printed value can carry a different "
         "basis of expression.",
@@ -549,11 +549,12 @@ if __name__ == "__main__":
     write_figure_tex(
         "fig1Timeline",
         "Version timeline from issue date to effective date. Dates are read from source covers "
-        "or the 2002 announcement and released in \\texttt{version\\_dates.csv}; 20 of the 21 "
-        "coverage editions have both dates, while GB 2760-1996 records an explicit missing date. "
-        f"{timeline['n_cross_checked']} editions are listed in a register of current standards, "
-        f"and for {timeline['n_agree']} of them both register dates agree with the source reading; "
-        f"{timeline['n_ocr_covers']} covers required OCR. Across extracted editions, the "
+        "or the 2002 announcement and released in \\texttt{version\\_dates.csv}. Of the 21 "
+        "coverage editions, 20 have both dates, and GB 2760-1996 records an explicit missing date. "
+        f"A register of current standards lists {timeline['n_cross_checked']} editions, and for "
+        f"{'all' if timeline['n_agree'] == timeline['n_cross_checked'] else timeline['n_agree']} "
+        "of them both register dates agree with the source reading. OCR was required for "
+        f"{timeline['n_ocr_covers']} covers. Across extracted editions, the "
         f"transition-period median is {timeline['median_months']:.0f} months. The 2002 "
         "announcement took effect on its issue date.",
     )

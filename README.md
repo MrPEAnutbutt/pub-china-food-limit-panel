@@ -6,8 +6,8 @@ files holding 46,337 limit records from five mandatory Chinese food-safety stand
 families, 2002–2026) is deposited at figshare under the DOI
 `10.6084/m9.figshare.33005717`. This repository holds the extraction, alignment, release-assembly, testing and
 validation code, plus frozen intermediate and verification evidence, exported from
-the private build workspace. Archive versions 1.1.0 to 1.1.2 match release v1.1
-of the dataset, and 1.1.2 is the current one (see "Versions").
+the private build workspace. Archive versions 1.1.0 to 1.1.3 match release v1.1
+of the dataset, and 1.1.3 is the current one (see "Versions").
 
 Licences: the code is MIT-licensed (see `LICENSE`); the released dataset carries
 CC BY 4.0 (see `Data/Final/china_food_limit_panel_v1/LICENSE.md`). Source standards
@@ -172,6 +172,10 @@ difference tables should be archived first.
 
 All versions share the Zenodo concept DOI `10.5281/zenodo.21397471`.
 
+- **1.1.3** — the manuscript tables, figure captions and number macros as revised
+  for the resubmission: shorter table and figure captions, Table 4 without the
+  declared-rule-total row, and the pesticide count-reconciliation numbers read from
+  the frozen text-layer extraction report. No released data value changed.
 - **1.1.2** — the manuscript tables and figure captions as revised in the first
   round of peer review (Table 2 with one column per extraction method, Tables 4 and
   6 condensed, source-class terminology), the data package's README and data

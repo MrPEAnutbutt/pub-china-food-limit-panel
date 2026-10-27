@@ -3,7 +3,8 @@
 
 脚本直接读取本工程 Data/Final 真源，输出供 main-en.tex ``\\input`` 的
 LaTeX longtable。历史 markdown 生成器已停用，避免维护两套稿件结果接口。
-独立核验结果表和核验宏另读入 git 的冻结核验证据(Data/Interim 下三处)。
+独立核验结果表和核验宏另读入 git 的冻结核验证据(Data/Interim 下三处),
+农残两版条数对账的译本核对另读入 git 的冻结提取报告。
 label = 文件名主干、无下划线(tab1AlignmentFailures / tab1ExtractionMethod /
 tab1FileInventory / tab1ValidationMetrics / tab1PanelRules / tab1TraceExamples /
 tab1Restructuring / tab1IndependentVerification / tab1NaturalKeys)。
@@ -248,13 +249,13 @@ T3_SPEC = (
 )
 T3_CAP = (
     "Main source-dependent validation diagnostics. Positional traceback uses "
-    "every eligible row; its rate uses the decidable subset, and a parenthetical "
+    "every eligible row. Its rate uses the decidable subset, and a parenthetical "
     "eligible count is shown when the two denominators differ. The shuffled "
     "column gives the value-permuted control. A traceback pass also requires "
     "at least 30 decidable rows and an observed-minus-shuffled gap of at least "
     "25 percentage points. Entity coverage compares "
     "the released unique-entity count with independently countable source-entry "
-    "markers; it is a count proxy and not entity-level sensitivity."
+    "markers."
 )
 T3_HEAD = (
     "Diagnostic & Edition & Numerator / denominator & Observed & Shuffled & "
@@ -425,9 +426,10 @@ def table4():
         f"Inventory of the data deposit, {len(listed)} CSV files and "
         f"{len(NON_CSV_FILES)} documentation and code files in a flat directory. Row "
         "counts exclude the header row and are read from the released files. The five "
-        f"long tables hold the {long_total:,} released limit records; the panels, "
+        f"long tables hold the {long_total:,} released limit records. The panels, "
         "lookups and audit tables are derived from those records and are not "
-        "additional limits."
+        "additional limits. All file digests in the deposit and the code archive are "
+        "SHA-256."
     )
 
     body = []
@@ -513,9 +515,6 @@ def table5():
                 add_rows[r["record_id"]] = r["trend"]
     add_judged = sum(t in JUDGED for t in add_rows.values())
 
-    pest = rd("pesticide_panel.csv")
-    pest_judged = [r for r in pest if r["trend"] in JUDGED]
-    pest_flagged = sum(1 for r in pest_judged if json.loads(r["count_mismatch_editions"]))
     t = trend
 
     rows = [
@@ -568,10 +567,11 @@ def table5():
          f"{tt('incomparable_category_disappeared')}: contaminant "
          f"{t['pollutant_category_panel.csv']['incomparable_category_disappeared']}"),
         ("Contaminant member host not determinable",
-         "Cell and host are left blank, with the reason in note: excluded by the inherited rule "
-         f"({blanks['excluded']} cells), spanning two rules ({blanks['spans two printed rules']}) "
-         f"or under differing exclusion lists ({blanks['host not determinable']}).",
-         f"Trend from the remaining editions; {noted} rows carry a note"),
+         f"Cell and host are left blank, and {tt('note')} gives the reason, namely exclusion by "
+         f"the inherited rule ({blanks['excluded']} cells), a span over two rules "
+         f"({blanks['spans two printed rules']}) or differing exclusion lists "
+         f"({blanks['host not determinable']}).",
+         f"Trend from the remaining editions, with a note on {noted} rows"),
         ("Quarantined fragment",
          f"Kept only in {tt('quarantined_rows.csv')}. The {len(pol_q)} contaminant fragments "
          f"duplicate released rules, so no cell is lost. The {len(add_q)} additive fragments "
@@ -584,10 +584,6 @@ def table5():
          f"{t['pesticide_panel.csv']['incomparable_edition_gap']}, additive "
          f"{t['additive_panel.csv']['incomparable_edition_gap']}, veterinary-drug member "
          f"{t['vetdrug_member_panel.csv']['incomparable_edition_gap']}"),
-        ("Declared rule total not matched (GB 2763-2016 and -2019)",
-         f"Trends are kept, and {tt('count_mismatch_editions')} names the editions each relies "
-         "on.",
-         f"{pest_flagged:,} of {len(pest_judged):,} judged pesticide rows flagged"),
     ]
     body = [("\\addlinespace " if i else "") + " & ".join(row) for i, row in enumerate(rows)]
     write_tab("tab1PanelRules", T5_SPEC, T5_CAP, T5_HEAD, body)
@@ -600,10 +596,11 @@ T6_SPEC = (r"@{}>{\raggedright\arraybackslash}p{0.09\textwidth}"
            r">{\raggedright\arraybackslash}p{0.27\textwidth}@{}")
 T6_HEAD = ("Step & Comparable: acephate, tea & Unit changes: lead, concentrated juice & "
            "Quarantined: inorganic arsenic, rice")
-T6_CAP = ("Three records traced from the source table to the panels: a comparable pesticide "
-          "limit, a contaminant limit whose unit changes dimension, and a contaminant entry "
-          "whose malformed duplicate was quarantined. Identifiers are released "
-          "record\\_id values; page numbers refer to the PDF files in source\\_manifest.csv.")
+T6_CAP = ("Three records traced from the source table to the panels, namely a comparable "
+          "pesticide limit, a contaminant limit whose unit changes dimension, and a contaminant "
+          "entry whose malformed duplicate was quarantined. Identifiers are released "
+          "\\texttt{record\\_id} values, and page numbers refer to the PDF files in "
+          "\\texttt{source\\_manifest.csv}.")
 
 
 def table6():
@@ -617,7 +614,7 @@ def table6():
     years = YEARS["pesticide_panel.csv"]
     assert [tea[f"status_{y}"] for y in years] == ["single_rule"] * 6
     assert [tea[f"v{y}"] for y in years] == ["0.1"] * 4 + ["0.05"] * 2
-    assert tea["trend"] == "tightened" and json.loads(tea["count_mismatch_editions"]) == ["2016", "2019"]
+    assert tea["trend"] == "tightened"
     tea_rows = {y: pest_long[json.loads(tea[f"source_record_ids_{y}"])[0]] for y in years}
     first, last = tea_rows["2012"], tea_rows["2026"]
     copies = [y for y in years
@@ -659,37 +656,36 @@ def table6():
          f"and {last['limit_value']} mg/kg in 2021 and 2026 (PDF p. {first['source_page']} in "
          f"2012, p. {last['source_page']} in 2026).",
          "GB 2762, Table 1 (lead), p. 5: concentrated fruit and vegetable juice (pulp) 0.5 mg/L "
-         "in 2012 and 2017; 0.5 under the table's mg/kg header in 2022 and 2025.",
+         "in 2012 and 2017, and 0.5 under the table's mg/kg header in 2022 and 2025.",
          "GB 2762-2017, Table 4 (arsenic), p. 9: paddy, brown rice and milled rice, inorganic "
          "arsenic 0.2 mg/kg, with a footnote marker after paddy."),
         ("Long table",
          f"Six rows, one per edition, sharing \\texttt{{{tea['pesticide_key']}}} and "
-         f"\\texttt{{{tea['food_key']}}}, e.g. {rid(last)} (2026; source page "
+         f"\\texttt{{{tea['food_key']}}}, e.g. {rid(last)} (2026, source page "
          f"{last['source_page']}, y = {float(last['source_y']):.1f}). The 2019 and 2021 rows "
          "come from the government-hosted copies and agree with the OCR cross-check of "
          "the edition scans.",
          f"Four rows. The 2012 and 2017 rows keep unit mg/L, "
          f"{tt('normalization_status')} {tt('density_required')} and a blank "
-         f"{tt('limit_mgkg')}; the 2022 and 2025 rows are already in mg/kg.",
+         f"{tt('limit_mgkg')}. The 2022 and 2025 rows are already in mg/kg.",
          f"The coordinate parser releases {rid(rice_2017)}. A second, line-based reading of "
-         "the same entry began with a separator; the bracket-structure gate moved it to "
+         "the same entry began with a separator, and the bracket-structure gate moved it to "
          f"{tt('quarantined_rows.csv')} as {rid(frag)}."),
         ("Panel",
-         f"{tt('pesticide_panel.csv')} {rid(tea)}: {tt('single_rule')} in all six editions; "
-         f"{tt('source_record_ids_YYYY')} returns each cell to its long-table row.",
+         f"In {tt('pesticide_panel.csv')}, {rid(tea)} is {tt('single_rule')} in all six editions, "
+         f"and {tt('source_record_ids_YYYY')} returns each cell to its long-table row.",
          f"Category row {rid(juice_c)} and member row {rid(juice_m)} hold 0.5 in all four "
          "editions, with units mg/L, mg/L, mg/kg and mg/kg.",
          f"The released row fills the 2017 cell of category row {rid(rice_c)} and of the "
          "paddy, brown-rice and milled-rice member rows. The fragment enters no panel, so no "
          "cell is lost."),
         ("Trend",
-         f"{tt('tightened')}. {tt('count_mismatch_editions')} lists 2016 and 2019, whose "
-         "visible rule counts differ from the declared totals; the trend is kept and flagged.",
+         f"{tt('tightened')}.",
          f"{tt('incomparable_unit_dimension_or_value')} for the category and "
          f"{tt('incomparable_basis_unit_or_value')} for the member. Equal digits are not "
          "read as stable.",
          f"{tt('incomparable_category_disappeared')} for the category row, which is not "
-         "printed after 2017; the member rows follow the split "
+         "printed after 2017, while the member rows follow the split "
          "(Table~\\ref{tab1Restructuring})."),
     ]
     body = [("\\addlinespace " if i else "") + " & ".join(row) for i, row in enumerate(rows)]
@@ -709,7 +705,7 @@ T7_CAP = ("Category restructuring in the contaminant member panel. Each cell giv
           "member takes its own printed rule or the rule of the first ancestor category that "
           "has a value and does not exclude it. A cell is blank when that rule excludes the "
           "member, when the member spans two printed rules, or when the host cannot be "
-          "determined, and note records the reason. Renames and containment links that the "
+          "determined, and \\texttt{note} records the reason. Renames and containment links that the "
           "printed text does not establish were confirmed against the source pages before "
           "use.")
 HOST_EN = {
@@ -773,8 +769,7 @@ def table7():
                 else:
                     assert y in row["note"]
                     cells.append("blank")
-            block.append(f"{label}\\newline {{\\footnotesize\\texttt{{{row['record_id']}}}}} & "
-                         + " & ".join(cells) + f" & {tt(row['trend'])}")
+            block.append(f"{label} & " + " & ".join(cells) + f" & {tt(row['trend'])}")
         used = sorted({letters[unicodedata.normalize("NFKC", r[f'host_category_{y}'])]
                        for (a, n), r in rows.items() if a == analyte
                        and n in dict(members) for y in years if r[f'host_category_{y}']})
@@ -800,7 +795,7 @@ def _split_line(cat_row):
     assert shared["trend"] == "incomparable_category_disappeared"
     assert all(r["trend"] == "stable" and r["coverage_status"] == "introduced_2022" for r in later)
     return ("Category panel: A is not printed after 2017 "
-            f"({tt('incomparable_category_disappeared')}); B, C and D start in 2022 "
+            f"({tt('incomparable_category_disappeared')}), and B, C and D start in 2022 "
             f"({tt('stable')}). Milled rice reaches D through a confirmed containment link.")
 
 
@@ -811,7 +806,7 @@ def _absorbed_line(cat_row):
     assert dairy["v2017"] == "0.3" and "乳粉" in dairy["source_category_2017"]
     assert dairy["trend"] == "incomparable_scope_text"
     return ("Category panel: E is not printed after 2017. The milk and dairy products class "
-            "is printed from 2017; in 2017 its exclusions still name milk powder and its value "
+            "is printed from 2017. In 2017 its exclusions still name milk powder and its value "
             f"is 0.3, so its category row is {tt('incomparable_scope_text')}.")
 
 
@@ -822,15 +817,14 @@ def _narrowed_line(cat_row):
     assert old["trend"] == "incomparable_category_disappeared" and new["trend"] == "stable"
     assert rest["trend"] == "incomparable_scope_text"
     return ("Baijiu reaches G through a confirmed containment link. From 2022 distilled "
-            "spirits spans H and J, so its cells are blank and note gives the reason; the "
-            "residual class keeps 0.2 while its exclusions change.")
+            "spirits spans H and J, so its cells are blank and \\texttt{note} gives the reason. "
+            "The residual class keeps 0.2 while its exclusions change.")
 
 
 def _renamed_line(cat_row):
     row = cat_row("镉", "饮用天然矿泉水")
     assert row["n_versions"] == "4" and row["trend"] == "stable"
-    return (f"The confirmed rename merges K and L into one category row, "
-            f"\\texttt{{{row['record_id']}}} ({tt('stable')}).")
+    return f"The confirmed rename merges K and L into one category row ({tt('stable')})."
 
 
 CAT_LINE = {"Split": _split_line, "Absorbed": _absorbed_line, "Narrowed": _narrowed_line,
@@ -842,6 +836,8 @@ INTERIM = os.path.join(PROJ, "Data", "Interim")
 AUDIT_ONE = os.path.join(INTERIM, "pesticide_audit")
 AUDIT_TWO = os.path.join(INTERIM, "pesticide_audit_round2")
 REENTRY = os.path.join(INTERIM, "manual_reentry", "reconciliation")
+TEXTLAYER_REPORT = os.path.join(INTERIM, "pesticide_textlayer_scans",
+                                "pesticide_textlayer_extraction_report.json")
 
 
 def rd_path(path):
@@ -889,15 +885,12 @@ STRATA = (("2019", "consistent", "2019, OCR agrees"),
 T8_CAP = ("Independent reading of the GB 2763-2019 and GB 2763-2021 rows against the "
           "edition scans. Rows are stratified by edition and by whether the OCR "
           "comparison recovered the row (OCR agrees) or not (text layer only). Within a "
-          "stratum, rows were drawn in proportion to stratum size by ranking a seeded SHA-256 "
-          "digest of the record identifier. Round 1 read release v1.0: its errors are seven "
-          "foods filed under a long food label instead of their category and one "
-          "temporary-limit asterisk printed in the government-hosted copy but not on the edition scan; two "
-          "verifier misreadings are not counted. After the category rule was corrected in all "
-          "six editions, round 2 redrew the three strata with errors at the same sizes, "
-          "skipping rows already read. The v1.1 columns combine round 2 with the round-1 rows "
-          "of the stratum that was not redrawn; every row counted there is unchanged in "
-          "release v1.1. Rates are errors per row read. Intervals and upper bounds are two-sided "
+          "stratum, rows were drawn at random with a fixed seed, in proportion to stratum "
+          "size. Round 1 read release v1.0. Round 2 redrew the three "
+          "strata with errors at the same sizes from the corrected release, skipping rows "
+          "already read. The v1.1 columns combine round 2 with the round-1 rows of the stratum "
+          "that was not redrawn, which are unchanged in release v1.1. Verifier misreadings are "
+          "not counted as errors. Rates are errors per row read. Intervals and upper bounds are two-sided "
           "95\\% Clopper--Pearson limits. The nine OCR conflict rows and three "
           "OCR-only groups were read in full and are reported in the text.")
 
@@ -986,8 +979,8 @@ def table9():
     add_rows, add_keys = repeated["additive_limits_long.csv"]
     cat_pairs = repeated["pollutant_category_panel.csv"][1]
     caption = ("Natural keys for joining records across releases. Within a release, "
-               "\\texttt{record\\_id} links panels to long tables; across releases it stays the "
-               "same only while the fields it digests are unchanged, and these keys identify the "
+               "\\texttt{record\\_id} links panels to long tables. Across releases it stays the "
+               "same only while the fields it is computed from are unchanged, and these keys identify the "
                "same printed entry or aligned group instead. \\texttt{record\\_id\\_changes.csv} "
                "pairs the identifiers of releases v1.0 and v1.1 on the same keys. In the pesticide "
                "long table, \\texttt{pesticide\\_key} and \\texttt{food\\_key} group rules across "
@@ -1011,7 +1004,10 @@ def numbers(validation_report, audit_v11_rows):
     # source_reference 是「标准号-版本; [页码或表行;] 网址」,三段的才定位到页或表行。
     located = sum(len(r["source_reference"].split("; ")) == 3 for r in rows)
     with open(validation_report, encoding="utf-8") as handle:
-        layers = json.load(handle)["layers"]
+        report = json.load(handle)
+    layers = report["layers"]
+    # 正文写「所有检查通过」:报告须是带源文件的完整运行,且每项都是 pass。
+    assert report["summary"]["status_counts"]["pass"] == sum(len(layer) for layer in layers.values())
     # _build_stats.json 每个构建产出的 CSV 一项;其余 CSV 在构建后另写。
     with open(os.path.join(REL, "_build_stats.json"), encoding="utf-8") as handle:
         built = len(json.load(handle))
@@ -1032,6 +1028,22 @@ def numbers(validation_report, audit_v11_rows):
     assert all(r["outcome"] == "omission_not_confirmed" for r in ocr_only)
     second = audit_rates(AUDIT_TWO)[("2019+2021", "random")]
     corrected = rd_path(os.path.join(AUDIT_TWO, "category_corrections.csv"))
+
+    # 2016、2019 两版可见条数与声明总数之差;正文据冻结提取报告写
+    # 「2016 版英译本逐节条数相同」「2019 版没有重复条」。
+    counts = {r["version_year"]: r for r in rd("pesticide_edition_reconciliation.csv")}
+    sixteen, nineteen = counts["2016"], counts["2019"]
+    with open(TEXTLAYER_REPORT, encoding="utf-8") as handle:
+        textlayer = json.load(handle)["visible_rule_reconciliation"]
+    translation = textlayer["2016"]["independent_translation_check"]
+    assert (translation["english_translation_visible_rules"]
+            == translation["chinese_source_visible_rules"]
+            == int(sixteen["coordinate_extracted_visible_rules"]))
+    assert (translation["sections_with_equal_visible_rule_counts"]
+            == translation["section_rosters_compared"]
+            == int(sixteen["declared_section_roster"]))
+    duplicates = textlayer["2019"]["plus_one_audit"]["checks"]
+    assert duplicates["exact_full_rule_duplicates"] == duplicates["cross_page_exact_duplicates"] == 0
 
     values = OrderedDict([
         ("ReleaseCsvFiles", len(list(Path(REL).glob("*.csv")))),
@@ -1086,6 +1098,11 @@ def numbers(validation_report, audit_v11_rows):
         ("CategoryCorrectionShare", pct(len(corrected) / len(pesticide))),
         ("AsteriskCorrections", sum("scan_temporary_mark_correction" in r["review_status"]
                                     for r in pesticide)),
+        ("CountSixteenVisible", int(sixteen["coordinate_extracted_visible_rules"])),
+        ("CountSixteenDeclared", int(sixteen["declared_mrl_items"])),
+        ("CountSixteenSections", int(sixteen["declared_section_roster"])),
+        ("CountNineteenVisible", int(nineteen["coordinate_extracted_visible_rules"])),
+        ("CountNineteenDeclared", int(nineteen["declared_mrl_items"])),
     ])
     lines = ["% Generated by Program/Analysis/DatapaperTables.py; do not edit."]
     lines += [f"\\newcommand{{\\{name}}}{{{n:,}}}" if isinstance(n, int)
