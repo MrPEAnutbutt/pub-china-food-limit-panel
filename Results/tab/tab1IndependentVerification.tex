@@ -1,17 +1,18 @@
 \begin{longtable}[]{@{}>{\raggedright\arraybackslash}p{0.21\textwidth}>{\raggedleft\arraybackslash}p{0.08\textwidth}>{\raggedleft\arraybackslash}p{0.11\textwidth}>{\raggedleft\arraybackslash}p{0.18\textwidth}>{\raggedleft\arraybackslash}p{0.11\textwidth}>{\raggedleft\arraybackslash}p{0.14\textwidth}@{}}
-\caption{Independent reading of the GB 2763-2019 and GB 2763-2021 rows against the edition scans. Rows are stratified by edition and by whether the OCR comparison recovered the row (OCR agrees) or not (text layer only). Within a stratum, rows were drawn at random with a fixed seed, in proportion to stratum size. Round 1 read release v1.0. Round 2 redrew the three strata with errors at the same sizes from the corrected release, skipping rows already read. The v1.1 columns combine round 2 with the round-1 rows of the stratum that was not redrawn, which are unchanged in release v1.1. Verifier misreadings are not counted as errors. Rates are errors per row read. Intervals and upper bounds are two-sided 95\% Clopper--Pearson limits. The nine OCR conflict rows and three OCR-only groups were read in full and are reported in the text.}\label{tab1IndependentVerification}\tabularnewline
+\caption{Independent reading of the GB 2763-2019 and GB 2763-2021 rows against the edition scans. Rows are stratified by edition and by whether the OCR comparison recovered the row (OCR agrees) or not (text layer only). Within a stratum, rows were drawn at random with a fixed seed, in proportion to stratum size. Round 1 read release v1.0. Round 2 redrew the three strata with errors at the same sizes from the corrected release, skipping rows already read. The stratum without round-1 errors was not redrawn, so round 1 is its only reading, and the two rounds are not pooled. Verifier misreadings are not counted as errors. Rates are errors per row read. Intervals and upper bounds are two-sided 95\% Clopper--Pearson limits. The nine OCR conflict rows and three OCR-only groups were read in full and are reported in the text.}\label{tab1IndependentVerification}\tabularnewline
 \toprule
-Stratum & Rows in stratum & Round 1 errors / read & Round 1 rate, \% (95\% CI) & v1.1 errors / read & v1.1 upper 95\% bound, \% \\
+Stratum & Rows in stratum & Round 1 errors / read & Round 1 rate, \% (95\% CI) & Round 2 errors / read & Round 2 upper 95\% bound, \% \\
 \midrule
 \endfirsthead
 \toprule
-Stratum & Rows in stratum & Round 1 errors / read & Round 1 rate, \% (95\% CI) & v1.1 errors / read & v1.1 upper 95\% bound, \% \\
+Stratum & Rows in stratum & Round 1 errors / read & Round 1 rate, \% (95\% CI) & Round 2 errors / read & Round 2 upper 95\% bound, \% \\
 \midrule
 \endhead
 2019, OCR agrees & 1,929 & 2 / 32 & 6.3 (0.8--20.8) & 0 / 32 & 10.9 \\
 2019, text layer only & 5,175 & 3 / 87 & 3.4 (0.7--9.7) & 0 / 87 & 4.2 \\
-2021, OCR agrees & 1,772 & 0 / 30 & 0.0 (0.0--11.6) & 0 / 30 & 11.6 \\
+2021, OCR agrees & 1,772 & 0 / 30 & 0.0 (0.0--11.6) & \multicolumn{2}{c@{}}{not redrawn} \\
 2021, text layer only & 8,315 & 3 / 139 & 2.2 (0.4--6.2) & 0 / 139 & 2.6 \\
-\addlinespace All four strata & 17,191 & 8 / 288 & 2.8 (1.2--5.4) & 0 / 288 & 1.3 \\
+\addlinespace Three redrawn strata & 15,419 &  &  & 0 / 258 & 1.4 \\
+All four strata & 17,191 & 8 / 288 & 2.8 (1.2--5.4) &  &  \\
 \bottomrule
 \end{longtable}

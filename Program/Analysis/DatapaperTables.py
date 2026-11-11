@@ -471,6 +471,22 @@ def joined(parts):
     return parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " and " + parts[-1]
 
 
+def volume_unit_rows(filename):
+    """污染物面板里含体积单位的行:(各版同为一个体积单位、有数值趋势的行数,
+    单位在体积与质量之间变动的行数)。后一种一律不给数值趋势。"""
+    same = changed = 0
+    for r in rd(filename):
+        units = {r[f"unit_{y}"] for y in YEARS[filename]} - {""}
+        if not any(u.endswith("/L") for u in units):
+            continue
+        if len(units) == 1:
+            same += r["trend"] in JUDGED
+        else:
+            assert units == {"mg/L", "mg/kg"} and r["trend"].startswith("incomparable_"), r
+            changed += 1
+    return same, changed
+
+
 def table5():
     trend = {f: Counter(r["trend"] for r in rd(f)) for f in (
         "pollutant_category_panel.csv", "pollutant_member_panel.csv", "pesticide_panel.csv",
@@ -487,6 +503,17 @@ def table5():
     pol_long = rd("pollutant_limits_long.csv")
     with_basis = sum(1 for r in pol_long if r["limit_basis"])
     density = sum(1 for r in pol_long if r["normalization_status"] == "density_required")
+    assert density == sum(r["unit"] == "mg/L" for r in pol_long)
+    assert all(r["unit"] in ("mg/L", "mg/kg", "μg/kg") for r in pol_long)
+    cat_same, cat_changed = volume_unit_rows("pollutant_category_panel.csv")
+    mem_same, mem_changed = volume_unit_rows("pollutant_member_panel.csv")
+    # 类别面板的单位不可比行都是 mg/L 与 mg/kg 之间变动;成员面板这类行和基准变动共用一个状态。
+    assert cat_changed == trend["pollutant_category_panel.csv"]["incomparable_unit_dimension_or_value"]
+    mem_blocked = trend["pollutant_member_panel.csv"]["incomparable_basis_unit_or_value"]
+    assert all(r["trend"] == "incomparable_basis_unit_or_value"
+               for r in rd("pollutant_member_panel.csv")
+               if {r[f"unit_{y}"] for y in YEARS["pollutant_member_panel.csv"]} - {""}
+               == {"mg/L", "mg/kg"})
 
     blanks, noted = Counter(), 0
     for r in rd("pollutant_member_panel.csv"):
@@ -533,15 +560,19 @@ def table5():
          "row key and blocks a member trend when it changes. Pesticide qualifiers, including "
          "the temporary-limit asterisk, must agree.",
          f"{tt('incomparable_basis_unit_or_value')}: contaminant member "
-         f"{t['pollutant_member_panel.csv']['incomparable_basis_unit_or_value']}. "
+         f"{mem_blocked - mem_changed} of {mem_blocked}. "
          f"{tt('incomparable_unresolved_review_or_source_qualifier')}: pesticide "
          f"{t['pesticide_panel.csv']['incomparable_unresolved_review_or_source_qualifier']}"),
         ("Unit that cannot be converted",
          "Mass-per-mass units are converted. Volume-based values "
-         f"({density} contaminant long-table rows) and grams per serving are not, and GMP is "
-         "compared only with GMP.",
-         f"{tt('incomparable_unit_dimension_or_value')}: contaminant category "
-         f"{t['pollutant_category_panel.csv']['incomparable_unit_dimension_or_value']}. "
+         f"({density} contaminant long-table rows, all in mg/L) and grams per serving are not "
+         "converted. They are compared as printed with values in the same unit, and no "
+         "numeric trend spans a change between a volume-based and a mass-based unit, such as "
+         "mg/L and mg/kg. GMP is compared only with GMP.",
+         f"Numeric trend within mg/L: contaminant category {cat_same}, member {mem_same}. "
+         f"{tt('incomparable_unit_dimension_or_value')}: contaminant category {cat_changed}. "
+         f"{tt('incomparable_basis_unit_or_value')}: contaminant member {mem_changed} of "
+         f"{mem_blocked}. "
          f"{tt('incomparable_units')}: additive {t['additive_panel.csv']['incomparable_units']}. "
          f"{tt('stable_gmp')}: additive {t['additive_panel.csv']['stable_gmp']}"),
         ("Scope text changes (exclusions, food label, use condition, animals)",
@@ -705,7 +736,9 @@ T7_CAP = ("Category restructuring in the contaminant member panel. Each cell giv
           "member takes its own printed rule or the rule of the first ancestor category that "
           "has a value and does not exclude it. A cell is blank when that rule excludes the "
           "member, when the member spans two printed rules, or when the host cannot be "
-          "determined, and \\texttt{note} records the reason. Renames and containment links that the "
+          "determined, and \\texttt{note} records the reason. A trend describes only the "
+          "editions that hold a value, and its range is stated when these are fewer than "
+          "four. Renames and containment links that the "
           "printed text does not establish were confirmed against the source pages before "
           "use.")
 HOST_EN = {
@@ -733,6 +766,15 @@ RESTRUCTURING = [
       ("酒类", "Alcoholic beverages (residual class)")]),
     ("Renamed", "cadmium", "镉", "mg/L", [("饮用天然矿泉水", "Natural mineral drinking water")]),
 ]
+
+
+def trend_span(row, years):
+    """数值趋势只覆盖行内有值的版本:不是各版都有值时返回起止年份,否则 None。"""
+    held = [y for y in years if row[f"v{y}"]]
+    if row["trend"] not in JUDGED or len(held) == len(years):
+        return None
+    assert held == [y for y in years if held[0] <= y <= held[-1]], row["record_id"]
+    return held[0], held[-1]
 
 
 def table7():
@@ -769,7 +811,9 @@ def table7():
                 else:
                     assert y in row["note"]
                     cells.append("blank")
-            block.append(f"{label} & " + " & ".join(cells) + f" & {tt(row['trend'])}")
+            span = trend_span(row, years)
+            block.append(f"{label} & " + " & ".join(cells) + f" & {tt(row['trend'])}"
+                         + (f" ({span[0]}--{span[1]})" if span else ""))
         used = sorted({letters[unicodedata.normalize("NFKC", r[f'host_category_{y}'])]
                        for (a, n), r in rows.items() if a == analyte
                        and n in dict(members) for y in years if r[f'host_category_{y}']})
@@ -787,6 +831,7 @@ def table7():
     assert [rows[("铅", n)]["trend"] for n in ("白酒", "蒸馏酒", "酒类")] == [
         "stable", "stable", "incomparable_scope_text"]
     assert "spans two printed rules" in rows[("铅", "蒸馏酒")]["note"]
+    assert trend_span(rows[("铅", "蒸馏酒")], years) == ("2012", "2017")
 
 
 def _split_line(cat_row):
@@ -818,6 +863,7 @@ def _narrowed_line(cat_row):
     assert rest["trend"] == "incomparable_scope_text"
     return ("Baijiu reaches G through a confirmed containment link. From 2022 distilled "
             "spirits spans H and J, so its cells are blank and \\texttt{note} gives the reason. "
+            "Its trend covers 2012--2017 only, and the later editions remain unresolved. "
             "The residual class keeps 0.2 while its exclusions change.")
 
 
@@ -859,11 +905,6 @@ def reentry_report(stage):
         return json.load(fh)
 
 
-def zero_error_upper(n):
-    """0/n 的 Clopper–Pearson 95% 上界(闭式)。"""
-    return 1 - 0.025 ** (1 / n)
-
-
 def pct(share):
     """比例 → 一位小数的百分数,四舍五入(6.25 → 6.3)。"""
     return str((Decimal(str(share)) * 100).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP))
@@ -877,7 +918,7 @@ T8_SPEC = (r"@{}>{\raggedright\arraybackslash}p{0.21\textwidth}"
            r">{\raggedleft\arraybackslash}p{0.11\textwidth}"
            r">{\raggedleft\arraybackslash}p{0.14\textwidth}@{}")
 T8_HEAD = ("Stratum & Rows in stratum & Round 1 errors / read & Round 1 rate, \\% (95\\% CI) & "
-           "v1.1 errors / read & v1.1 upper 95\\% bound, \\%")
+           "Round 2 errors / read & Round 2 upper 95\\% bound, \\%")
 STRATA = (("2019", "consistent", "2019, OCR agrees"),
           ("2019", "text_only", "2019, text layer only"),
           ("2021", "consistent", "2021, OCR agrees"),
@@ -888,8 +929,8 @@ T8_CAP = ("Independent reading of the GB 2763-2019 and GB 2763-2021 rows against
           "stratum, rows were drawn at random with a fixed seed, in proportion to stratum "
           "size. Round 1 read release v1.0. Round 2 redrew the three "
           "strata with errors at the same sizes from the corrected release, skipping rows "
-          "already read. The v1.1 columns combine round 2 with the round-1 rows of the stratum "
-          "that was not redrawn, which are unchanged in release v1.1. Verifier misreadings are "
+          "already read. The stratum without round-1 errors was not redrawn, so round 1 is "
+          "its only reading, and the two rounds are not pooled. Verifier misreadings are "
           "not counted as errors. Rates are errors per row read. Intervals and upper bounds are two-sided "
           "95\\% Clopper--Pearson limits. The nine OCR conflict rows and three "
           "OCR-only groups were read in full and are reported in the text.")
@@ -909,27 +950,29 @@ def table8():
     one, two = audit_rates(AUDIT_ONE), audit_rates(AUDIT_TWO)
     carried = [r for r in audit_rows(AUDIT_ONE)
                if (r["edition"], r["stratum"]) in set(one) - set(two)]
-    v11_unread = [r for r in audit_rows(AUDIT_TWO) + carried if r["outcome"] != "agree"]
-    if v11_unread:
-        raise ValueError("v1.1 列只收一致的行")
+    if any(r["outcome"] != "agree" for r in audit_rows(AUDIT_TWO)):
+        raise ValueError("第二轮应全部一致")
+    # 正文写「没重抽那一层第一轮读过的行在 v1.1 里没变」。
     v11_rows_unchanged(audit_rows(AUDIT_TWO) + carried)
-    body, v11_read = [], 0
+    body = []
     for edition, stratum, label in STRATA:
         r1 = one[(edition, stratum)]
-        # 第一轮零错的层不重抽,沿用第一轮读过的行(上面已核过在 v1.1 里没变)。
-        r2 = two.get((edition, stratum), r1)
-        v11_read += int(r2["compared"])
+        # 第一轮零错的层没有重抽,第二轮两栏不填数;两轮不合并。
+        r2 = two.get((edition, stratum))
+        second = (f"{r2['errors']} / {r2['compared']} & {pct(r2['ci95_high'])}" if r2
+                  else "\\multicolumn{2}{c@{}}{not redrawn}")
         body.append(f"{label} & {int(r1['population_rows']):,} & {r1['errors']} / "
                     f"{r1['compared']} & {pct(r1['error_rate'])} ({pct(r1['ci95_low'])}--"
-                    f"{pct(r1['ci95_high'])}) & {r2['errors']} / {r2['compared']} & "
-                    f"{pct(r2['ci95_high'])}")
-    total = one[("2019+2021", "random")]
-    body.append(f"\\addlinespace All four strata & {int(total['population_rows']):,} & "
+                    f"{pct(r1['ci95_high'])}) & {second}")
+    total, redrawn = one[("2019+2021", "random")], two[("2019+2021", "random")]
+    assert len(two) == 4 and len(one) == 5
+    body.append(f"\\addlinespace Three redrawn strata & {int(redrawn['population_rows']):,} & "
+                f" &  & {redrawn['errors']} / {redrawn['compared']} & "
+                f"{pct(redrawn['ci95_high'])}")
+    body.append(f"All four strata & {int(total['population_rows']):,} & "
                 f"{total['errors']} / {total['compared']} & {pct(total['error_rate'])} "
-                f"({pct(total['ci95_low'])}--{pct(total['ci95_high'])}) & 0 / {v11_read} & "
-                f"{pct(zero_error_upper(v11_read))}")
+                f"({pct(total['ci95_low'])}--{pct(total['ci95_high'])}) &  & ")
     write_tab("tab1IndependentVerification", T8_SPEC, T8_CAP, T8_HEAD, body)
-    return v11_read
 
 
 # ── Table 9 · 跨发布版本连接用的自然键 ────────────────────────────
@@ -997,7 +1040,7 @@ def table9():
 
 
 # ── 正文数字宏 ────────────────────────────────────────────────────
-def numbers(validation_report, audit_v11_rows):
+def numbers(validation_report):
     """正文引用的发布包计数与核验结果 → DatapaperNumbers.tex。"""
     rows = [r for f, _ in DEPOSIT_INVENTORY["Family-specific long tables"] for r in rd(f)]
     status = Counter(r["verification_status"] for r in rows)
@@ -1028,6 +1071,21 @@ def numbers(validation_report, audit_v11_rows):
     assert all(r["outcome"] == "omission_not_confirmed" for r in ocr_only)
     second = audit_rates(AUDIT_TWO)[("2019+2021", "random")]
     corrected = rd_path(os.path.join(AUDIT_TWO, "category_corrections.csv"))
+    # 第一轮零错、第二轮没有重抽的那一层:只有第一轮的结果;类别更正落在这一层的行数。
+    (kept,) = set(audit_rates(AUDIT_ONE)) - set(audit_rates(AUDIT_TWO))
+    kept_rate = audit_rates(AUDIT_ONE)[kept]
+    assert int(kept_rate["errors"]) == 0
+    stratum = {r["record_id"]: (r["edition"], r["crosscheck_status"]) for r in rd_path(
+        os.path.join(AUDIT_TWO, "pesticide_row_crosscheck_status.csv"))}
+    kept_corrected = sum(stratum.get(r["record_id_current"]) == kept for r in corrected)
+
+    # 污染物成员面板:数值趋势只覆盖有值的版本,不是四版都有值的行数。
+    member_trends = [r for r in rd("pollutant_member_panel.csv") if r["trend"] in JUDGED]
+    member_partial = sum(trend_span(r, YEARS["pollutant_member_panel.csv"]) is not None
+                         for r in member_trends)
+    # 污染物面板:各版同为 mg/L 而有数值趋势的行、单位在 mg/L 与 mg/kg 之间变动的行。
+    volume_category = volume_unit_rows("pollutant_category_panel.csv")
+    volume_member = volume_unit_rows("pollutant_member_panel.csv")
 
     # 2016、2019 两版可见条数与声明总数之差;正文据冻结提取报告写
     # 「2016 版英译本逐节条数相同」「2019 版没有重复条」。
@@ -1092,8 +1150,18 @@ def numbers(validation_report, audit_v11_rows):
         ("AuditTwoRows", int(second["compared"])),
         ("AuditTwoErrors", int(second["errors"])),
         ("AuditTwoUpper", pct(second["ci95_high"])),
-        ("AuditReleaseRows", audit_v11_rows),
-        ("AuditReleaseUpper", pct(zero_error_upper(audit_v11_rows))),
+        ("AuditTwoStrataShare", pct(int(second["population_rows"])
+                                    / int(rate["population_rows"]))),
+        ("AuditKeptRows", int(kept_rate["compared"])),
+        ("AuditKeptUpper", pct(kept_rate["ci95_high"])),
+        ("AuditKeptStratumRows", int(kept_rate["population_rows"])),
+        ("AuditKeptCorrections", kept_corrected),
+        ("MemberTrendRows", len(member_trends)),
+        ("MemberTrendPartial", member_partial),
+        ("VolumeCategorySameUnit", volume_category[0]),
+        ("VolumeCategoryUnitChange", volume_category[1]),
+        ("VolumeMemberSameUnit", volume_member[0]),
+        ("VolumeMemberUnitChange", volume_member[1]),
         ("CategoryCorrections", len(corrected)),
         ("CategoryCorrectionShare", pct(len(corrected) / len(pesticide))),
         ("AsteriskCorrections", sum("scan_temporary_mark_correction" in r["review_status"]
@@ -1132,5 +1200,6 @@ if __name__ == "__main__":
     table6()
     table7()
     table9()
-    numbers(args.validation_report, table8())
+    table8()
+    numbers(args.validation_report)
     print("tables →", OUT)
